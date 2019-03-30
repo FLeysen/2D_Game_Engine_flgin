@@ -1,0 +1,4 @@
+Engine version: 1.0
+[2019-3-29 19:41:38][WARNING]: Attempted to delete a nullpointer of type class dae::Texture2D * __ptr64
+[2019-3-29 19:41:38][WARNING]: Attempted to delete a nullpointer of type class dae::Texture2D * __ptr64
+[2019-3-29 19:41:38][WARNING]: Attempted to delete a nullpointer of type class dae::Texture2D * __ptr64
