@@ -7,26 +7,26 @@
 #include <glm/vec2.hpp>
 #pragma warning(pop)
 
-RenderComponent::RenderComponent(dae::GameObject* const ownerObject)
+flgin::RenderComponent::RenderComponent(GameObject* const ownerObject)
 	: BaseComponent(ownerObject)
 	, m_pTexture{ nullptr }
 {}
 
-RenderComponent::~RenderComponent()
+flgin::RenderComponent::~RenderComponent()
 {
 	 Logger::GetInstance().SafeDelete(m_pTexture);
 }
 
-void RenderComponent::Render() const
+void flgin::RenderComponent::Render() const
 {
 	if (m_pTexture != nullptr)
 	{
 		const glm::vec2& pos{ m_pOwnerObject->GetPosition() };
-		dae::Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
+		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
 	}
 }
 
-void RenderComponent::SetTexture(dae::Texture2D* const newTexture)
+void flgin::RenderComponent::SetTexture(Texture2D* const newTexture)
 {
 	Logger::GetInstance().SafeDelete(m_pTexture);
 	m_pTexture = newTexture;

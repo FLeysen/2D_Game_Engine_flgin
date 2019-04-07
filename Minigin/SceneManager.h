@@ -1,7 +1,7 @@
 #pragma once
 #include "Singleton.h"
 
-namespace dae
+namespace flgin
 {
 	class Scene;
 	class SceneManager final : public Singleton<SceneManager>
@@ -13,7 +13,7 @@ namespace dae
 		void Render() const;
 
 	private:
-		std::vector<std::shared_ptr<Scene>> mScenes;
+		std::vector<std::shared_ptr<Scene>> m_spScenes;
 	};
 
 }

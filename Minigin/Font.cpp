@@ -1,25 +1,20 @@
 #include "MiniginPCH.h"
 #include "Font.h"
-#include "Logger.h"
 
-TTF_Font* dae::Font::GetFont() const 
+flgin::Font::Font(const std::string& fullPath, unsigned int size)
+	: m_pFont{ nullptr }
 {
-	return m_Font;
-}
-
-dae::Font::Font(const std::string& fullPath, unsigned int size) 
-	: m_Font(nullptr)
-	, m_Size(size)
-{
-	m_Font = TTF_OpenFont(fullPath.c_str(), size);
-	if (m_Font == nullptr) 
-	{
+	m_pFont = TTF_OpenFont(fullPath.c_str(), size);
+	if (m_pFont == nullptr)
 		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, std::string("Failed to load font: ") + SDL_GetError(), this });
-		throw std::runtime_error(std::string("Failed to load font: ") + SDL_GetError());
-	}
 }
 
-dae::Font::~Font()
+flgin::Font::~Font()
 {
-	TTF_CloseFont(m_Font);
+	if (m_pFont) TTF_CloseFont(m_pFont);
+}
+
+TTF_Font* flgin::Font::GetFont() const
+{
+	return m_pFont;
 }

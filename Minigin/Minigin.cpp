@@ -14,8 +14,9 @@
 #include "TextComponent.h"
 #include "Logger.h"
 #include "Time.h"
+#include "Invoker.h"
 
-void dae::Minigin::Initialize()
+void flgin::Minigin::Initialize()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
 	{
@@ -40,15 +41,12 @@ void dae::Minigin::Initialize()
 	Renderer::GetInstance().Init(window);
 }
 
-/**
- * Code constructing the scene world starts here
- */
-void dae::Minigin::LoadGame() const
+void flgin::Minigin::LoadGame() const
 {
 	Scene& scene = SceneManager::GetInstance().CreateScene("Demo");
 
-	GameObject* go{ new GameObject{} };
-	RenderComponent* renderComponent{ new RenderComponent{ go } };
+	GameObject* go{ new flgin::GameObject{} };
+	flgin::RenderComponent* renderComponent{ new flgin::RenderComponent{ go } };
 	renderComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("background.jpg"));
 	go->AddComponent(renderComponent);
 	scene.AddGameObject(go);
@@ -79,7 +77,7 @@ void dae::Minigin::LoadGame() const
 	scene.AddRenderComponent(renderComponent);
 }
 
-void dae::Minigin::Cleanup()
+void flgin::Minigin::Cleanup()
 {
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(window);
@@ -87,12 +85,12 @@ void dae::Minigin::Cleanup()
 	SDL_Quit();
 }
 
-void dae::Minigin::Run()
+void flgin::Minigin::Run()
 {
 	Initialize();
 
 	// tell the resource manager where he can find the game data
-	ResourceManager::GetInstance().Init("../Data/");
+	flgin::ResourceManager::GetInstance().Init("../Data/");
 
 	LoadGame();
 
@@ -100,8 +98,9 @@ void dae::Minigin::Run()
 		float lag{ 1.0f };
 		auto lastTime{ std::chrono::high_resolution_clock::now() };
 		Renderer& renderer{ Renderer::GetInstance() };
-		SceneManager& sceneManager{ SceneManager::GetInstance() };
-		InputManager& input{ InputManager::GetInstance() };
+		flgin::SceneManager& sceneManager{ flgin::SceneManager::GetInstance() };
+		flgin::InputManager& input{ flgin::InputManager::GetInstance() };
+		flgin::Invoker& invoker{ flgin::Invoker::GetInstance() };
 		Time& time{ Time::GetInstance() };
 		bool doContinue{ true };
 		float frameTime{ msPerFrame / 1000.0f };
@@ -118,6 +117,7 @@ void dae::Minigin::Run()
 
 			doContinue = input.ProcessInput();
 
+			invoker.Update();
 			sceneManager.Update();
 
 			while (lag >= frameTime)

@@ -4,19 +4,19 @@
 #include "Texture2D.h"
 #include "RenderComponent.h"
 
-TextComponent::TextComponent(dae::GameObject* const ownerObject, const std::string& fontPath, const unsigned int fontSize, const SDL_Color& color, const std::string& text)
+flgin::TextComponent::TextComponent(GameObject* const ownerObject, const std::string& fontPath, const unsigned int fontSize, const SDL_Color& color, const std::string& text)
 	: BaseComponent(ownerObject)
-	, m_pFont{ new dae::Font{fontPath, fontSize} }
+	, m_pFont{ new Font{fontPath, fontSize} }
 	, m_TextColor{ color }
 	, m_Text{ text }
 {}
 
-TextComponent::~TextComponent()
+flgin::TextComponent::~TextComponent()
 {
 	Logger::GetInstance().SafeDelete(m_pFont);
 }
 
-void TextComponent::Update()
+void flgin::TextComponent::Update()
 {
 
 	RenderComponent* const renderComponent{ m_pOwnerObject->GetComponent<RenderComponent>() };
@@ -32,7 +32,7 @@ void TextComponent::Update()
 		Logger::GetInstance().Log(StatusCode{StatusCode::Status::FAIL, std::string("Render text failed: ") + SDL_GetError(), this});
 		return;
 	}
-	SDL_Texture* const texture{ SDL_CreateTextureFromSurface(dae::Renderer::GetInstance().GetSDLRenderer(), surface) };
+	SDL_Texture* const texture{ SDL_CreateTextureFromSurface(Renderer::GetInstance().GetSDLRenderer(), surface) };
 	if (texture == nullptr)
 	{
 		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, std::string("Create text texture from surface failed: ") + SDL_GetError(), this });
@@ -40,10 +40,10 @@ void TextComponent::Update()
 	}
 	SDL_FreeSurface(surface);
 
-	renderComponent->SetTexture(new dae::Texture2D{ texture });
+	renderComponent->SetTexture(new Texture2D{ texture });
 }
 
-void TextComponent::SetText(const std::string& text)
+void flgin::TextComponent::SetText(const std::string& text)
 {
 	m_Text = text;
 }

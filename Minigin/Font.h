@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL_ttf.h>
 
-namespace dae
+namespace flgin
 {
 	class Font
 	{
@@ -16,8 +16,7 @@ namespace dae
 		Font & operator= (const Font &&) = delete;
 
 	private:
-		TTF_Font* m_Font;
-		unsigned int m_Size;
+		TTF_Font* m_pFont;
 	};
 
 }

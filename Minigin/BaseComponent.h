@@ -1,17 +1,20 @@
 #pragma once
 #include "GameObject.h"
-class BaseComponent
+namespace flgin
 {
-public:
-	BaseComponent(dae::GameObject* ownerObject) : m_pOwnerObject{ ownerObject }{};
-	virtual ~BaseComponent() = default;
-	
-	virtual void Update() = 0;
-	dae::GameObject* GetGameObject() { return m_pOwnerObject; };
+	class BaseComponent
+	{
+	public:
+		BaseComponent(GameObject* ownerObject) : m_pOwnerObject{ ownerObject } {};
+		virtual ~BaseComponent() = default;
 
-	BaseComponent& operator=(const BaseComponent&) = delete;
-	BaseComponent& operator=(BaseComponent&&) = delete;
+		virtual void Update() = 0;
+		GameObject* GetGameObject() { return m_pOwnerObject; };
 
-protected:
-	dae::GameObject* m_pOwnerObject;
-};
+		BaseComponent& operator=(const BaseComponent&) = delete;
+		BaseComponent& operator=(BaseComponent&&) = delete;
+
+	protected:
+		GameObject* m_pOwnerObject;
+	};
+}

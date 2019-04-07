@@ -3,7 +3,7 @@
 #include <time.h>
 #include <chrono>
 
-void Logger::Log(const StatusCode& sc)
+void flgin::Logger::Log(const StatusCode& sc)
 {
 	for (const StatusCode& logged : m_Logged)
 	{
@@ -26,8 +26,10 @@ void Logger::Log(const StatusCode& sc)
 
 	if (sc.status == StatusCode::Status::WARNING)
 		m_Output << "[WARNING]: ";
-	else
+	else if (sc.status == StatusCode::Status::FAIL)
 		m_Output << "[ERROR]: ";
+	else
+		m_Output << "[SUCCESS]: ";
 
 	m_Output << sc.message << '\n';
 
@@ -35,7 +37,7 @@ void Logger::Log(const StatusCode& sc)
 		m_Logged.push_back(sc);
 }
 
-Logger::Logger()
+flgin::Logger::Logger()
 	: m_Output{ }
 {
 	auto accurateTime{ std::chrono::system_clock::now() };
@@ -52,10 +54,10 @@ Logger::Logger()
 		<< now.tm_sec << ".txt";
 	m_Output.open(outPath.str());
 
-	m_Output << "Engine version: 1.0\n";
+	m_Output << "Engine version: 2.0\n";
 }
 
-Logger::~Logger()
+flgin::Logger::~Logger()
 {
 	m_Output.close();
 }

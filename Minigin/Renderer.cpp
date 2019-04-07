@@ -4,34 +4,32 @@
 #include "SceneManager.h"
 #include "Texture2D.h"
 
-void dae::Renderer::Init(SDL_Window * window)
+void flgin::Renderer::Init(SDL_Window * window)
 {
-	mRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (mRenderer == nullptr) 
-	{
-		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
-	}
+	m_pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if (m_pRenderer == nullptr) 
+		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, std::string("SDL_CreateRenderer Error: ") + SDL_GetError() });
 }
 
-void dae::Renderer::Render()
+void flgin::Renderer::Render()
 {
-	SDL_RenderClear(mRenderer);
+	SDL_RenderClear(m_pRenderer);
 
-	SceneManager::GetInstance().Render();
+	flgin::SceneManager::GetInstance().Render();
 	
-	SDL_RenderPresent(mRenderer);
+	SDL_RenderPresent(m_pRenderer);
 }
 
-void dae::Renderer::Destroy()
+void flgin::Renderer::Destroy()
 {
-	if (mRenderer != nullptr)
+	if (m_pRenderer != nullptr)
 	{
-		SDL_DestroyRenderer(mRenderer);
-		mRenderer = nullptr;
+		SDL_DestroyRenderer(m_pRenderer);
+		m_pRenderer = nullptr;
 	}
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
+void flgin::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
 {
 	SDL_Rect dst;
 	dst.x = static_cast<int>(x);
@@ -40,7 +38,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
+void flgin::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
 {
 	SDL_Rect dst;
 	dst.x = static_cast<int>(x);

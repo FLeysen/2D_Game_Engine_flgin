@@ -3,28 +3,30 @@
 #include "GameObject.h"
 #include "RenderComponent.h"
 
-unsigned int dae::Scene::idCounter = 0;
+unsigned int flgin::Scene::idCounter{ 0 };
 
-dae::Scene::Scene(const std::string& name) : m_Name(name) {}
+flgin::Scene::Scene(const std::string& name) 
+	: m_Name(name) 
+{}
 
-dae::Scene::~Scene()
+flgin::Scene::~Scene()
 {
 	Logger& logger{ Logger::GetInstance() };
 	for (GameObject* gameObject : m_pGameObjects)
 		logger.SafeDelete(gameObject);
 };
 
-void dae::Scene::AddGameObject(GameObject* const object)
+void flgin::Scene::AddGameObject(GameObject* const object)
 {
 	m_pGameObjects.push_back(object);
 }
 
-void dae::Scene::AddRenderComponent(RenderComponent* const renderComponent)
+void flgin::Scene::AddRenderComponent(RenderComponent* const renderComponent)
 {
 	m_pRenderComponents.push_back(renderComponent);
 }
 
-void dae::Scene::Update()
+void flgin::Scene::Update()
 {
 	for(GameObject* const gameObject : m_pGameObjects)
 	{
@@ -32,7 +34,7 @@ void dae::Scene::Update()
 	}
 }
 
-void dae::Scene::Render() const
+void flgin::Scene::Render() const
 {
 	for (RenderComponent* const renderComponent : m_pRenderComponents)
 	{

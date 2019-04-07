@@ -1,59 +1,113 @@
 #pragma once
 #include <functional>
-#include <vector>
 #include "Singleton.h"
-template<typename returnType, typename... argList>
-struct FunctionContainer
-{
-	std::function<returnType(argList...)> function;
-	std::tuple<argList...> arguments;
+#include "Time.h"
+#include "Logger.h"
 
-	explicit FunctionContainer(std::function<returnType(argList...)> func, argList... argumentList) 
-		: function{ func }, arguments{ std::tuple<argList...>{argumentList...} } {}
-};
+#ifndef MAX_INVOCATIONS
+#define MAX_INVOCATIONS 10
+#endif
 
-class Invoker final : public dae::Singleton<Invoker>
+namespace flgin
 {
-public:
-	Invoker() = default;
-	~Invoker() = default;
-	Invoker(const Invoker& other) = delete;
-	Invoker(Invoker&& other) = delete;
-	Invoker& operator=(const Invoker& other) = delete;
-	Invoker& operator=(Invoker&& other) = delete;
+	class FunctionHolderBase
+	{
+	public:
+		FunctionHolderBase(float invocationTime) : m_ElapsedTime{ 0.0f }, m_InvocationTime{ invocationTime }, m_IsRepeating{ false }{}
+		virtual ~FunctionHolderBase() = default;
+		bool Update()
+		{
+			m_ElapsedTime += Time::GetInstance().GetDeltaTime();
+			if (m_ElapsedTime > m_InvocationTime)
+			{
+				Invoke();
+				if (m_IsRepeating)
+				{
+					m_ElapsedTime -= m_InvocationTime;
+					return false;
+				}
+				return true;
+			}
+			return false;
+		}
+		void SetRepeating(bool repeating) { m_IsRepeating = repeating; }
+
+	protected:
+		virtual void Invoke() = 0;
+
+		bool m_IsRepeating;
+		float m_ElapsedTime;
+		float m_InvocationTime;
+	};
 
 	template<typename returnType, typename... argList>
-	void Invoke(const FunctionContainer<returnType(argList...)>& function, float timeToCall = 0.0f) {};
-
-private:
-	std::vector<Invocation> m_Invokes;
-};
-
-//-----------------------------------------------------------------
-// DELEGATE CLASS (DELEGATE BASE)
-//----------------------------------------------------------------
-template<typename ret, typename... args>
-class Invocation final
-{
-public:
-	template<std::size_t... Is>
-	ret CallFunction(std::function<ret(args...)>& func, const std::tuple<args...>& tuple, std::index_sequence<Is...>)
+	class FunctionHolder : public FunctionHolderBase
 	{
-		return func(std::get<Is>(tuple)...);
-	}
+	public:
+		explicit FunctionHolder(float invocationTime, std::function<returnType(argList...)> function, argList... arguments)
+			: FunctionHolderBase(invocationTime), m_Function{ function }, m_Arguments{ arguments... } {}
 
-	explicit Multicast() {};
-	explicit Multicast(std::vector<FunctionContainer<void, args...>> dc)
-	{
-		for (auto c : dc)
-			MulticastDataBase<void, args...>::m_functions.push_back(c);
-	}
-
-	void Invoke()
-	{
-		for (FunctionContainer<void, args...> f : MulticastDataBase<void, args...>::m_functions)
+	private:
+		void Invoke() 
 		{
-			CallFunction(f.func, f.arguments, std::index_sequence_for<args...>());
+			CallFunction(m_Function, m_Arguments, std::index_sequence_for<argList...>());
 		}
-	}
-};
+		template<std::size_t... Is>
+		returnType CallFunction(std::function<returnType(argList...)>& func, const std::tuple<argList...>& tuple, std::index_sequence<Is...>)
+		{
+			return func(std::get<Is>(tuple)...);
+		}
+
+		std::function<returnType(argList...)> m_Function;
+		std::tuple<argList...> m_Arguments;
+	};
+
+	class Invoker final : public Singleton<Invoker>
+	{
+	public:
+		Invoker() = default;
+		~Invoker() 
+		{ 
+			Logger& logger{ Logger::GetInstance() };
+			for (int i{}; i < m_FunctionsHeld; ++i)
+				logger.SafeDelete(m_pFunctionHolders[i]);
+		};
+		Invoker(const Invoker& other) = delete;
+		Invoker(Invoker&& other) = delete;
+		Invoker& operator=(const Invoker& other) = delete;
+		Invoker& operator=(Invoker&& other) = delete;
+
+		void Update()
+		{
+			for (int i{}; i < m_FunctionsHeld; ++i)
+			{
+				if (m_pFunctionHolders[i]->Update())
+				{
+					--m_FunctionsHeld;
+					Logger::GetInstance().SafeDelete(m_pFunctionHolders[i]);
+					m_pFunctionHolders[i] = m_pFunctionHolders[m_FunctionsHeld];
+					--i;
+				}
+			}
+		}
+		void AddInvoke(FunctionHolderBase* pInvokeToAdd)
+		{
+			if (m_FunctionsHeld == MAX_INVOCATIONS)
+			{
+				Logger::GetInstance().Log(StatusCode{StatusCode::Status::FAIL, "Invoker is full, could not add invoke."});
+				Logger::GetInstance().SafeDelete(pInvokeToAdd);
+				return;
+			}
+			m_pFunctionHolders[m_FunctionsHeld] = pInvokeToAdd;
+			++m_FunctionsHeld;
+		}
+
+		void CancelInvoke(FunctionHolderBase*)
+		{
+		}
+
+	private:
+		FunctionHolderBase* m_pFunctionHolders[MAX_INVOCATIONS]{};
+		int m_FunctionsHeld{ 0 };
+	};
+}

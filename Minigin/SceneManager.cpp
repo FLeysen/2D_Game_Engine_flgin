@@ -2,26 +2,25 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-
-void dae::SceneManager::Update()
+void flgin::SceneManager::Update()
 {
-	for(auto scene : mScenes)
+	for(auto scene : m_spScenes)
 	{
 		scene->Update();
 	}
 }
 
-void dae::SceneManager::Render() const
+void flgin::SceneManager::Render() const
 {
-	for (const auto scene : mScenes)
+	for (const auto scene : m_spScenes)
 	{
 		scene->Render();
 	}
 }
 
-dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
+flgin::Scene& flgin::SceneManager::CreateScene(const std::string& name)
 {
 	const auto scene = std::shared_ptr<Scene>(new Scene(name));
-	mScenes.push_back(scene);
+	m_spScenes.push_back(scene);
 	return *scene;
 }

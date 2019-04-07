@@ -27,6 +27,12 @@
     <Filter Include="Scenes">
       <UniqueIdentifier>{6e3ec48c-ec92-4743-9547-c4eb2a36c763}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{dc1f2ffb-93ce-49fc-b342-2b986a7bce30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{dfc5fac8-1969-47bf-b5ab-5778cab6c733}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -94,6 +100,21 @@
     </ClInclude>
     <ClInclude Include="Singleton.h">
       <Filter>Minigin</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioLocator.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioServices.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Commands.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

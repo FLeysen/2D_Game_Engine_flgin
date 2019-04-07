@@ -3,10 +3,9 @@
 
 #include "Transform.h"
 #include "Texture2D.h"
-class BaseComponent;
-class RenderComponent;
-namespace dae
+namespace flgin
 {
+	class BaseComponent;
 	class GameObject final
 	{
 	public:
@@ -22,7 +21,7 @@ namespace dae
 		void RemoveComponentsOfType()
 		{
 			const type_info& typeInfo{ typeid(T) };
-			for (BaseComponent* const component : m_pComponents)
+			for (flgin::BaseComponent* const component : m_pComponents)
 			{
 				if (typeid(*component) == typeInfo)
 					Logger::GetInstance().SafeDelete(component);
@@ -32,7 +31,7 @@ namespace dae
 		T* GetComponent()
 		{
 			const type_info& typeInfo{ typeid(T) };
-			for (BaseComponent* const component : m_pComponents)
+			for (flgin::BaseComponent* const component : m_pComponents)
 			{
 				if (typeid(*component) == typeInfo)					
 					return static_cast<T*>(component);
@@ -47,7 +46,7 @@ namespace dae
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
-		Transform m_Transform;
+		dae::Transform m_Transform;
 		std::vector<BaseComponent*> m_pComponents;
 	};
 }

@@ -1,0 +1,7 @@
+Engine version: 2.0
+[2019-4-5 18:6:53][WARNING]: Attempted to delete a nullpointer of type class dae::Texture2D * __ptr64
+[2019-4-5 18:6:53][WARNING]: Attempted to delete a nullpointer of type class dae::Texture2D * __ptr64
+[2019-4-5 18:6:53][WARNING]: Attempted to delete a nullpointer of type class dae::Texture2D * __ptr64
+[2019-4-5 18:6:53][ERROR]: Render text failed: Text has zero width
+[2019-4-5 18:6:54][WARNING]: Attempted to delete a nullpointer of type class dae::Texture2D * __ptr64
+[2019-4-5 18:6:56][SUCCESS]: Invoking went right, someValue was: 5

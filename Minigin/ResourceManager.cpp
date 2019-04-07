@@ -8,9 +8,9 @@
 #include "Texture2D.h"
 #include "Font.h"
 
-void dae::ResourceManager::Init(std::string&& dataPath)
+void flgin::ResourceManager::Init(std::string&& dataPath)
 {
-	mDataPath = std::move(dataPath);
+	m_DataPath = std::move(dataPath);
 
 	// load support for png and jpg, this takes a while!
 
@@ -30,18 +30,19 @@ void dae::ResourceManager::Init(std::string&& dataPath)
 	}
 }
 
-dae::Texture2D* dae::ResourceManager::LoadTexture(const std::string& file)
+flgin::Texture2D* flgin::ResourceManager::LoadTexture(const std::string& file)
 {
-	std::string fullPath = mDataPath + file;
+	std::string fullPath = m_DataPath + file;
 	SDL_Texture *texture = IMG_LoadTexture(Renderer::GetInstance().GetSDLRenderer(), fullPath.c_str());
 	if (texture == nullptr) 
 	{
-		throw std::runtime_error(std::string("Failed to load texture: ") + SDL_GetError());
+		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, std::string("Failed to load texture: ") + SDL_GetError() });
+		return nullptr;
 	}
 	return new Texture2D{ texture };
 }
 
-std::shared_ptr<dae::Font> dae::ResourceManager::LoadFont(const std::string& file, unsigned int size)
+std::shared_ptr<flgin::Font> flgin::ResourceManager::LoadFont(const std::string& file, unsigned int size)
 {
-	return std::make_shared<Font>(mDataPath + file, size);
+	return std::make_shared<Font>(m_DataPath + file, size);
 }

@@ -1,42 +1,66 @@
 #include "MiniginPCH.h"
 #include "InputManager.h"
-#include <SDL.h>
+#include <winerror.h>
+#pragma comment(lib, "XInput.lib")
+#include "Command.h"
+#include "SDL.h"
 
+flgin::InputManager::InputManager()
+	: m_pCommands{}
+	, m_InputState{}
+{}
 
-bool dae::InputManager::ProcessInput()
+flgin::InputManager::~InputManager()
 {
-	ZeroMemory(&currentState, sizeof(XINPUT_STATE));
-	XInputGetState(0, &currentState);
+	Logger& logger{ Logger::GetInstance() };
+	for (Command* command : m_pCommands)
+		logger.SafeDelete(command);
+}
 
+bool flgin::InputManager::ProcessInput()
+{
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
 		if (e.type == SDL_QUIT) {
 			return false;
 		}
 		if (e.type == SDL_KEYDOWN) {
-			
+
 		}
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			
+
 		}
 	}
 
 	return true;
-}
-
-bool dae::InputManager::IsPressed(ControllerButton button) const
-{
-	switch (button)
+	//TODO: Update this
+	/*
+	DWORD packetNumber{ m_InputState.dwPacketNumber };
+	if (XInputGetState(0, &m_InputState) == ERROR_DEVICE_NOT_CONNECTED)
 	{
-	case ControllerButton::ButtonA:
-		return currentState.Gamepad.wButtons & XINPUT_GAMEPAD_A;
-	case ControllerButton::ButtonB:
-		return currentState.Gamepad.wButtons & XINPUT_GAMEPAD_B;
-	case ControllerButton::ButtonX:
-		return currentState.Gamepad.wButtons & XINPUT_GAMEPAD_X;
-	case ControllerButton::ButtonY:
-		return currentState.Gamepad.wButtons & XINPUT_GAMEPAD_Y;
-	default: return false;
+		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::WARNING, "ProcessInput: Controller not found.", this });
+		return true;
 	}
+	if (m_InputState.dwPacketNumber == packetNumber) return true;
+	
+	for (Command* const command : m_pCommands)
+	{
+		if (command)
+		{
+			if (m_InputState.Gamepad.wButtons & command->GetMapping())
+				command->Execute();
+		}
+	}
+	return true;
+	*/
 }
 
+bool flgin::InputManager::IsPressed(WORD button) const
+{
+	return m_InputState.Gamepad.wButtons & button;
+}
+
+void flgin::InputManager::AddCommand(Command* const command)
+{
+	m_pCommands.push_back(command);
+}

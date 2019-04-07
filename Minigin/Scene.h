@@ -1,9 +1,9 @@
 #pragma once
 #include "SceneManager.h"
 
-class RenderComponent;
-namespace dae
+namespace flgin
 {
+	class RenderComponent;
 	class GameObject;
 	class Scene
 	{
