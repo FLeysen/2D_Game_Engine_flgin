@@ -90,17 +90,16 @@ void flgin::Minigin::Run()
 	Initialize();
 
 	// tell the resource manager where he can find the game data
-	flgin::ResourceManager::GetInstance().Init("../Data/");
+	ResourceManager::GetInstance().Init("../Data/");
 
 	LoadGame();
-
 	{
 		float lag{ 1.0f };
 		auto lastTime{ std::chrono::high_resolution_clock::now() };
 		Renderer& renderer{ Renderer::GetInstance() };
-		flgin::SceneManager& sceneManager{ flgin::SceneManager::GetInstance() };
-		flgin::InputManager& input{ flgin::InputManager::GetInstance() };
-		flgin::Invoker& invoker{ flgin::Invoker::GetInstance() };
+		SceneManager& sceneManager{ SceneManager::GetInstance() };
+		InputManager& input{ InputManager::GetInstance() };
+		Invoker& invoker{ Invoker::GetInstance() };
 		Time& time{ Time::GetInstance() };
 		bool doContinue{ true };
 		float frameTime{ msPerFrame / 1000.0f };

@@ -33,6 +33,9 @@
     <Filter Include="Input">
       <UniqueIdentifier>{dfc5fac8-1969-47bf-b5ab-5778cab6c733}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Observer">
+      <UniqueIdentifier>{6f573eb5-75a6-4785-be70-73ba4ccff644}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -116,6 +119,15 @@
     <ClInclude Include="Commands.h">
       <Filter>Input</Filter>
     </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>Observer</Filter>
+    </ClInclude>
+    <ClInclude Include="Subject.h">
+      <Filter>Observer</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreObserver.h">
+      <Filter>Observer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TextComponent.cpp">
@@ -168,6 +180,12 @@
     </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>Minigin</Filter>
+    </ClCompile>
+    <ClCompile Include="Subject.cpp">
+      <Filter>Observer</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreObserver.cpp">
+      <Filter>Observer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
