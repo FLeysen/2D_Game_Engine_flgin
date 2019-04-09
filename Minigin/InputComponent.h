@@ -9,11 +9,11 @@ namespace flgin
 	public:
 		InputComponent(GameObject* const ownerObject);
 		~InputComponent();
-		void AddMapping(WORD key, Command* command);
+		void AddMapping(UINT8 key, Command* command);
 		void Update() override;
-		bool ProcessInput(WORD buttonsPressed);
+		bool ProcessInput(UINT8 key);
 
 	private:
-		std::map<WORD, Command*> m_Mappings;
+		std::map<UINT8, Command*> m_Mappings;
 	};
 }

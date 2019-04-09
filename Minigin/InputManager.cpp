@@ -1,13 +1,11 @@
 #include "MiniginPCH.h"
 #include "InputManager.h"
-#pragma comment(lib, "XInput.lib")
 #include "Command.h"
 #include "SDL.h"
 #include "InputComponent.h"
 
 flgin::InputManager::InputManager()
 	: m_pCommands{}
-	, m_InputStates{}
 {}
 
 flgin::InputManager::~InputManager()
@@ -26,14 +24,11 @@ bool flgin::InputManager::ProcessInput()
 		{
 			return false;
 		}
-	}
-	for (size_t i{}, playerAmount{ m_pPlayers.size() }; i < playerAmount; ++i)
-	{
-		if (m_pPlayers[i])
+		else if (e.type == SDL_CONTROLLERBUTTONDOWN)
 		{
-			XInputGetState(static_cast<DWORD>(i), &m_InputStates[i]);
-			if (!m_pPlayers[i]->ProcessInput(m_InputStates[i].Gamepad.wButtons))
-				return false;
+			if (e.cbutton.which > m_pPlayers.size() - 1) continue;
+			if (!m_pPlayers[e.cbutton.which]) continue;
+			if (!m_pPlayers[e.cbutton.which]->ProcessInput(e.cbutton.button)) return false;
 		}
 	}
 
@@ -48,7 +43,6 @@ void flgin::InputManager::AddCommand(Command* const command)
 void flgin::InputManager::AddPlayer(InputComponent* player)
 {
 	m_pPlayers.push_back(player);
-	m_InputStates.push_back({});
 }
 
 void flgin::InputManager::RemovePlayer(InputComponent* player)

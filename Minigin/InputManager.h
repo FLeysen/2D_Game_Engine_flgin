@@ -52,7 +52,6 @@ namespace flgin
 		}
 
 	private:
-		std::vector<XINPUT_STATE> m_InputStates;
 		std::vector<Command*> m_pCommands;
 		std::vector<InputComponent*> m_pPlayers;
 	};

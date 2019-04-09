@@ -20,10 +20,18 @@
 
 void flgin::Minigin::Initialize()
 {
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0)
 	{
 		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, std::string("SDL_Init Error: ") + SDL_GetError(), this });
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
+	}
+
+	SDL_GameController* controller{ };
+
+	for (int i{}, amt{ SDL_NumJoysticks() }; i < amt; ++i)
+	{
+		if (SDL_IsGameController(i))
+			controller = SDL_GameControllerOpen(i);
 	}
 
 	window = SDL_CreateWindow(
@@ -76,15 +84,15 @@ void flgin::Minigin::LoadGame() const
 
 	go = new GameObject{};
 	InputComponent* inputComponent{ new InputComponent{ go } };
-	inputComponent->AddMapping(XINPUT_GAMEPAD_A, new QuitCommand{});
-	inputComponent->AddMapping(XINPUT_GAMEPAD_Y, new RumbleCommand{ 0 });
+	inputComponent->AddMapping(SDL_CONTROLLER_BUTTON_A, new QuitCommand{});
+	inputComponent->AddMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
 	go->AddComponent(inputComponent);
 	scene.AddGameObject(go);
 
 	go = new GameObject{};
 	inputComponent = new InputComponent{ go };
-	inputComponent->AddMapping(XINPUT_GAMEPAD_B, new QuitCommand{});
-	inputComponent->AddMapping(XINPUT_GAMEPAD_X, new RumbleCommand{ 1 });
+	inputComponent->AddMapping(SDL_CONTROLLER_BUTTON_B, new QuitCommand{});
+	inputComponent->AddMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 1 });
 	go->AddComponent(inputComponent);
 	scene.AddGameObject(go);
 }
