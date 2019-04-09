@@ -3,17 +3,19 @@
 #include <vector>
 #include "Singleton.h"
 
-class Command;
 namespace flgin
 {
+	class Command;
+	class InputComponent;
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
 		InputManager();
 		~InputManager();
 		bool ProcessInput();
-		bool IsPressed(WORD button) const;
 		void AddCommand(Command* const command);
+		void AddPlayer(InputComponent* player);
+		void RemovePlayer(InputComponent* player);
 		
 		template <class T>
 		void RemoveCommand()
@@ -32,22 +34,26 @@ namespace flgin
 			}
 		}
 
-		template<class T>
-		void UpdateButtonMapping(WORD newMapping)
+		template <class T>
+		void GetCommand()
 		{
 			const type_info& typeInfo{ typeid(T) };
-			for (Command* const command : m_pCommands)
+			for (size_t i{}, commandAmount{ m_pCommands.size() }; i < commandAmount; ++i)
 			{
-				if (command)
+				if (m_pCommands[i])
 				{
-					if (typeid(*command) == typeInfo)
-						command->SetMapping(newMapping);
+					if (typeid(*m_pCommands[i]) == typeInfo)
+					{
+						delete m_pCommands[i];
+						m_pCommands[i] = nullptr;
+					}
 				}
 			}
 		}
 
 	private:
-		XINPUT_STATE m_InputState;
+		std::vector<XINPUT_STATE> m_InputStates;
 		std::vector<Command*> m_pCommands;
+		std::vector<InputComponent*> m_pPlayers;
 	};
 }

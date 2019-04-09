@@ -1,0 +1,6 @@
+Engine version: 2.0
+[2019-4-9 21:4:35][WARNING]: Attempted to delete a nullpointer of type class flgin::Texture2D * __ptr64
+[2019-4-9 21:4:35][WARNING]: Attempted to delete a nullpointer of type class flgin::Texture2D * __ptr64
+[2019-4-9 21:4:36][WARNING]: Attempted to delete a nullpointer of type class flgin::Texture2D * __ptr64
+[2019-4-9 21:4:36][ERROR]: Render text failed: Text has zero width
+[2019-4-9 21:4:36][WARNING]: Attempted to delete a nullpointer of type class flgin::Texture2D * __ptr64

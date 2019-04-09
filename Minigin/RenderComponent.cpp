@@ -6,11 +6,14 @@
 #pragma warning (disable:4201)
 #include <glm/vec2.hpp>
 #pragma warning(pop)
+#include "Scene.h"
 
-flgin::RenderComponent::RenderComponent(GameObject* const ownerObject)
+flgin::RenderComponent::RenderComponent(GameObject* const ownerObject, Scene& scene)
 	: BaseComponent(ownerObject)
 	, m_pTexture{ nullptr }
-{}
+{
+	scene.AddRenderComponent(this);
+}
 
 flgin::RenderComponent::~RenderComponent()
 {

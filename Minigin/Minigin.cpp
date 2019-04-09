@@ -15,6 +15,8 @@
 #include "Logger.h"
 #include "Time.h"
 #include "Invoker.h"
+#include "InputComponent.h"
+#include "PlayerCommands.h"
 
 void flgin::Minigin::Initialize()
 {
@@ -46,35 +48,45 @@ void flgin::Minigin::LoadGame() const
 	Scene& scene = SceneManager::GetInstance().CreateScene("Demo");
 
 	GameObject* go{ new flgin::GameObject{} };
-	flgin::RenderComponent* renderComponent{ new flgin::RenderComponent{ go } };
+	RenderComponent* renderComponent{ new flgin::RenderComponent{ go, scene } };
 	renderComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("background.jpg"));
 	go->AddComponent(renderComponent);
 	scene.AddGameObject(go);
-	scene.AddRenderComponent(renderComponent);
 	
 	go = new GameObject{};
-	renderComponent = new RenderComponent{ go };
+	renderComponent = new RenderComponent{ go, scene };
 	renderComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("logo.png"));
 	go->AddComponent( renderComponent );
 	go->SetPosition(216, 180);
 	scene.AddGameObject(go);
-	scene.AddRenderComponent(renderComponent);
 	
 	go = new GameObject{};
-	renderComponent = new RenderComponent{ go };
+	renderComponent = new RenderComponent{ go, scene };
 	go->AddComponent(renderComponent);
 	go->AddComponent(new TextComponent{ go, "../Data/Lingua.otf", 36, {255, 0,0 }, "Programming 4 Assignment" });
 	go->SetPosition(80.f, 20.f);
 	scene.AddGameObject(go);
-	scene.AddRenderComponent(renderComponent);
 	
 	go = new GameObject{};
-	renderComponent = new RenderComponent{ go };
+	renderComponent = new RenderComponent{ go, scene };
 	go->AddComponent(renderComponent);
 	go->AddComponent(new TextComponent{ go, "../Data/Lingua.otf", 20, {255, 255, 0} });
 	go->AddComponent(new FPSComponent{ go, .5f });
 	scene.AddGameObject(go);
-	scene.AddRenderComponent(renderComponent);
+
+	go = new GameObject{};
+	InputComponent* inputComponent{ new InputComponent{ go } };
+	inputComponent->AddMapping(XINPUT_GAMEPAD_A, new QuitCommand{});
+	inputComponent->AddMapping(XINPUT_GAMEPAD_Y, new RumbleCommand{ 0 });
+	go->AddComponent(inputComponent);
+	scene.AddGameObject(go);
+
+	go = new GameObject{};
+	inputComponent = new InputComponent{ go };
+	inputComponent->AddMapping(XINPUT_GAMEPAD_B, new QuitCommand{});
+	inputComponent->AddMapping(XINPUT_GAMEPAD_X, new RumbleCommand{ 1 });
+	go->AddComponent(inputComponent);
+	scene.AddGameObject(go);
 }
 
 void flgin::Minigin::Cleanup()

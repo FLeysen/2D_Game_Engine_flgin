@@ -3,10 +3,11 @@
 namespace flgin
 {
 	class Texture2D;
+	class Scene;
 	class RenderComponent final : public BaseComponent
 	{
 	public:
-		RenderComponent(GameObject* const ownerObject);
+		RenderComponent(GameObject* const ownerObject, Scene& scene);
 		~RenderComponent();
 		void Update() override {}
 		void Render() const;

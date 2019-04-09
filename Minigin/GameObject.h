@@ -17,6 +17,7 @@ namespace flgin
 		glm::vec2 GetPosition();
 		void AddComponent(BaseComponent* const component);
 		void RemoveComponent(BaseComponent* const component);
+
 		template <class T>
 		void RemoveComponentsOfType()
 		{

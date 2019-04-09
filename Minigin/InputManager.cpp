@@ -1,13 +1,13 @@
 #include "MiniginPCH.h"
 #include "InputManager.h"
-#include <winerror.h>
 #pragma comment(lib, "XInput.lib")
 #include "Command.h"
 #include "SDL.h"
+#include "InputComponent.h"
 
 flgin::InputManager::InputManager()
 	: m_pCommands{}
-	, m_InputState{}
+	, m_InputStates{}
 {}
 
 flgin::InputManager::~InputManager()
@@ -19,48 +19,43 @@ flgin::InputManager::~InputManager()
 
 bool flgin::InputManager::ProcessInput()
 {
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_QUIT) {
+	SDL_Event e{};
+	while (SDL_PollEvent(&e)) 
+	{
+		if (e.type == SDL_QUIT) 
+		{
 			return false;
 		}
-		if (e.type == SDL_KEYDOWN) {
-
-		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) {
-
-		}
 	}
-
-	return true;
-	//TODO: Update this
-	/*
-	DWORD packetNumber{ m_InputState.dwPacketNumber };
-	if (XInputGetState(0, &m_InputState) == ERROR_DEVICE_NOT_CONNECTED)
+	for (size_t i{}, playerAmount{ m_pPlayers.size() }; i < playerAmount; ++i)
 	{
-		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::WARNING, "ProcessInput: Controller not found.", this });
-		return true;
-	}
-	if (m_InputState.dwPacketNumber == packetNumber) return true;
-	
-	for (Command* const command : m_pCommands)
-	{
-		if (command)
+		if (m_pPlayers[i])
 		{
-			if (m_InputState.Gamepad.wButtons & command->GetMapping())
-				command->Execute();
+			XInputGetState(static_cast<DWORD>(i), &m_InputStates[i]);
+			if (!m_pPlayers[i]->ProcessInput(m_InputStates[i].Gamepad.wButtons))
+				return false;
 		}
 	}
-	return true;
-	*/
-}
 
-bool flgin::InputManager::IsPressed(WORD button) const
-{
-	return m_InputState.Gamepad.wButtons & button;
+	return true;	
 }
 
 void flgin::InputManager::AddCommand(Command* const command)
 {
 	m_pCommands.push_back(command);
+}
+
+void flgin::InputManager::AddPlayer(InputComponent* player)
+{
+	m_pPlayers.push_back(player);
+	m_InputStates.push_back({});
+}
+
+void flgin::InputManager::RemovePlayer(InputComponent* player)
+{
+	for (InputComponent* pl : m_pPlayers)
+	{
+		if (pl == player)
+			Logger::GetInstance().SafeDelete(pl);
+	}
 }

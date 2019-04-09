@@ -116,9 +116,6 @@
     <ClInclude Include="Command.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="Commands.h">
-      <Filter>Input</Filter>
-    </ClInclude>
     <ClInclude Include="Observer.h">
       <Filter>Observer</Filter>
     </ClInclude>
@@ -127,6 +124,15 @@
     </ClInclude>
     <ClInclude Include="ScoreObserver.h">
       <Filter>Observer</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementGrid.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="InputComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCommands.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +192,18 @@
     </ClCompile>
     <ClCompile Include="ScoreObserver.cpp">
       <Filter>Observer</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementGrid.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="InputComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCommands.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
