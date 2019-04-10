@@ -205,6 +205,9 @@
     <ClCompile Include="Command.cpp">
       <Filter>Input</Filter>
     </ClCompile>
+    <ClCompile Include="Invoker.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Minigin.rc">

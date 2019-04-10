@@ -8,6 +8,7 @@ namespace flgin
 		FPSComponent(GameObject* const ownerObject, const float timeBetweenUpdates);
 		~FPSComponent() = default;
 		void Update() override;
+		void MoveParent();
 
 	private:
 		int m_ElapsedFrames;

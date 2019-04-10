@@ -1,8 +1,7 @@
+// This invoker was inspired by Matthieu Delaere's Elite engine Multicast functionality and the Invoke function in Unity engine
 #pragma once
-#include <functional>
 #include "Singleton.h"
-#include "Time.h"
-#include "Logger.h"
+#include <functional>
 
 #ifndef MAX_INVOCATIONS
 #define MAX_INVOCATIONS 10
@@ -13,24 +12,11 @@ namespace flgin
 	class FunctionHolderBase
 	{
 	public:
-		FunctionHolderBase(float invocationTime) : m_ElapsedTime{ 0.0f }, m_InvocationTime{ invocationTime }, m_IsRepeating{ false }{}
+		FunctionHolderBase(float invocationTime, void* origin);
 		virtual ~FunctionHolderBase() = default;
-		bool Update()
-		{
-			m_ElapsedTime += Time::GetInstance().GetDeltaTime();
-			if (m_ElapsedTime > m_InvocationTime)
-			{
-				Invoke();
-				if (m_IsRepeating)
-				{
-					m_ElapsedTime -= m_InvocationTime;
-					return false;
-				}
-				return true;
-			}
-			return false;
-		}
-		void SetRepeating(bool repeating) { m_IsRepeating = repeating; }
+		bool Update();
+		bool DoesOriginateFrom(void* owner);
+		void SetRepeating(bool repeating);
 
 	protected:
 		virtual void Invoke() = 0;
@@ -38,14 +24,16 @@ namespace flgin
 		bool m_IsRepeating;
 		float m_ElapsedTime;
 		float m_InvocationTime;
+		void* m_pOrigin;
 	};
 
 	template<typename returnType, typename... argList>
 	class FunctionHolder : public FunctionHolderBase
 	{
 	public:
-		explicit FunctionHolder(float invocationTime, std::function<returnType(argList...)> function, argList... arguments)
-			: FunctionHolderBase(invocationTime), m_Function{ function }, m_Arguments{ arguments... } {}
+		//Origin is used to cancel invokes on a specific object, set this to nullptr if you only want it canceled by CancelAll
+		explicit FunctionHolder(void* origin, float invocationTime, std::function<returnType(argList...)> function, argList... arguments)
+			: FunctionHolderBase(invocationTime, origin), m_Function{ function }, m_Arguments{ arguments... } {}
 
 	private:
 		void Invoke() 
@@ -65,49 +53,20 @@ namespace flgin
 	class Invoker final : public Singleton<Invoker>
 	{
 	public:
+		~Invoker();
 		Invoker() = default;
-		~Invoker() 
-		{ 
-			Logger& logger{ Logger::GetInstance() };
-			for (int i{}; i < m_FunctionsHeld; ++i)
-				logger.SafeDelete(m_pFunctionHolders[i]);
-		};
 		Invoker(const Invoker& other) = delete;
 		Invoker(Invoker&& other) = delete;
 		Invoker& operator=(const Invoker& other) = delete;
 		Invoker& operator=(Invoker&& other) = delete;
 
-		void Update()
-		{
-			for (int i{}; i < m_FunctionsHeld; ++i)
-			{
-				if (m_pFunctionHolders[i]->Update())
-				{
-					--m_FunctionsHeld;
-					Logger::GetInstance().SafeDelete(m_pFunctionHolders[i]);
-					m_pFunctionHolders[i] = m_pFunctionHolders[m_FunctionsHeld];
-					--i;
-				}
-			}
-		}
-		void AddInvoke(FunctionHolderBase* pInvokeToAdd)
-		{
-			if (m_FunctionsHeld == MAX_INVOCATIONS)
-			{
-				Logger::GetInstance().Log(StatusCode{StatusCode::Status::FAIL, "Invoker is full, could not add invoke."});
-				Logger::GetInstance().SafeDelete(pInvokeToAdd);
-				return;
-			}
-			m_pFunctionHolders[m_FunctionsHeld] = pInvokeToAdd;
-			++m_FunctionsHeld;
-		}
-
-		void CancelInvoke(FunctionHolderBase*)
-		{
-		}
+		void Update();
+		void AddInvoke(FunctionHolderBase* pInvokeToAdd);
+		void CancelOwnedInvokes(void* owner);
+		void CancelAllInvokes();
 
 	private:
-		FunctionHolderBase* m_pFunctionHolders[MAX_INVOCATIONS]{};
-		int m_FunctionsHeld{ 0 };
+		FunctionHolderBase* m_pFunctionHolders[MAX_INVOCATIONS];
+		int m_FunctionsHeld;
 	};
 }

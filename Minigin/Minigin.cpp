@@ -84,15 +84,17 @@ void flgin::Minigin::LoadGame() const
 
 	go = new GameObject{};
 	InputComponent* inputComponent{ new InputComponent{ go } };
-	inputComponent->AddMapping(SDL_CONTROLLER_BUTTON_A, new QuitCommand{});
-	inputComponent->AddMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
+	QuitCommand* quitCommand{ new QuitCommand{} };
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_A, quitCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
+	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
 	go->AddComponent(inputComponent);
 	scene.AddGameObject(go);
 
 	go = new GameObject{};
 	inputComponent = new InputComponent{ go };
-	inputComponent->AddMapping(SDL_CONTROLLER_BUTTON_B, new QuitCommand{});
-	inputComponent->AddMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 1 });
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_B, quitCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 1 });
 	go->AddComponent(inputComponent);
 	scene.AddGameObject(go);
 }
