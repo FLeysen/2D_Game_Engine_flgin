@@ -12,8 +12,8 @@ namespace flgin
 		void AddControllerMapping(UINT8 key, Command* command);
 		void AddKeyboardMapping(int key, Command* command);
 		void Update() override;
-		bool KeyboardButtonDown(int key);
-		bool ControllerButtonDown(UINT8 key);
+		bool ProcessKeyboardKey(int key, bool isKeyUp = false);
+		bool ProcessControllerKey(UINT8 key, bool isKeyUp = false);
 
 	private:
 		std::map<int, Command*> m_KeyboardMappings;

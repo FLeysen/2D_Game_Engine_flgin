@@ -24,22 +24,22 @@ bool flgin::InputManager::ProcessInput()
 		{
 			return false;
 		}
-		else if (e.type == SDL_KEYDOWN)
+		else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
 		{
 			for (InputComponent* player : m_pPlayers)
 			{
 				if (player)
 				{
-					if (!player->KeyboardButtonDown(e.key.keysym.sym))
+					if (!player->ProcessKeyboardKey(e.key.keysym.sym, e.type == SDL_KEYUP))
 						return false;
 				}
 			}
 		}
-		else if (e.type == SDL_CONTROLLERBUTTONDOWN)
+		else if (e.type == SDL_CONTROLLERBUTTONDOWN || e.type == SDL_CONTROLLERBUTTONUP)
 		{
 			if (e.cbutton.which > m_pPlayers.size() - 1) continue;
 			if (!m_pPlayers[e.cbutton.which]) continue;
-			if (!m_pPlayers[e.cbutton.which]->ControllerButtonDown(e.cbutton.button)) return false;
+			if (!m_pPlayers[e.cbutton.which]->ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP)) return false;
 		}
 	}
 

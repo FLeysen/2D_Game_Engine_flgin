@@ -30,13 +30,13 @@ void flgin::InputComponent::AddKeyboardMapping(int key, Command* command)
 void flgin::InputComponent::Update()
 {}
 
-bool flgin::InputComponent::KeyboardButtonDown(int key)
+bool flgin::InputComponent::ProcessKeyboardKey(int key, bool isKeyUp)
 {
 	for (const std::pair<int, Command*>& mapping : m_KeyboardMappings)
 	{
 		if (key == mapping.first)
 		{
-			if (!mapping.second->Execute(*m_pOwnerObject))
+			if (!mapping.second->Execute(*m_pOwnerObject, isKeyUp))
 				return false;
 			return true;
 		}
@@ -44,13 +44,13 @@ bool flgin::InputComponent::KeyboardButtonDown(int key)
 	return true;
 }
 
-bool flgin::InputComponent::ControllerButtonDown(UINT8 key)
+bool flgin::InputComponent::ProcessControllerKey(UINT8 key, bool isKeyUp)
 {
 	for (const std::pair<UINT8, Command*>& mapping : m_ControllerMappings)
 	{
 		if (key == mapping.first)
 		{
-			if (!mapping.second->Execute(*m_pOwnerObject))
+			if (!mapping.second->Execute(*m_pOwnerObject, isKeyUp))
 				return false;
 			return true;
 		}
