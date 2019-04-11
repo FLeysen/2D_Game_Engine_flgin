@@ -4,6 +4,8 @@
 #pragma warning (disable:4201)
 #include <glm/vec2.hpp>
 #pragma warning(pop)
+#include "BaseComponent.h"
+
 namespace flgin
 {
 	class GridNode
@@ -14,6 +16,7 @@ namespace flgin
 		glm::vec2 GetPosition();
 
 	private:
+		int m_Weight;
 		glm::vec2 m_Position;
 		GridNode const* m_pLeftNode;
 		GridNode const* m_pRightNode;
@@ -21,13 +24,20 @@ namespace flgin
 		GridNode const* m_pDownNode;
 	};
 
-	class MovementGrid
+	class MovementGrid : public BaseComponent
 	{
 	public:
-		MovementGrid(unsigned int rows, unsigned int cols, float distBetween);
+		MovementGrid(GameObject* pOwnerObject, unsigned int rows, unsigned int cols, float distBetween);
 		~MovementGrid();
+		void Update() override;
+		GridNode* GetNodeNearestTo(float x, float y);
+		GridNode* GetGrid();
+		unsigned int GetGridSize();
 
 	private:
+		unsigned int m_Rows;
+		unsigned int m_Cols;
+		float m_DistBetween;
 		GridNode* m_pNodes;
 	};
 }

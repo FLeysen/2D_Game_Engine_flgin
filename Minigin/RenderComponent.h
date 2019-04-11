@@ -12,6 +12,7 @@ namespace flgin
 		void Update() override {}
 		void Render() const;
 		void SetTexture(Texture2D* const newTexture);
+		void SetPositionOffset(float x, float y);
 
 		RenderComponent(const RenderComponent&) = delete;
 		RenderComponent(RenderComponent&&) = delete;
@@ -19,6 +20,8 @@ namespace flgin
 		RenderComponent& operator=(RenderComponent&&) = delete;
 
 	private:
+		float m_XOffset;
+		float m_YOffset;
 		Texture2D* m_pTexture;
 	};
 }

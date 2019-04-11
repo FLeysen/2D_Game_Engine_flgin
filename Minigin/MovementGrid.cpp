@@ -1,8 +1,13 @@
 #include "MiniginPCH.h"
 #include "MovementGrid.h"
+#include "GameObject.h"
 
-flgin::MovementGrid::MovementGrid(unsigned int rows, unsigned int cols, float distBetween)
-	: m_pNodes{ new GridNode[rows * cols] }
+flgin::MovementGrid::MovementGrid(GameObject* pOwnerObject, unsigned int rows, unsigned int cols, float distBetween)
+	: BaseComponent(pOwnerObject)
+	, m_pNodes{ new GridNode[rows * cols]{} }
+	, m_Rows{ rows }
+	, m_Cols{ cols }
+	, m_DistBetween{ distBetween }
 {
 	unsigned int nodeId{ 0 };
 	glm::vec2 position{ distBetween / 2, distBetween / 2 };
@@ -38,10 +43,40 @@ flgin::MovementGrid::MovementGrid(unsigned int rows, unsigned int cols, float di
 	}
 }
 
+flgin::GridNode* flgin::MovementGrid::GetNodeNearestTo(float x, float y)
+{
+	if (!m_pNodes) return nullptr;
+
+	float xSteps{ (x - m_DistBetween / 2) / m_DistBetween };
+	float ySteps{ (y - m_DistBetween / 2) / m_DistBetween };
+	int col{ static_cast<int>(round(xSteps)) };
+	int row{ static_cast<int>(round(ySteps)) };
+
+	if (col < 0) col = 0;
+	else if (col >= static_cast<int>(m_Cols)) col = m_Cols - 1;
+	if (row < 0) row = 0;
+	else if (row <= static_cast<int>(m_Rows)) row = m_Rows - 1;
+
+	return &m_pNodes[col + row * col];
+}
+
+flgin::GridNode* flgin::MovementGrid::GetGrid()
+{
+	return m_pNodes;
+}
+
+unsigned int flgin::MovementGrid::GetGridSize()
+{
+	return m_Rows * m_Cols;
+}
+
 flgin::MovementGrid::~MovementGrid()
 {
-	Logger::GetInstance().SafeDelete(m_pNodes);
+	Logger::GetInstance().SafeDeleteArray(m_pNodes);
 }
+
+void flgin::MovementGrid::Update()
+{}
 
 flgin::GridNode::GridNode()
 	: m_pLeftNode{}
@@ -49,6 +84,7 @@ flgin::GridNode::GridNode()
 	, m_pDownNode{}
 	, m_pUpNode{}
 	, m_Position{}
+	, m_Weight{}
 {}
 
 flgin::GridNode::GridNode(glm::vec2 pos, const GridNode* leftNode, const GridNode* rightNode, const GridNode* upNode, const GridNode* downNode)
@@ -57,6 +93,7 @@ flgin::GridNode::GridNode(glm::vec2 pos, const GridNode* leftNode, const GridNod
 	, m_pUpNode{ upNode }
 	, m_pDownNode{ downNode }
 	, m_Position{ pos }
+	, m_Weight{ 10 }
 {}
 
 glm::vec2 flgin::GridNode::GetPosition()

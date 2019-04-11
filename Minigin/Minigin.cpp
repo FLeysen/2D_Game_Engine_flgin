@@ -17,6 +17,8 @@
 #include "Invoker.h"
 #include "InputComponent.h"
 #include "PlayerCommands.h"
+#include "MovementGrid.h"
+#include "GridRenderer.h"
 
 void flgin::Minigin::Initialize()
 {
@@ -64,7 +66,7 @@ void flgin::Minigin::LoadGame() const
 	go = new GameObject{};
 	renderComponent = new RenderComponent{ go, scene };
 	renderComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("logo.png"));
-	go->AddComponent( renderComponent );
+	go->AddComponent(renderComponent);
 	go->SetPosition(216, 180);
 	scene.AddGameObject(go);
 	
@@ -85,7 +87,7 @@ void flgin::Minigin::LoadGame() const
 	go = new GameObject{};
 	InputComponent* inputComponent{ new InputComponent{ go } };
 	QuitCommand* quitCommand{ new QuitCommand{} };
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_A, quitCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
 	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
 	go->AddComponent(inputComponent);
@@ -96,6 +98,12 @@ void flgin::Minigin::LoadGame() const
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_B, quitCommand);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 1 });
 	go->AddComponent(inputComponent);
+	scene.AddGameObject(go);
+
+	go = new GameObject{};
+	MovementGrid* grid{ new MovementGrid{ go, 16, 22, 30.0f } };
+	go->AddComponent(grid);
+	go->AddComponent(new GridRenderer{ go, scene, grid });
 	scene.AddGameObject(go);
 }
 

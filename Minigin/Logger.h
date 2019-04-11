@@ -19,16 +19,30 @@ namespace flgin
 	public:
 		void Log(const StatusCode& sc);
 		template<class T>
-		void SafeDelete(T &pObjectToDelete, bool ignoreWarning = false)
+		void SafeDelete(T& pObjectToDelete, bool ignoreWarning = false)
 		{
 			if (pObjectToDelete != nullptr)
 			{
-				delete(pObjectToDelete);
+				delete pObjectToDelete;
 				pObjectToDelete = nullptr;
 			}
 			else if (!ignoreWarning)
 			{
 				Log(StatusCode{ StatusCode::Status::WARNING, "Attempted to delete a nullpointer of type " + std::string(typeid(T).name()) });
+			}
+		}
+
+		template<class T>
+		void SafeDeleteArray(T& pArrayToDelete, bool ignoreWarning = false)
+		{
+			if (pArrayToDelete != nullptr)
+			{
+				delete[] pArrayToDelete;
+				pArrayToDelete = nullptr;
+			}
+			else if (!ignoreWarning)
+			{
+				Log(StatusCode{ StatusCode::Status::WARNING, "Attempted to delete a nullpointer to array of type " + std::string(typeid(T).name()) });
 			}
 		}
 

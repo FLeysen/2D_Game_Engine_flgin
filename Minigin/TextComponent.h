@@ -6,7 +6,7 @@ namespace flgin
 	class TextComponent final : public BaseComponent
 	{
 	public:
-		TextComponent(GameObject* const ownerObject, const std::string& fontPath, const unsigned int fontSize, const SDL_Color& color = { 255,255,255 }, const std::string& text = "");
+		TextComponent(GameObject* const ownerObject, const std::string& fontPath, const unsigned int fontSize, const SDL_Color& color = { 255,255,255 }, const std::string& text = " ");
 		~TextComponent();
 		void Update() override;
 		void SetText(const std::string& text);

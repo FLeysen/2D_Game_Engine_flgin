@@ -13,7 +13,7 @@
 
 flgin::FPSComponent::FPSComponent(GameObject* const ownerObject, const float timeBetweenUpdates)
 	: BaseComponent(ownerObject)
-	, m_TimeBetweenUpdates(timeBetweenUpdates)
+	, m_TimeBetweenUpdates{ timeBetweenUpdates }
 	, m_ElapsedTime{ 0.0f }
 	, m_ElapsedFrames{ 0 }
 {
