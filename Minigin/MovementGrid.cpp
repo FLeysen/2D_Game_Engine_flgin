@@ -55,9 +55,9 @@ flgin::GridNode* flgin::MovementGrid::GetNodeNearestTo(float x, float y)
 	if (col < 0) col = 0;
 	else if (col >= static_cast<int>(m_Cols)) col = m_Cols - 1;
 	if (row < 0) row = 0;
-	else if (row <= static_cast<int>(m_Rows)) row = m_Rows - 1;
+	else if (row >= static_cast<int>(m_Rows)) row = m_Rows - 1;
 
-	return &m_pNodes[col + row * col];
+	return &m_pNodes[col + row * m_Cols];
 }
 
 flgin::GridNode* flgin::MovementGrid::GetGrid()
@@ -96,7 +96,7 @@ flgin::GridNode::GridNode(glm::vec2 pos, const GridNode* leftNode, const GridNod
 	, m_Weight{ 10 }
 {}
 
-glm::vec2 flgin::GridNode::GetPosition()
+glm::vec2 flgin::GridNode::GetPosition() const
 {
 	return m_Position;
 }

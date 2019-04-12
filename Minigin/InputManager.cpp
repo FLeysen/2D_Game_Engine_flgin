@@ -37,12 +37,12 @@ bool flgin::InputManager::ProcessInput()
 		}
 		else if (e.type == SDL_CONTROLLERBUTTONDOWN || e.type == SDL_CONTROLLERBUTTONUP)
 		{
-			if (e.cbutton.which > m_pPlayers.size() - 1) continue;
-			if (!m_pPlayers[e.cbutton.which]) continue;
-			if (!m_pPlayers[e.cbutton.which]->ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP)) return false;
+			SDL_JoystickID playerID{ e.cbutton.which };
+			if (playerID >= m_pPlayers.size()) continue;
+			if (!m_pPlayers[playerID]) continue;
+			if (!m_pPlayers[playerID]->ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP)) return false;
 		}
 	}
-
 	return true;	
 }
 

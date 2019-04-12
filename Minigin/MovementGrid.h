@@ -13,7 +13,11 @@ namespace flgin
 	public:
 		GridNode();
 		GridNode(glm::vec2 pos, const GridNode* leftNode = nullptr, const GridNode* rightNode = nullptr, const GridNode* upNode = nullptr, const GridNode* downNode = nullptr);
-		glm::vec2 GetPosition();
+		glm::vec2 GetPosition() const;
+		GridNode const* GetLeftNode() const { return m_pLeftNode; }
+		GridNode const* GetRightNode() const { return m_pRightNode; }
+		GridNode const* GetUpNode() const { return m_pUpNode; }
+		GridNode const* GetDownNode() const { return m_pDownNode; }
 
 	private:
 		int m_Weight;

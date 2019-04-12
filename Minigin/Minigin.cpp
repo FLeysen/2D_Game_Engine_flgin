@@ -19,6 +19,8 @@
 #include "PlayerCommands.h"
 #include "MovementGrid.h"
 #include "GridRenderer.h"
+#include "GridMovementComponent.h"
+#include "MovementCommands.h"
 
 void flgin::Minigin::Initialize()
 {
@@ -101,9 +103,25 @@ void flgin::Minigin::LoadGame() const
 	scene.AddGameObject(go);
 
 	go = new GameObject{};
-	MovementGrid* grid{ new MovementGrid{ go, 16, 22, 30.0f } };
+	MovementGrid* grid{ new MovementGrid{ go, 16, 21, 30.0f } };
 	go->AddComponent(grid);
 	go->AddComponent(new GridRenderer{ go, scene, grid });
+	scene.AddGameObject(go);
+
+	go = new GameObject{};
+	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid} };
+	inputComponent = new InputComponent{ go };
+	inputComponent->AddKeyboardMapping(SDLK_RIGHT, new DirectionalGridMove{ gridMover, true, true });
+	inputComponent->AddKeyboardMapping(SDLK_LEFT, new DirectionalGridMove{ gridMover, true, false });
+	inputComponent->AddKeyboardMapping(SDLK_DOWN, new DirectionalGridMove{ gridMover, false, true });
+	inputComponent->AddKeyboardMapping(SDLK_UP, new DirectionalGridMove{ gridMover, false, false });
+	renderComponent = new RenderComponent{ go, scene };
+	renderComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("Sprite.png"));
+	renderComponent->SetPositionOffset(-2.5f, -2.5f);
+	go->AddComponent(renderComponent);
+	go->AddComponent(gridMover);
+	go->AddComponent(inputComponent);
+	go->SetPosition(15.0f, 15.0f);
 	scene.AddGameObject(go);
 }
 

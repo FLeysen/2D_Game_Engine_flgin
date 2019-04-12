@@ -11,37 +11,24 @@ namespace flgin
 	class GridMovementComponent : public BaseComponent
 	{
 	public:
-		GridMovementComponent(GameObject* const ownerObject, float maxVelocity, MovementGrid* pAttachedGrid)
-			: BaseComponent(ownerObject)
-			, m_WasStopped{ false }
-			, m_CurrentVelocity{ 0,0 }
-			, m_MaxVelocity{ maxVelocity }
-			, m_pMovementGrid{ pAttachedGrid }
-		{}
-		void Update() override 
-		{
-			m_WasStopped = false;
-		}
-		void SetMoving(bool isHorizontal, bool isPositiveDirection) 
-		{
-			StopMoving();
-			(isHorizontal ? m_CurrentVelocity.x : m_CurrentVelocity.y)
-				= m_MaxVelocity * (isPositiveDirection ? 1 : -1);
-		}
-		void StopMoving()
-		{
-			if (!m_WasStopped) m_CurrentVelocity = { 0,0 };
-			m_WasStopped = true;
-		}
-		glm::vec2 GetVelocity() 
-		{ 
-			return m_CurrentVelocity; 
-		}
+		GridMovementComponent(GameObject* const ownerObject, float maxVelocity, MovementGrid* pAttachedGrid, float acceptableTurnDist = 1.0f);
+		void Update() override;
+		void SetMoving(bool isHorizontal, bool isPositiveDirection);
+		void StopMoving();
+		glm::vec2 GetVelocity();
 
 	private:
+		void MoveLeft();
+		void MoveRight();
+		void MoveDown();
+		void MoveUp();
+		void ClampVelocity();
+
 		bool m_WasStopped;
 		float m_MaxVelocity;
+		float m_MaxTurnDistance;
 		glm::vec2 m_CurrentVelocity;
+		glm::vec2 m_TargetPos;
 		MovementGrid* m_pMovementGrid;
 	};
 }

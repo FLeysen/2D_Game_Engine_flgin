@@ -11,6 +11,7 @@ namespace flgin
 		bool Execute(GameObject& attachedObject, bool isInverseAction);
 
 	private:
+		bool m_IsHeld;
 		bool m_IsHorizontal;
 		bool m_IsPositiveDirection;
 		GridMovementComponent* m_pGridMover;

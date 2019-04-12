@@ -10,11 +10,15 @@ flgin::DirectionalGridMove::DirectionalGridMove(GridMovementComponent* attachedM
 
 bool flgin::DirectionalGridMove::Execute(GameObject&, bool isInverseAction)
 {
-	if (isInverseAction)
+	if (!m_IsHeld)
 	{
-		m_pGridMover->StopMoving();
-		return true;
+		m_IsHeld = true;
+		m_pGridMover->SetMoving(m_IsHorizontal, m_IsPositiveDirection);
 	}
-	m_pGridMover->SetMoving(m_IsHorizontal, m_IsPositiveDirection);
+	else if (isInverseAction)
+	{
+		m_IsHeld = false;
+		m_pGridMover->SetMoving(m_IsHorizontal, !m_IsPositiveDirection);
+	}
 	return true;
 }
