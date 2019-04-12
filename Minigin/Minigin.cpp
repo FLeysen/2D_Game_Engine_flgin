@@ -87,34 +87,34 @@ void flgin::Minigin::LoadGame() const
 	scene.AddGameObject(go);
 
 	go = new GameObject{};
-	InputComponent* inputComponent{ new InputComponent{ go } };
-	QuitCommand* quitCommand{ new QuitCommand{} };
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
-	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
-	go->AddComponent(inputComponent);
-	scene.AddGameObject(go);
-
-	go = new GameObject{};
-	inputComponent = new InputComponent{ go };
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_B, quitCommand);
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 1 });
-	go->AddComponent(inputComponent);
-	scene.AddGameObject(go);
-
-	go = new GameObject{};
 	MovementGrid* grid{ new MovementGrid{ go, 16, 21, 30.0f } };
 	go->AddComponent(grid);
 	go->AddComponent(new GridRenderer{ go, scene, grid });
 	scene.AddGameObject(go);
 
 	go = new GameObject{};
+	InputComponent* inputComponent{ new InputComponent{ go } };
 	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid} };
-	inputComponent = new InputComponent{ go };
-	inputComponent->AddKeyboardMapping(SDLK_RIGHT, new DirectionalGridMove{ gridMover, true, true });
-	inputComponent->AddKeyboardMapping(SDLK_LEFT, new DirectionalGridMove{ gridMover, true, false });
-	inputComponent->AddKeyboardMapping(SDLK_DOWN, new DirectionalGridMove{ gridMover, false, true });
-	inputComponent->AddKeyboardMapping(SDLK_UP, new DirectionalGridMove{ gridMover, false, false });
+	QuitCommand* quitCommand{ new QuitCommand{} };
+	DirectionalGridMove* gridMoveRight{ new DirectionalGridMove{ gridMover, true, true } };
+	DirectionalGridMove* gridMoveLeft{ new DirectionalGridMove{ gridMover, true, false } };
+	DirectionalGridMove* gridMoveDown{ new DirectionalGridMove{ gridMover, false, true } };
+	DirectionalGridMove* gridMoveUp{ new DirectionalGridMove{ gridMover, false, false } };
+
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
+
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, gridMoveRight);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_LEFT, gridMoveLeft);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_DOWN, gridMoveDown);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_UP, gridMoveUp);
+
+	inputComponent->AddKeyboardMapping(SDLK_RIGHT, gridMoveRight);
+	inputComponent->AddKeyboardMapping(SDLK_LEFT, gridMoveLeft);
+	inputComponent->AddKeyboardMapping(SDLK_DOWN, gridMoveDown);
+	inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
+	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
+
 	renderComponent = new RenderComponent{ go, scene };
 	renderComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("Sprite.png"));
 	renderComponent->SetPositionOffset(-2.5f, -2.5f);
@@ -122,6 +122,13 @@ void flgin::Minigin::LoadGame() const
 	go->AddComponent(gridMover);
 	go->AddComponent(inputComponent);
 	go->SetPosition(15.0f, 15.0f);
+	scene.AddGameObject(go);
+
+	go = new GameObject{};
+	inputComponent = new InputComponent{ go };
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_B, quitCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 1 });
+	go->AddComponent(inputComponent);
 	scene.AddGameObject(go);
 }
 
