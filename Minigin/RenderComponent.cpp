@@ -7,12 +7,15 @@
 #include <glm/vec2.hpp>
 #pragma warning(pop)
 #include "Scene.h"
+#include "SDL.h"
 
 flgin::RenderComponent::RenderComponent(GameObject* const ownerObject, Scene& scene)
 	: BaseComponent(ownerObject)
 	, m_pTexture{ nullptr }
 	, m_XOffset{ 0.0f }
 	, m_YOffset{ 0.0f }
+	, m_Height{}
+	, m_Width{}
 {
 	scene.AddRenderComponent(this);
 }
@@ -24,21 +27,47 @@ flgin::RenderComponent::~RenderComponent()
 
 void flgin::RenderComponent::Render() const
 {
-	if (m_pTexture != nullptr)
+	if (!m_pTexture)
 	{
-		const glm::vec2& pos{ m_pOwnerObject->GetPosition() };
-		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x + m_XOffset, pos.y + m_YOffset);
+		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::WARNING, "RenderComponent does not have an attached texture!", (void*)this });
+		return;
 	}
+	const glm::vec2& pos{ m_pOwnerObject->GetPosition() };
+	Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x + m_XOffset, pos.y + m_YOffset, m_Width, m_Height);
 }
+
+void flgin::RenderComponent::Update()
+{}
 
 void flgin::RenderComponent::SetTexture(Texture2D* const newTexture)
 {
 	Logger::GetInstance().SafeDelete(m_pTexture, true);
 	m_pTexture = newTexture;
+	ResetDimensions();
 }
 
 void flgin::RenderComponent::SetPositionOffset(float x, float y)
 {
 	m_XOffset = x;
 	m_YOffset = y;
+}
+
+void flgin::RenderComponent::ResetDimensions()
+{
+	if (!m_pTexture)
+	{
+		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to reset dimensions on nullpointer texture!" });
+		return;
+	}
+	int width{};
+	int height{};
+	SDL_QueryTexture(m_pTexture->GetSDLTexture(), nullptr, nullptr, &width, &height);
+	m_Width = float(width);
+	m_Height = float(height);
+}
+
+void flgin::RenderComponent::SetDimensions(float width, float height)
+{
+	m_Width = width;
+	m_Height = height;
 }

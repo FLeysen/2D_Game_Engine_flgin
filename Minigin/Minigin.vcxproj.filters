@@ -36,6 +36,12 @@
     <Filter Include="Observer">
       <UniqueIdentifier>{6f573eb5-75a6-4785-be70-73ba4ccff644}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Rendering">
+      <UniqueIdentifier>{8ecc610f-8331-4510-9fdb-911d6b8e0106}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Input">
+      <UniqueIdentifier>{8a0b7cef-7720-408a-825c-811f983d2616}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -48,18 +54,6 @@
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="BaseComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="TextComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="FPSComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="Log.h">
@@ -125,38 +119,41 @@
     <ClInclude Include="ScoreObserver.h">
       <Filter>Observer</Filter>
     </ClInclude>
-    <ClInclude Include="InputComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerCommands.h">
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="MovementCommands.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="GridMovementComponent.h">
-      <Filter>Components</Filter>
+    <ClInclude Include="TextComponent.h">
+      <Filter>Components\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderComponent.h">
+      <Filter>Components\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteComponent.h">
+      <Filter>Components\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSComponent.h">
+      <Filter>Components\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="MovementGrid.h">
-      <Filter>Components</Filter>
+      <Filter>Components\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="InputComponent.h">
+      <Filter>Components\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GridMovementComponent.h">
+      <Filter>Components\Input</Filter>
     </ClInclude>
     <ClInclude Include="GridRenderer.h">
-      <Filter>Components</Filter>
+      <Filter>Components\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Components\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TextComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="FPSComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
@@ -202,9 +199,6 @@
     <ClCompile Include="ScoreObserver.cpp">
       <Filter>Observer</Filter>
     </ClCompile>
-    <ClCompile Include="InputComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerCommands.cpp">
       <Filter>Input</Filter>
     </ClCompile>
@@ -217,14 +211,32 @@
     <ClCompile Include="MovementCommands.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="GridMovementComponent.cpp">
-      <Filter>Components</Filter>
+    <ClCompile Include="RenderComponent.cpp">
+      <Filter>Components\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteComponent.cpp">
+      <Filter>Components\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="TextComponent.cpp">
+      <Filter>Components\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSComponent.cpp">
+      <Filter>Components\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="InputComponent.cpp">
+      <Filter>Components\Input</Filter>
     </ClCompile>
     <ClCompile Include="MovementGrid.cpp">
-      <Filter>Components</Filter>
+      <Filter>Components\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="GridMovementComponent.cpp">
+      <Filter>Components\Input</Filter>
     </ClCompile>
     <ClCompile Include="GridRenderer.cpp">
-      <Filter>Components</Filter>
+      <Filter>Components\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Components\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

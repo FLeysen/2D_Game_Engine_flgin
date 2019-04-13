@@ -21,6 +21,7 @@
 #include "GridRenderer.h"
 #include "GridMovementComponent.h"
 #include "MovementCommands.h"
+#include "SpriteComponent.h"
 
 void flgin::Minigin::Initialize()
 {
@@ -115,10 +116,12 @@ void flgin::Minigin::LoadGame() const
 	inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
 	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
 
-	renderComponent = new RenderComponent{ go, scene };
-	renderComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("Sprite.png"));
-	renderComponent->SetPositionOffset(-2.5f, -2.5f);
-	go->AddComponent(renderComponent);
+	SpriteComponent* spriteComponent{ new SpriteComponent{ go, scene } };
+	spriteComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("ActualSprite.png"));
+	spriteComponent->SetPositionOffset(-7.5f, -7.5f);
+	spriteComponent->SetSpriteInfo(4, 1, 15.0f, 15.0f, 1.0f);
+	spriteComponent->SetDimensions(25.0f, 25.0f);
+	go->AddComponent(spriteComponent);
 	go->AddComponent(gridMover);
 	go->AddComponent(inputComponent);
 	go->SetPosition(15.0f, 15.0f);
