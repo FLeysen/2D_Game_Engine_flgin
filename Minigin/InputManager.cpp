@@ -38,7 +38,7 @@ bool flgin::InputManager::ProcessInput()
 		else if (e.type == SDL_CONTROLLERBUTTONDOWN || e.type == SDL_CONTROLLERBUTTONUP)
 		{
 			SDL_JoystickID playerID{ e.cbutton.which };
-			if (playerID >= m_pPlayers.size()) continue;
+			if (playerID >= static_cast<SDL_JoystickID>(m_pPlayers.size())) continue;
 			if (!m_pPlayers[playerID]) continue;
 			if (!m_pPlayers[playerID]->ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP)) return false;
 		}

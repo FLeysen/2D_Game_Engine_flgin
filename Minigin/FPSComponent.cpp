@@ -16,20 +16,7 @@ flgin::FPSComponent::FPSComponent(GameObject* const ownerObject, const float tim
 	, m_TimeBetweenUpdates{ timeBetweenUpdates }
 	, m_ElapsedTime{ 0.0f }
 	, m_ElapsedFrames{ 0 }
-{
-	//auto moveParentPosition{ [&]()
-	//{
-	//	glm::vec2 pos{ m_pOwnerObject->GetPosition() };
-	//	pos.x += 5.0f;
-	//	pos.y += 5.0f;
-	//	m_pOwnerObject->SetPosition(pos.x, pos.y);
-	//} };
-	std::function<void()> moveParent{ std::bind(&flgin::FPSComponent::MoveParent, this) };
-	//FunctionHolderBase* test{ new FunctionHolder<void>{0.5f, moveParentPosition} };
-	FunctionHolderBase* test{ new FunctionHolder<void>{this, 0.5f, moveParent} };
-	test->SetRepeating(true);
-	Invoker::GetInstance().AddInvoke(test);
-}
+{}
 
 void flgin::FPSComponent::Update()
 {
@@ -48,12 +35,4 @@ void flgin::FPSComponent::Update()
 		m_ElapsedFrames = 0;
 	}
 	++m_ElapsedFrames;
-}
-
-void flgin::FPSComponent::MoveParent()
-{
-	glm::vec2 pos{ m_pOwnerObject->GetPosition() };
-	pos.x += 5.0f;
-	pos.y += 5.0f;
-	m_pOwnerObject->SetPosition(pos.x, pos.y);
 }
