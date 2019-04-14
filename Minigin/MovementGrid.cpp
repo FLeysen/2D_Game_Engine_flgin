@@ -84,7 +84,7 @@ flgin::GridNode::GridNode()
 	, m_pDownNode{}
 	, m_pUpNode{}
 	, m_Position{}
-	, m_Weight{}
+	, m_IsBlocked{}
 {}
 
 flgin::GridNode::GridNode(glm::vec2 pos, const GridNode* leftNode, const GridNode* rightNode, const GridNode* upNode, const GridNode* downNode)
@@ -93,10 +93,49 @@ flgin::GridNode::GridNode(glm::vec2 pos, const GridNode* leftNode, const GridNod
 	, m_pUpNode{ upNode }
 	, m_pDownNode{ downNode }
 	, m_Position{ pos }
-	, m_Weight{ 10 }
+	, m_IsBlocked{ false }
 {}
 
 glm::vec2 flgin::GridNode::GetPosition() const
 {
 	return m_Position;
+}
+
+std::vector<flgin::GridConnection> flgin::GridNode::GetConnections() const
+{
+	std::vector<GridConnection> out{};
+	GridNode const* pOtherNode{ nullptr };
+	if ((pOtherNode = GetDownNode()) != nullptr)
+	{
+		if (!pOtherNode->IsBlocked())
+			out.push_back(GridConnection{ this, pOtherNode });
+	}
+	if ((pOtherNode = GetUpNode()) != nullptr)
+	{
+		if (!pOtherNode->IsBlocked())
+			out.push_back(GridConnection{ this, pOtherNode });
+	}
+	if ((pOtherNode = GetLeftNode()) != nullptr)
+	{
+		if (!pOtherNode->IsBlocked())
+			out.push_back(GridConnection{ this, pOtherNode });
+	}
+	if ((pOtherNode = GetRightNode()) != nullptr)
+	{
+		if (!pOtherNode->IsBlocked())
+			out.push_back(GridConnection{ this, pOtherNode });
+	}
+	return out;
+}
+
+flgin::GridConnection::GridConnection(GridNode const * pStartNode, GridNode const * pEndNode)
+	: m_pEndNode{ pEndNode }
+	, m_pStartNode{ pStartNode }
+	, m_Weight{ static_cast<int>(abs((pStartNode->GetPosition().x - pEndNode->GetPosition().x) + (pStartNode->GetPosition().y - pEndNode->GetPosition().y))) }
+{}
+
+bool flgin::GridConnection::operator==(const GridConnection & other) const
+{
+	return (m_pStartNode == other.m_pStartNode && m_pEndNode == other.m_pEndNode)
+		|| (m_pStartNode == other.m_pEndNode && m_pEndNode == other.m_pStartNode);
 }

@@ -17,7 +17,7 @@ namespace flgin
 		void StopMoving();
 		glm::vec2 GetVelocity();
 
-	private:
+	protected:
 		void MoveLeft();
 		void MoveRight();
 		void MoveDown();
