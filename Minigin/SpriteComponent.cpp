@@ -16,7 +16,7 @@ void flgin::SpriteComponent::Update()
 
 void flgin::SpriteComponent::Render() const
 {
-	if (!m_pTexture)
+	if (!m_spTexture)
 	{
 		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::WARNING, "SpriteComponent does not have an attached texture!", (void*)this });
 		return;
@@ -31,7 +31,7 @@ void flgin::SpriteComponent::Render() const
 
 	int result{ SDL_RenderCopyEx(
 			Renderer::GetInstance().GetSDLRenderer(),
-			m_pTexture->GetSDLTexture(),
+			m_spTexture->GetSDLTexture(),
 			&m_SourceRect,
 			&destRect,
 			m_Rotation,

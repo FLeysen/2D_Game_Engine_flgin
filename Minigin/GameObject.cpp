@@ -34,7 +34,7 @@ void flgin::GameObject::SetPosition(float x, float y)
 	m_Transform.SetPosition(x, y, 0.0f);
 }
 
-glm::vec2 flgin::GameObject::GetPosition()
+glm::vec2 flgin::GameObject::GetPosition() const
 {
 	return glm::vec2{ m_Transform.GetPosition().x, m_Transform.GetPosition().y };
 }

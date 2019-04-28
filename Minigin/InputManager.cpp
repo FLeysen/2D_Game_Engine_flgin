@@ -4,9 +4,19 @@
 #include "SDL.h"
 #include "InputComponent.h"
 
+//TODO: REMOVE TEST CODE:
+#include "PathfinderComponent.h"
+#include "SceneManager.h"
+
 flgin::InputManager::InputManager()
 	: m_pCommands{}
+	, m_pPathFinder{}
 {}
+
+void flgin::InputManager::AddPathfinder(PathfinderComponent* pathfinder)
+{
+	m_pPathFinder = pathfinder;
+}
 
 flgin::InputManager::~InputManager()
 {
@@ -42,6 +52,11 @@ bool flgin::InputManager::ProcessInput()
 			if (!m_pPlayers[playerID]) continue;
 			if (!m_pPlayers[playerID]->ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP)) return false;
 		}
+		//TODO: REMOVE TEST CODE
+		else if (e.type == SDL_MOUSEBUTTONUP)
+		{
+			m_pPathFinder->SetTarget(float(e.button.x), float(e.button.y));
+		}
 	}
 	return true;	
 }
@@ -64,3 +79,4 @@ void flgin::InputManager::RemovePlayer(InputComponent* player)
 			Logger::GetInstance().SafeDelete(pl);
 	}
 }
+

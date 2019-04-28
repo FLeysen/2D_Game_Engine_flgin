@@ -30,7 +30,7 @@ void flgin::ResourceManager::Init(std::string&& dataPath)
 	}
 }
 
-flgin::Texture2D* flgin::ResourceManager::LoadTexture(const std::string& file)
+std::shared_ptr<flgin::Texture2D> flgin::ResourceManager::LoadTexture(const std::string& file)
 {
 	std::string fullPath = m_DataPath + file;
 	SDL_Texture *texture = IMG_LoadTexture(Renderer::GetInstance().GetSDLRenderer(), fullPath.c_str());
@@ -39,7 +39,7 @@ flgin::Texture2D* flgin::ResourceManager::LoadTexture(const std::string& file)
 		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, std::string("Failed to load texture: ") + SDL_GetError() });
 		return nullptr;
 	}
-	return new Texture2D{ texture };
+	return std::make_shared<Texture2D>( texture );
 }
 
 std::shared_ptr<flgin::Font> flgin::ResourceManager::LoadFont(const std::string& file, unsigned int size)

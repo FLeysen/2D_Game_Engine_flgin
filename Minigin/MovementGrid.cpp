@@ -10,7 +10,7 @@ flgin::MovementGrid::MovementGrid(GameObject* pOwnerObject, unsigned int rows, u
 	, m_DistBetween{ distBetween }
 {
 	unsigned int nodeId{ 0 };
-	glm::vec2 position{ distBetween / 2, distBetween / 2 };
+	glm::vec2 position{ pOwnerObject->GetPosition() };
 	GridNode* leftNode{ nullptr };
 	GridNode* rightNode{ nullptr };
 	GridNode* upNode{ nullptr };
@@ -38,7 +38,7 @@ flgin::MovementGrid::MovementGrid(GameObject* pOwnerObject, unsigned int rows, u
 
 			position.x += distBetween;
 		}
-		position.x = distBetween / 2;
+		position.x = pOwnerObject->GetPosition().x;
 		position.y += distBetween;
 	}
 }
@@ -47,8 +47,12 @@ flgin::GridNode* flgin::MovementGrid::GetNodeNearestTo(float x, float y)
 {
 	if (!m_pNodes) return nullptr;
 
-	float xSteps{ (x - m_DistBetween / 2) / m_DistBetween };
-	float ySteps{ (y - m_DistBetween / 2) / m_DistBetween };
+	glm::vec2 ownerPosition{ m_pOwnerObject->GetPosition() };
+	x -= ownerPosition.x;
+	y -= ownerPosition.y;
+
+	float xSteps{ x / m_DistBetween };
+	float ySteps{ y / m_DistBetween };
 	int col{ static_cast<int>(round(xSteps)) };
 	int row{ static_cast<int>(round(ySteps)) };
 
@@ -63,11 +67,6 @@ flgin::GridNode* flgin::MovementGrid::GetNodeNearestTo(float x, float y)
 flgin::GridNode* flgin::MovementGrid::GetGrid()
 {
 	return m_pNodes;
-}
-
-unsigned int flgin::MovementGrid::GetGridSize()
-{
-	return m_Rows * m_Cols;
 }
 
 flgin::MovementGrid::~MovementGrid()
@@ -85,57 +84,42 @@ flgin::GridNode::GridNode()
 	, m_pUpNode{}
 	, m_Position{}
 	, m_IsBlocked{}
+	, m_Connections{}
 {}
 
-flgin::GridNode::GridNode(glm::vec2 pos, const GridNode* leftNode, const GridNode* rightNode, const GridNode* upNode, const GridNode* downNode)
+flgin::GridNode::GridNode(glm::vec2 pos, GridNode* leftNode, GridNode* rightNode, GridNode* upNode, GridNode* downNode)
 	: m_pLeftNode{ leftNode }
 	, m_pRightNode{ rightNode }
 	, m_pUpNode{ upNode }
 	, m_pDownNode{ downNode }
 	, m_Position{ pos }
 	, m_IsBlocked{ false }
-{}
+	, m_Connections{}
+{
+	if (m_pLeftNode) m_Connections.push_back(GridConnection{ this, m_pLeftNode });
+	if (m_pRightNode) m_Connections.push_back(GridConnection{ this, m_pRightNode });
+	if (m_pUpNode) m_Connections.push_back(GridConnection{ this, m_pUpNode });
+	if (m_pDownNode) m_Connections.push_back(GridConnection{ this, m_pDownNode });
+}
 
 glm::vec2 flgin::GridNode::GetPosition() const
 {
 	return m_Position;
 }
 
-std::vector<flgin::GridConnection> flgin::GridNode::GetConnections() const
-{
-	std::vector<GridConnection> out{};
-	GridNode const* pOtherNode{ nullptr };
-	if ((pOtherNode = GetDownNode()) != nullptr)
-	{
-		if (!pOtherNode->IsBlocked())
-			out.push_back(GridConnection{ this, pOtherNode });
-	}
-	if ((pOtherNode = GetUpNode()) != nullptr)
-	{
-		if (!pOtherNode->IsBlocked())
-			out.push_back(GridConnection{ this, pOtherNode });
-	}
-	if ((pOtherNode = GetLeftNode()) != nullptr)
-	{
-		if (!pOtherNode->IsBlocked())
-			out.push_back(GridConnection{ this, pOtherNode });
-	}
-	if ((pOtherNode = GetRightNode()) != nullptr)
-	{
-		if (!pOtherNode->IsBlocked())
-			out.push_back(GridConnection{ this, pOtherNode });
-	}
-	return out;
-}
-
-flgin::GridConnection::GridConnection(GridNode const * pStartNode, GridNode const * pEndNode)
+flgin::GridConnection::GridConnection(GridNode* pStartNode, GridNode* pEndNode)
 	: m_pEndNode{ pEndNode }
 	, m_pStartNode{ pStartNode }
-	, m_Weight{ static_cast<int>(abs((pStartNode->GetPosition().x - pEndNode->GetPosition().x) + (pStartNode->GetPosition().y - pEndNode->GetPosition().y))) }
+	, m_Weight{ }
 {}
 
-bool flgin::GridConnection::operator==(const GridConnection & other) const
+bool flgin::GridConnection::operator==(const GridConnection& other) const
 {
 	return (m_pStartNode == other.m_pStartNode && m_pEndNode == other.m_pEndNode)
 		|| (m_pStartNode == other.m_pEndNode && m_pEndNode == other.m_pStartNode);
+}
+
+int flgin::GridConnection::GetWeight()
+{
+	return m_Weight = static_cast<int>(abs(m_pStartNode->GetPosition().x - m_pEndNode->GetPosition().x) + abs(m_pStartNode->GetPosition().y - m_pEndNode->GetPosition().y));
 }

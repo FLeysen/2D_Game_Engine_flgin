@@ -13,43 +13,44 @@ namespace flgin
 	{
 	public:
 		GridConnection() : m_pEndNode{ nullptr }, m_pStartNode{ nullptr }, m_Weight{ -1 }{}
-		GridConnection(GridNode const* pStartNode, GridNode const* pEndNode);
+		GridConnection(GridNode* pStartNode, GridNode* pEndNode);
 		bool operator==(const GridConnection& other) const;
 
-		int GetWeight() { return m_Weight; }
-		GridNode const* GetStartNode() { return m_pStartNode; }
-		GridNode const* GetEndNode() { return m_pEndNode; }
-		void SetHeadConnection(GridConnection const* newHead) { m_pHeadConnection = newHead; }
-		GridConnection const* GetHeadConnection() { return m_pHeadConnection; }
+		int GetWeight();
+		GridNode* GetStartNode() const { return m_pStartNode; }
+		GridNode* GetEndNode() const { return m_pEndNode; }
+		void SetHeadConnection(GridConnection* newHead) { m_pHeadConnection = newHead; }
+		GridConnection* GetHeadConnection() { return m_pHeadConnection; }
 
 	private:
 		int m_Weight;
-		GridNode const* m_pStartNode;
-		GridNode const* m_pEndNode;
-		GridConnection const* m_pHeadConnection;
+		GridNode* m_pStartNode;
+		GridNode* m_pEndNode;
+		GridConnection* m_pHeadConnection;
 	};
 
 	class GridNode
 	{
 	public:
 		GridNode();
-		GridNode(glm::vec2 pos, const GridNode* leftNode = nullptr, const GridNode* rightNode = nullptr, const GridNode* upNode = nullptr, const GridNode* downNode = nullptr);
+		GridNode(glm::vec2 pos, GridNode* leftNode = nullptr, GridNode* rightNode = nullptr, GridNode* upNode = nullptr, GridNode* downNode = nullptr);
 		glm::vec2 GetPosition() const;
-		std::vector<GridConnection> GetConnections() const;
-		GridNode const* GetLeftNode() const { return m_pLeftNode; }
-		GridNode const* GetRightNode() const { return m_pRightNode; }
-		GridNode const* GetUpNode() const { return m_pUpNode; }
-		GridNode const* GetDownNode() const { return m_pDownNode; }
+		std::vector<GridConnection>& GetConnections() { return m_Connections; }
+		GridNode* GetLeftNode() { return m_pLeftNode; }
+		GridNode* GetRightNode() { return m_pRightNode; }
+		GridNode* GetUpNode() { return m_pUpNode; }
+		GridNode* GetDownNode() { return m_pDownNode; }
 		bool SetBlocked(bool isBlocked) { m_IsBlocked = isBlocked; }
 		bool IsBlocked() const { return m_IsBlocked; }
 
 	private:
 		bool m_IsBlocked;
 		glm::vec2 m_Position;
-		GridNode const* m_pLeftNode;
-		GridNode const* m_pRightNode;
-		GridNode const* m_pUpNode;
-		GridNode const* m_pDownNode;
+		GridNode* m_pLeftNode;
+		GridNode* m_pRightNode;
+		GridNode* m_pUpNode;
+		GridNode* m_pDownNode;
+		std::vector<GridConnection> m_Connections;
 	};
 
 	class MovementGrid : public BaseComponent
@@ -60,7 +61,8 @@ namespace flgin
 		void Update() override;
 		GridNode* GetNodeNearestTo(float x, float y);
 		GridNode* GetGrid();
-		unsigned int GetGridSize();
+		unsigned int GetGridSize() const { return m_Rows * m_Cols; }
+		float GetNodeSize() const { return m_DistBetween; }
 
 	private:
 		unsigned int m_Rows;

@@ -8,11 +8,11 @@ namespace flgin
 	{
 	public:
 		RenderComponent(GameObject* const ownerObject, Scene& scene);
-		virtual ~RenderComponent();
+		virtual ~RenderComponent() = default;
 		virtual void Render() const;
 		virtual void Update() override;
 
-		void SetTexture(Texture2D* const newTexture);
+		void SetTexture(std::shared_ptr<Texture2D> newTexture);
 		void SetPositionOffset(float x, float y);
 		void SetDimensions(float width, float height);
 		void ResetDimensions();
@@ -27,6 +27,6 @@ namespace flgin
 		float m_YOffset;
 		float m_Width;
 		float m_Height;
-		Texture2D* m_pTexture;
+		std::shared_ptr<Texture2D> m_spTexture;
 	};
 }

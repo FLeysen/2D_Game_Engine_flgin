@@ -22,6 +22,7 @@
 #include "GridMovementComponent.h"
 #include "MovementCommands.h"
 #include "SpriteComponent.h"
+#include "PathfinderComponent.h"
 
 void flgin::Minigin::Initialize()
 {
@@ -88,12 +89,14 @@ void flgin::Minigin::LoadGame() const
 	scene.AddGameObject(go);
 
 	go = new GameObject{};
+	go->SetPosition(15.0f, 15.0f);
 	MovementGrid* grid{ new MovementGrid{ go, 16, 21, 30.0f } };
 	go->AddComponent(grid);
 	go->AddComponent(new GridRenderer{ go, scene, grid });
 	scene.AddGameObject(go);
 
 	go = new GameObject{};
+	go->SetPosition(15.0f, 15.0f);
 	InputComponent* inputComponent{ new InputComponent{ go } };
 	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid} };
 	QuitCommand* quitCommand{ new QuitCommand{} };
@@ -118,13 +121,12 @@ void flgin::Minigin::LoadGame() const
 
 	SpriteComponent* spriteComponent{ new SpriteComponent{ go, scene } };
 	spriteComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("ActualSprite.png"));
-	spriteComponent->SetPositionOffset(-7.5f, -7.5f);
-	spriteComponent->SetSpriteInfo(4, 1, 15.0f, 15.0f, 1.0f);
-	spriteComponent->SetDimensions(25.0f, 25.0f);
+	spriteComponent->SetPositionOffset(-15.f, -15.f);
+	spriteComponent->SetSpriteInfo(4, 1, 30.0f, 30.0f, 1.0f);
+	spriteComponent->SetDimensions(30.0f, 30.0f);
 	go->AddComponent(spriteComponent);
 	go->AddComponent(gridMover);
 	go->AddComponent(inputComponent);
-	go->SetPosition(15.0f, 15.0f);
 	scene.AddGameObject(go);
 
 	go = new GameObject{};
@@ -133,6 +135,19 @@ void flgin::Minigin::LoadGame() const
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 1 });
 	go->AddComponent(inputComponent);
 	scene.AddGameObject(go);
+
+	//go = new GameObject{};
+	//PathfinderComponent* pathfinderComponent{ new PathfinderComponent{ go, 100.0f, grid} };
+	//spriteComponent = new SpriteComponent{ go, scene };
+	//spriteComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("ActualSprite.png"));
+	//spriteComponent->SetPositionOffset(-7.5f, -7.5f);
+	//spriteComponent->SetSpriteInfo(4, 1, 15.0f, 15.0f, 1.0f);
+	//spriteComponent->SetDimensions(25.0f, 25.0f);
+	//go->AddComponent(spriteComponent);
+	//go->AddComponent(pathfinderComponent);
+	//go->SetPosition(15.0f, 15.0f);
+	//scene.AddGameObject(go);
+	//InputManager::GetInstance().AddPathfinder(pathfinderComponent);
 }
 
 void flgin::Minigin::Cleanup()

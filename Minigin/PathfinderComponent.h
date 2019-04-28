@@ -1,6 +1,7 @@
 #pragma once
 #include "MovementGrid.h"
 #include "GridMovementComponent.h"
+#include <deque>
 
 namespace flgin
 {
@@ -14,12 +15,11 @@ namespace flgin
 
 	private:
 		void FindPath();
-		void SetVelocities();
+		void Move(GridNode const* moveTo);
 
 		bool m_TargetChanged;
 		bool m_IsActive;
 		glm::vec2 m_Target;
-		MovementGrid* m_pGrid;
-		std::vector<GridNode const*> m_Path;
+		std::deque<GridNode const*> m_pPath;
 	};
 }

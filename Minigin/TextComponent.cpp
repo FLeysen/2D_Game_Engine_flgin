@@ -40,7 +40,7 @@ void flgin::TextComponent::Update()
 	}
 	SDL_FreeSurface(surface);
 
-	renderComponent->SetTexture(new Texture2D{ texture });
+	renderComponent->SetTexture(std::make_shared<Texture2D>( texture ));
 }
 
 void flgin::TextComponent::SetText(const std::string& text)

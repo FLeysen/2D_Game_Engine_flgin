@@ -11,7 +11,16 @@ flgin::GridMovementComponent::GridMovementComponent(GameObject* const ownerObjec
 	, m_pMovementGrid{ pAttachedGrid }
 	, m_MaxTurnDistance{ acceptableTurnDist }
 	, m_TargetPos{ ownerObject->GetPosition() }
-{}
+{
+	if (m_pMovementGrid)
+	{
+		GridNode* nearestNode{ m_pMovementGrid->GetNodeNearestTo(m_TargetPos.x, m_TargetPos.y) };
+		m_pOwnerObject->SetPosition(nearestNode->GetPosition().x, nearestNode->GetPosition().y);
+		m_TargetPos = nearestNode->GetPosition();
+	}
+	else
+		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, "GridMovementComponent has no attached Movement Grid!" });
+}
 
 void flgin::GridMovementComponent::Update()
 {
@@ -51,7 +60,7 @@ glm::vec2 flgin::GridMovementComponent::GetVelocity()
 void flgin::GridMovementComponent::MoveLeft()
 {
 	glm::vec2 pos{ m_TargetPos };
-	GridNode const* nearestNode{ m_pMovementGrid->GetNodeNearestTo(pos.x, pos.y) };
+	GridNode* nearestNode{ m_pMovementGrid->GetNodeNearestTo(pos.x, pos.y) };
 	if (!nearestNode)
 	{
 		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, "GridMovementComponent Update could not find a nearest node in movement grid.", this });
@@ -65,9 +74,12 @@ void flgin::GridMovementComponent::MoveLeft()
 		m_TargetPos.x += m_CurrentVelocity.x * Time::GetInstance().GetDeltaTime();
 		if (m_TargetPos.x < nodePos.x)
 		{
-			GridNode const* leftNode{ nearestNode->GetLeftNode() };
+			GridNode* leftNode{ nearestNode->GetLeftNode() };
 			if (!leftNode)
 				m_TargetPos.x = nodePos.x;
+			else if (leftNode->IsBlocked())
+				m_TargetPos.x = nodePos.x;
+
 			else if (pos.x < leftNode->GetPosition().x && !leftNode->GetLeftNode())
 				m_TargetPos.x = leftNode->GetPosition().x;
 		}
@@ -77,7 +89,7 @@ void flgin::GridMovementComponent::MoveLeft()
 void flgin::GridMovementComponent::MoveRight()
 {
 	glm::vec2 pos{ m_TargetPos };
-	GridNode const* nearestNode{ m_pMovementGrid->GetNodeNearestTo(pos.x, pos.y) };
+	GridNode* nearestNode{ m_pMovementGrid->GetNodeNearestTo(pos.x, pos.y) };
 	if (!nearestNode)
 	{
 		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, "GridMovementComponent Update could not find a nearest node in movement grid.", this });
@@ -91,9 +103,12 @@ void flgin::GridMovementComponent::MoveRight()
 		m_TargetPos.x += m_CurrentVelocity.x * Time::GetInstance().GetDeltaTime();
 		if (m_TargetPos.x > nodePos.x)
 		{
-			GridNode const* rightNode{ nearestNode->GetRightNode() };
+			GridNode* rightNode{ nearestNode->GetRightNode() };
 			if (!rightNode)
 				m_TargetPos.x = nodePos.x;
+			else if (rightNode->IsBlocked())
+				m_TargetPos.x = nodePos.x;
+
 			else if (pos.x > rightNode->GetPosition().x && !rightNode->GetRightNode())
 				m_TargetPos.x = rightNode->GetPosition().x;
 		}
@@ -103,7 +118,7 @@ void flgin::GridMovementComponent::MoveRight()
 void flgin::GridMovementComponent::MoveDown()
 {
 	glm::vec2 pos{ m_TargetPos };
-	GridNode const* nearestNode{ m_pMovementGrid->GetNodeNearestTo(pos.x, pos.y) };
+	GridNode* nearestNode{ m_pMovementGrid->GetNodeNearestTo(pos.x, pos.y) };
 	if (!nearestNode)
 	{
 		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, "GridMovementComponent Update could not find a nearest node in movement grid.", this });
@@ -117,9 +132,12 @@ void flgin::GridMovementComponent::MoveDown()
 		m_TargetPos.y += m_CurrentVelocity.y * Time::GetInstance().GetDeltaTime();
 		if (m_TargetPos.y > nodePos.y)
 		{
-			GridNode const* downNode{ nearestNode->GetDownNode() };
+			GridNode* downNode{ nearestNode->GetDownNode() };
 			if (!downNode)
 				m_TargetPos.y = nodePos.y;
+			else if (downNode->IsBlocked())
+				m_TargetPos.y = nodePos.y;
+
 			else if (pos.y > downNode->GetPosition().y && !downNode->GetDownNode())
 				m_TargetPos.y = downNode->GetPosition().y;
 		}
@@ -129,7 +147,7 @@ void flgin::GridMovementComponent::MoveDown()
 void flgin::GridMovementComponent::MoveUp()
 {
 	glm::vec2 pos{ m_TargetPos };
-	GridNode const* nearestNode{ m_pMovementGrid->GetNodeNearestTo(pos.x, pos.y) };
+	GridNode* nearestNode{ m_pMovementGrid->GetNodeNearestTo(pos.x, pos.y) };
 	if (!nearestNode)
 	{
 		Logger::GetInstance().Log(StatusCode{ StatusCode::Status::FAIL, "GridMovementComponent Update could not find a nearest node in movement grid.", this });
@@ -143,9 +161,12 @@ void flgin::GridMovementComponent::MoveUp()
 		m_TargetPos.y += m_CurrentVelocity.y * Time::GetInstance().GetDeltaTime();
 		if (m_TargetPos.y < nodePos.y)
 		{
-			GridNode const* upNode{ nearestNode->GetUpNode() };
+			GridNode* upNode{ nearestNode->GetUpNode() };
 			if (!upNode)
 				m_TargetPos.y = nodePos.y;
+			else if (upNode->IsBlocked())
+				m_TargetPos.y = nodePos.y;
+
 			else if (pos.y < upNode->GetPosition().y && !upNode->GetUpNode())
 				m_TargetPos.y = upNode->GetPosition().y;
 		}

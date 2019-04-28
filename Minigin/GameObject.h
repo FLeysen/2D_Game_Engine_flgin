@@ -14,7 +14,7 @@ namespace flgin
 		void Update();
 
 		void SetPosition(float x, float y);
-		glm::vec2 GetPosition();
+		glm::vec2 GetPosition() const;
 		void AddComponent(BaseComponent* const component);
 		void RemoveComponent(BaseComponent* const component);
 
