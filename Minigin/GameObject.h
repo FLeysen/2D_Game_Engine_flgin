@@ -47,7 +47,7 @@ namespace flgin
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
-		dae::Transform m_Transform;
+	    Transform m_Transform;
 		std::vector<BaseComponent*> m_pComponents;
 	};
 }
