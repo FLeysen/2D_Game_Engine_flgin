@@ -1,2 +1,0 @@
-Engine version: 1.0
-[2019-3-16 14:58:23][WARNING]: FPSComponent could not find an attached TextComponent.
