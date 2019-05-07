@@ -15,7 +15,7 @@ void flgin::Renderer::Render()
 {
 	SDL_RenderClear(m_pRenderer);
 
-	flgin::SceneManager::GetInstance().Render();
+	FSceneManager.Render();
 	
 	SDL_RenderPresent(m_pRenderer);
 }

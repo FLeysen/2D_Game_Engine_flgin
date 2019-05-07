@@ -23,6 +23,7 @@
 #include "MovementCommands.h"
 #include "SpriteComponent.h"
 #include "PathfinderComponent.h"
+#include "TextLocalizer.h"
 
 void flgin::Flgin::Initialize()
 {
@@ -54,37 +55,37 @@ void flgin::Flgin::Initialize()
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
-	Renderer::GetInstance().Init(m_pWindow);
+	FRenderer.Init(m_pWindow);
 }
 
 void flgin::Flgin::LoadGame() const
 {
-	Scene& scene = SceneManager::GetInstance().CreateScene("Demo");
+	Scene& scene = FSceneManager.CreateScene("Demo");
 
 	GameObject* go{ new flgin::GameObject{} };
-	RenderComponent* renderComponent{ new flgin::RenderComponent{ go, scene } };
-	renderComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("background.jpg"));
+	RenderComponent* renderComponent{ new RenderComponent{ go, scene, 0 } };
+	renderComponent->SetTexture(FResourceManager.LoadTexture(FTextLocalizer.Get("texBg")));
 	go->AddComponent(renderComponent);
 	scene.AddGameObject(go);
 	
 	go = new GameObject{};
-	renderComponent = new RenderComponent{ go, scene };
-	renderComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("logo.png"));
+	renderComponent = new RenderComponent{ go, scene, 0 };
+	renderComponent->SetTexture(FResourceManager.LoadTexture(FTextLocalizer.Get("texLogo")));
 	go->AddComponent(renderComponent);
 	go->SetPosition(216, 180);
 	scene.AddGameObject(go);
 	
 	go = new GameObject{};
-	renderComponent = new RenderComponent{ go, scene };
+	renderComponent = new RenderComponent{ go, scene, 3 };
 	go->AddComponent(renderComponent);
-	go->AddComponent(new TextComponent{ go, "../Data/Lingua.otf", 36, {255, 0,0 }, "Programming 4 Assignment" });
+	go->AddComponent(new TextComponent{ go, FTextLocalizer.Get("fontDefault"), 36, {255, 0,0 }, FTextLocalizer.Get("stringAssignment")});
 	go->SetPosition(80.f, 20.f);
 	scene.AddGameObject(go);
 	
 	go = new GameObject{};
-	renderComponent = new RenderComponent{ go, scene };
+	renderComponent = new RenderComponent{ go, scene, 4 };
 	go->AddComponent(renderComponent);
-	go->AddComponent(new TextComponent{ go, "../Data/Lingua.otf", 20, {255, 255, 0} });
+	go->AddComponent(new TextComponent{ go, FTextLocalizer.Get("fontDefault"), 20, {255, 255, 0} });
 	go->AddComponent(new FPSComponent{ go, .5f });
 	scene.AddGameObject(go);
 
@@ -119,8 +120,8 @@ void flgin::Flgin::LoadGame() const
 	inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
 	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
 
-	SpriteComponent* spriteComponent{ new SpriteComponent{ go, scene } };
-	spriteComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("ActualSprite.png"));
+	SpriteComponent* spriteComponent{ new SpriteComponent{ go, scene, 2 } };
+	spriteComponent->SetTexture(FResourceManager.LoadTexture(FTextLocalizer.Get("texPlayer")));
 	spriteComponent->SetPositionOffset(-15.f, -15.f);
 	spriteComponent->SetSpriteInfo(4, 1, 30.0f, 30.0f, 1.0f);
 	spriteComponent->SetDimensions(30.0f, 30.0f);
@@ -139,7 +140,7 @@ void flgin::Flgin::LoadGame() const
 	//go = new GameObject{};
 	//PathfinderComponent* pathfinderComponent{ new PathfinderComponent{ go, 100.0f, grid} };
 	//spriteComponent = new SpriteComponent{ go, scene };
-	//spriteComponent->SetTexture(ResourceManager::GetInstance().LoadTexture("ActualSprite.png"));
+	//spriteComponent->SetTexture(FResourceManager.LoadTexture("ActualSprite.png"));
 	//spriteComponent->SetPositionOffset(-7.5f, -7.5f);
 	//spriteComponent->SetSpriteInfo(4, 1, 15.0f, 15.0f, 1.0f);
 	//spriteComponent->SetDimensions(25.0f, 25.0f);
@@ -147,12 +148,12 @@ void flgin::Flgin::LoadGame() const
 	//go->AddComponent(pathfinderComponent);
 	//go->SetPosition(15.0f, 15.0f);
 	//scene.AddGameObject(go);
-	//InputManager::GetInstance().AddPathfinder(pathfinderComponent);
+	//FInputManager.AddPathfinder(pathfinderComponent);
 }
 
 void flgin::Flgin::Cleanup()
 {
-	Renderer::GetInstance().Destroy();
+	FRenderer.Destroy();
 	SDL_DestroyWindow(m_pWindow);
 	m_pWindow = nullptr;
 	SDL_Quit();
@@ -163,16 +164,16 @@ void flgin::Flgin::Run()
 	Initialize();
 
 	// tell the resource manager where he can find the game data
-	ResourceManager::GetInstance().Init("../Data/");
+	FResourceManager.Init(FTextLocalizer.Get("dataPath"));
 
 	LoadGame();
 	{
 		float lag{ 1.0f };
 		auto lastTime{ std::chrono::high_resolution_clock::now() };
-		Renderer& renderer{ Renderer::GetInstance() };
-		SceneManager& sceneManager{ SceneManager::GetInstance() };
-		InputManager& input{ InputManager::GetInstance() };
-		Invoker& invoker{ Invoker::GetInstance() };
+		Renderer& renderer{ FRenderer };
+		SceneManager& sceneManager{ FSceneManager };
+		InputManager& input{ FInputManager };
+		Invoker& invoker{ FInvoker };
 		Time& time{ FTime };
 		bool doContinue{ true };
 		float frameTime{ m_MsPerFrame / 1000.0f };

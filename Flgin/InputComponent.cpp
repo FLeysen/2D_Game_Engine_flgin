@@ -7,12 +7,12 @@ flgin::InputComponent::InputComponent(GameObject* const ownerObject)
 	: BaseComponent(ownerObject)
 	, m_ControllerMappings{}
 {
-	InputManager::GetInstance().AddPlayer(this);
+	FInputManager.AddPlayer(this);
 }
 
 flgin::InputComponent::~InputComponent()
 {
-	InputManager::GetInstance().RemovePlayer(this);
+	FInputManager.RemovePlayer(this);
 }
 
 void flgin::InputComponent::AddControllerMapping(UINT8 key, Command* command)

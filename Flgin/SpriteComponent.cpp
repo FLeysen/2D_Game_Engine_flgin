@@ -7,8 +7,8 @@
 #pragma warning(pop)
 #include "Invoker.h"
 
-flgin::SpriteComponent::SpriteComponent(GameObject* const pOwnerObject, Scene& scene)
-	: RenderComponent(pOwnerObject, scene)
+flgin::SpriteComponent::SpriteComponent(GameObject* const pOwnerObject, Scene& scene, unsigned int renderLayer)
+	: RenderComponent(pOwnerObject, scene, renderLayer)
 {}
 
 void flgin::SpriteComponent::Update()
@@ -30,7 +30,7 @@ void flgin::SpriteComponent::Render() const
 	destRect.h = static_cast<int>(m_Height);
 
 	int result{ SDL_RenderCopyEx(
-			Renderer::GetInstance().GetSDLRenderer(),
+			FRenderer.GetSDLRenderer(),
 			m_spTexture->GetSDLTexture(),
 			&m_SourceRect,
 			&destRect,
@@ -51,7 +51,7 @@ void flgin::SpriteComponent::SetSpriteInfo(unsigned int columns, unsigned int ro
 	m_SourceRect.y = 0;
 	m_SourceRect.w = static_cast<int>(spriteWidth);
 	m_SourceRect.h = static_cast<int>(spriteHeight);
-	Invoker& invoker{ Invoker::GetInstance() };
+	Invoker& invoker{ FInvoker };
 	invoker.CancelOwnedInvokes(this);
 
 	std::function<void()> calculateFrame{ std::bind(&flgin::SpriteComponent::IncrementCurrentFrame, this) };

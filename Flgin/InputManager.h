@@ -2,6 +2,7 @@
 #include <Xinput.h>
 #include <vector>
 #include "Singleton.h"
+#define FInputManager flgin::InputManager::GetInstance()
 
 namespace flgin
 {

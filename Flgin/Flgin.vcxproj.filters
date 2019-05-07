@@ -44,6 +44,9 @@
     <Filter Include="PrecompiledHeaders">
       <UniqueIdentifier>{952125ce-433a-44a6-9ef0-dcf380bd34c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Localization">
+      <UniqueIdentifier>{597aa6a9-4dfa-4fd2-932e-fca21ef308d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioServices.h">
@@ -157,6 +160,12 @@
     <ClInclude Include="Flgin.h">
       <Filter>Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="TextLocalizer.h">
+      <Filter>Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="csv.h">
+      <Filter>Localization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ColliderComponent.cpp">
@@ -245,6 +254,9 @@
     </ClCompile>
     <ClCompile Include="Flgin.cpp">
       <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="TextLocalizer.cpp">
+      <Filter>Localization</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

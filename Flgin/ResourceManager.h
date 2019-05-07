@@ -1,5 +1,6 @@
 #pragma once
 #include "Singleton.h"
+#define FResourceManager flgin::ResourceManager::GetInstance()
 
 namespace flgin
 {
@@ -10,10 +11,10 @@ namespace flgin
 	public:
 		ResourceManager() = default;
 
-		void Init(std::string&& data);
+		void Init(const std::string& data);
 
 		std::shared_ptr<Texture2D> LoadTexture(const std::string& file);
-		std::shared_ptr<Font> LoadFont(const std::string& file, unsigned int size);
+		Font* LoadFont(const std::string& file, unsigned int size);
 
 	private:
 		std::string m_DataPath;

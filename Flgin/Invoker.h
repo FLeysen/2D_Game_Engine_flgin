@@ -6,6 +6,7 @@
 #ifndef MAX_INVOCATIONS
 #define MAX_INVOCATIONS 10
 #endif
+#define FInvoker flgin::Invoker::GetInstance()
 
 namespace flgin
 {

@@ -10,7 +10,7 @@ namespace flgin
 		friend Scene& SceneManager::CreateScene(const std::string& name);
 	public:
 		void AddGameObject(GameObject* const object);
-		void AddRenderComponent(RenderComponent* const renderComponent);
+		void AddRenderComponent(RenderComponent* const renderComponent, unsigned int layer);
 
 		void FixedUpdate();
 		void Update();
@@ -27,7 +27,8 @@ namespace flgin
 
 		std::string m_Name{};
 		std::vector<GameObject*> m_pGameObjects{};
-		std::vector<RenderComponent*> m_pRenderComponents{};
+		static const unsigned int MAX_RENDERLAYERS{ 5 };
+		std::vector<RenderComponent*> m_pRenderComponents[MAX_RENDERLAYERS];
 
 		static unsigned int idCounter; 
 	};

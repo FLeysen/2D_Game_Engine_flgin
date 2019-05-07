@@ -21,9 +21,14 @@ void flgin::Scene::AddGameObject(GameObject* const object)
 	m_pGameObjects.push_back(object);
 }
 
-void flgin::Scene::AddRenderComponent(RenderComponent* const renderComponent)
+void flgin::Scene::AddRenderComponent(RenderComponent* const renderComponent, unsigned int layer)
 {
-	m_pRenderComponents.push_back(renderComponent);
+	if (layer > MAX_RENDERLAYERS)
+	{
+		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to add render component to nonexistant layer: " + layer, renderComponent });
+		return;
+	}
+	m_pRenderComponents[layer].push_back(renderComponent);
 }
 
 void flgin::Scene::Update()
@@ -44,9 +49,12 @@ void flgin::Scene::FixedUpdate()
 
 void flgin::Scene::Render() const
 {
-	for (RenderComponent* const renderComponent : m_pRenderComponents)
+	for (unsigned int i{}; i < MAX_RENDERLAYERS; ++i)
 	{
-		renderComponent->Render();
+		for (RenderComponent* const renderComponent : m_pRenderComponents[i])
+		{
+			renderComponent->Render();
+		}
 	}
 }
 

@@ -9,7 +9,7 @@
 #include "Scene.h"
 #include "SDL.h"
 
-flgin::RenderComponent::RenderComponent(GameObject* const ownerObject, Scene& scene)
+flgin::RenderComponent::RenderComponent(GameObject* const ownerObject, Scene& scene, unsigned int renderLayer)
 	: BaseComponent(ownerObject)
 	, m_spTexture{ nullptr }
 	, m_XOffset{ 0.0f }
@@ -17,7 +17,7 @@ flgin::RenderComponent::RenderComponent(GameObject* const ownerObject, Scene& sc
 	, m_Height{}
 	, m_Width{}
 {
-	scene.AddRenderComponent(this);
+	scene.AddRenderComponent(this, renderLayer);
 }
 
 void flgin::RenderComponent::Render() const
@@ -28,13 +28,19 @@ void flgin::RenderComponent::Render() const
 		return;
 	}
 	const glm::vec2& pos{ m_pOwnerObject->GetPosition() };
-	Renderer::GetInstance().RenderTexture(*m_spTexture, pos.x + m_XOffset, pos.y + m_YOffset, m_Width, m_Height);
+	FRenderer.RenderTexture(*m_spTexture, pos.x + m_XOffset, pos.y + m_YOffset, m_Width, m_Height);
 }
 
 void flgin::RenderComponent::Update()
 {}
 
-void flgin::RenderComponent::SetTexture(std::shared_ptr<flgin::Texture2D> newTexture)
+void flgin::RenderComponent::SetTexture(std::shared_ptr<flgin::Texture2D>& newTexture)
+{
+	m_spTexture = newTexture;
+	ResetDimensions();
+}
+
+void flgin::RenderComponent::SetTexture(std::shared_ptr<flgin::Texture2D>&& newTexture)
 {
 	m_spTexture = newTexture;
 	ResetDimensions();

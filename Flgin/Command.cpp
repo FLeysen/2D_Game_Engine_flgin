@@ -4,5 +4,5 @@
 
 flgin::Command::Command()
 {
-	InputManager::GetInstance().AddCommand(this);
+	FInputManager.AddCommand(this);
 }

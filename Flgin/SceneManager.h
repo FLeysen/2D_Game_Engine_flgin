@@ -1,5 +1,6 @@
 #pragma once
 #include "Singleton.h"
+#define FSceneManager flgin::SceneManager::GetInstance()
 
 namespace flgin
 {

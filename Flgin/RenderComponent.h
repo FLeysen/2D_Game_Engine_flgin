@@ -7,12 +7,13 @@ namespace flgin
 	class RenderComponent : public BaseComponent
 	{
 	public:
-		RenderComponent(GameObject* const ownerObject, Scene& scene);
+		RenderComponent(GameObject* const ownerObject, Scene& scene, unsigned int renderLayer = 2);
 		virtual ~RenderComponent() = default;
 		virtual void Render() const;
 		virtual void Update() override;
 
-		void SetTexture(std::shared_ptr<Texture2D> newTexture);
+		void SetTexture(std::shared_ptr<Texture2D>& newTexture);
+		void SetTexture(std::shared_ptr<Texture2D>&& newTexture);
 		void SetPositionOffset(float x, float y);
 		void SetDimensions(float width, float height);
 		void ResetDimensions();

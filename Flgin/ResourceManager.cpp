@@ -8,7 +8,7 @@
 #include "Texture2D.h"
 #include "Font.h"
 
-void flgin::ResourceManager::Init(std::string&& dataPath)
+void flgin::ResourceManager::Init(const std::string& dataPath)
 {
 	m_DataPath = std::move(dataPath);
 
@@ -33,7 +33,7 @@ void flgin::ResourceManager::Init(std::string&& dataPath)
 std::shared_ptr<flgin::Texture2D> flgin::ResourceManager::LoadTexture(const std::string& file)
 {
 	std::string fullPath = m_DataPath + file;
-	SDL_Texture *texture = IMG_LoadTexture(Renderer::GetInstance().GetSDLRenderer(), fullPath.c_str());
+	SDL_Texture *texture = IMG_LoadTexture(FRenderer.GetSDLRenderer(), fullPath.c_str());
 	if (texture == nullptr) 
 	{
 		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, std::string("Failed to load texture: ") + SDL_GetError() });
@@ -42,7 +42,7 @@ std::shared_ptr<flgin::Texture2D> flgin::ResourceManager::LoadTexture(const std:
 	return std::make_shared<Texture2D>( texture );
 }
 
-std::shared_ptr<flgin::Font> flgin::ResourceManager::LoadFont(const std::string& file, unsigned int size)
+flgin::Font* flgin::ResourceManager::LoadFont(const std::string& file, unsigned int size)
 {
-	return std::make_shared<Font>(m_DataPath + file, size);
+	return new Font{ m_DataPath + file, size };
 }

@@ -9,7 +9,7 @@ flgin::GridRenderer::GridRenderer(GameObject* pOwnerObject, Scene& scene, Moveme
 {
 	m_pRenderers.resize(pGrid->GetGridSize());
 	GridNode* pGridNodes{ pGrid->GetGrid() };
-	std::shared_ptr<Texture2D> spTex{ ResourceManager::GetInstance().LoadTexture("backGroundSprite.png") };
+	std::shared_ptr<Texture2D> spTex{ FResourceManager.LoadTexture("backGroundSprite.png") };
 	glm::vec2 negativeOffset{ pGrid->GetGameObject()->GetPosition() };
 	negativeOffset += pGrid->GetNodeSize() / 2;
 	for (size_t i{}, size{ m_pRenderers.size() }; i < size; ++i)

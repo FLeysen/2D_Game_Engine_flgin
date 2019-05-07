@@ -1,5 +1,6 @@
 #pragma once
 #include "Singleton.h"
+#define FRenderer flgin::Renderer::GetInstance()
 
 struct SDL_Window;
 struct SDL_Renderer;
