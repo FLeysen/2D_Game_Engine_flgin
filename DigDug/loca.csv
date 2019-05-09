@@ -1,6 +1,7 @@
 key;en-uk
 dataPath;../Data/
 texBg;background.jpg
+texGameBg;backgroundSprite.png
 texLogo;logo.png
 texPlayer;ActualSprite.png
 fontDefault;Lingua.otf

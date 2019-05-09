@@ -14,12 +14,11 @@ flgin::TextComponent::TextComponent(GameObject* const ownerObject, const std::st
 
 flgin::TextComponent::~TextComponent()
 {
-	FLogger.SafeDelete(m_pFont);
+	FLogger.SafeDelete(m_pTexture);
 }
 
 void flgin::TextComponent::Update()
 {
-
 	RenderComponent* const renderComponent{ m_pOwnerObject->GetComponent<RenderComponent>() };
 	if (renderComponent == nullptr)
 	{
@@ -41,7 +40,8 @@ void flgin::TextComponent::Update()
 	}
 	SDL_FreeSurface(surface);
 
-	renderComponent->SetTexture(std::make_shared<Texture2D>( texture ));
+	FLogger.SafeDelete(m_pTexture, true);
+	renderComponent->SetTexture(m_pTexture = new Texture2D{ texture });
 }
 
 void flgin::TextComponent::SetText(const std::string& text)

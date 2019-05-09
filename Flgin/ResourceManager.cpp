@@ -3,10 +3,20 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <algorithm>
 
 #include "Renderer.h"
 #include "Texture2D.h"
 #include "Font.h"
+
+flgin::ResourceManager::~ResourceManager()
+{
+	for (std::pair<const std::string, Texture2D*>& texPair : m_pTextures)
+		FLogger.SafeDelete(texPair.second);
+
+	for (std::pair<const std::string, Font*>& fontPair : m_pFonts)
+		FLogger.SafeDelete(fontPair.second);
+}
 
 void flgin::ResourceManager::Init(const std::string& dataPath)
 {
@@ -30,19 +40,33 @@ void flgin::ResourceManager::Init(const std::string& dataPath)
 	}
 }
 
-std::shared_ptr<flgin::Texture2D> flgin::ResourceManager::LoadTexture(const std::string& file)
+flgin::Texture2D* flgin::ResourceManager::LoadTexture(const std::string& file)
 {
-	std::string fullPath = m_DataPath + file;
-	SDL_Texture *texture = IMG_LoadTexture(FRenderer.GetSDLRenderer(), fullPath.c_str());
-	if (texture == nullptr) 
+	if (m_pTextures.find(file) == m_pTextures.cend())
 	{
-		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, std::string("Failed to load texture: ") + SDL_GetError() });
-		return nullptr;
+		std::string fullPath{ m_DataPath + file };
+		SDL_Texture* texture{ IMG_LoadTexture(FRenderer.GetSDLRenderer(), fullPath.c_str()) };
+		if (texture == nullptr)
+		{
+			FLogger.Log(StatusCode{ StatusCode::Status::FAIL, std::string("Failed to load texture: ") + SDL_GetError() });
+			return nullptr;
+		}
+		m_pTextures[file] = new Texture2D{ texture };
 	}
-	return std::make_shared<Texture2D>( texture );
+
+	return m_pTextures[file];
 }
 
 flgin::Font* flgin::ResourceManager::LoadFont(const std::string& file, unsigned int size)
 {
-	return new Font{ m_DataPath + file, size };
+	auto it{ std::find_if(m_pFonts.cbegin(), m_pFonts.cend(),
+		[file, size](const std::pair<const std::string, Font*>& el) { return (el.first == file) && (el.second->GetSize() == size);  }) };
+
+	if (it == m_pFonts.cend())
+	{
+		std::string fullPath{ m_DataPath + file };
+		it = m_pFonts.emplace(file, new Font{ fullPath, size });
+	}
+
+	return it->second;
 }

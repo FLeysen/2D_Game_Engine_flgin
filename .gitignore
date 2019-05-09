@@ -6,6 +6,8 @@ Logger/
 Logger/DeprecatedLogs
 Flgin/Logger
 Flgin/Logger/DeprecatedLogs
+DigDug/Logger
+DigDug/Logger/DeprecatedLogs
 
 # User-specific files
 *.suo

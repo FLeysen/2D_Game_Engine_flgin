@@ -19,6 +19,7 @@ namespace flgin
 	private:
 		std::string m_Text;
 		Font* m_pFont;
+		Texture2D* m_pTexture;
 		SDL_Color m_TextColor;
 	};
 }

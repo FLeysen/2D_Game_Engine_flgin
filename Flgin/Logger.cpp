@@ -59,7 +59,7 @@ flgin::Logger::Logger()
 		<< now.tm_sec << ".txt";
 	m_Output.open(outPath.str());
 
-	m_Output << "Engine version: 2.0\n";
+	m_Output << "Engine version: 3.0\n";
 #endif
 }
 

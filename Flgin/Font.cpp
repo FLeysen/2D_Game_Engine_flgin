@@ -3,6 +3,7 @@
 
 flgin::Font::Font(const std::string& fullPath, unsigned int size)
 	: m_pFont{ nullptr }
+	, m_Size{ size }
 {
 	m_pFont = TTF_OpenFont(fullPath.c_str(), size);
 	if (m_pFont == nullptr)
@@ -17,4 +18,9 @@ flgin::Font::~Font()
 TTF_Font* flgin::Font::GetFont() const
 {
 	return m_pFont;
+}
+
+unsigned int flgin::Font::GetSize() const
+{
+	return m_Size;
 }

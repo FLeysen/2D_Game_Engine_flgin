@@ -7,6 +7,7 @@ namespace flgin
 	{
 	public:
 		TTF_Font* GetFont() const;
+		unsigned int GetSize() const;
 		explicit Font(const std::string& fullPath, unsigned int size);
 		~Font();
 
@@ -16,6 +17,7 @@ namespace flgin
 		Font & operator= (const Font &&) = delete;
 
 	private:
+		unsigned int m_Size;
 		TTF_Font* m_pFont;
 	};
 

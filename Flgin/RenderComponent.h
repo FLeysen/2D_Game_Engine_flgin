@@ -12,8 +12,7 @@ namespace flgin
 		virtual void Render() const;
 		virtual void Update() override;
 
-		void SetTexture(std::shared_ptr<Texture2D>& newTexture);
-		void SetTexture(std::shared_ptr<Texture2D>&& newTexture);
+		void SetTexture(Texture2D const* newTexture);
 		void SetPositionOffset(float x, float y);
 		void SetDimensions(float width, float height);
 		void ResetDimensions();
@@ -28,6 +27,6 @@ namespace flgin
 		float m_YOffset;
 		float m_Width;
 		float m_Height;
-		std::shared_ptr<Texture2D> m_spTexture;
+		Texture2D const* m_pTexture;
 	};
 }

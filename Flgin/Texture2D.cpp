@@ -13,6 +13,5 @@ SDL_Texture* flgin::Texture2D::GetSDLTexture() const
 }
 
 flgin::Texture2D::Texture2D(SDL_Texture* texture)
-{
-	m_pTexture = texture;
-}
+	: m_pTexture{ texture }
+{}
