@@ -1,104 +1,79 @@
-#include "FlginPCH.h"
-#include "Flgin.h"
-#include <chrono>
-#include <thread>
-#include "InputManager.h"
+#include "pch.h"
+#include "Game.h"
+#include "TextLocalizer.h"
 #include "SceneManager.h"
-#include "Renderer.h"
-#include "ResourceManager.h"
-#include <SDL.h>
 #include "GameObject.h"
-#include "Scene.h"
 #include "RenderComponent.h"
-#include "FPSComponent.h"
+#include "ResourceManager.h"
+#include "Scene.h"
 #include "TextComponent.h"
-#include "Logger.h"
-#include "Time.h"
-#include "Invoker.h"
-#include "InputComponent.h"
-#include "PlayerCommands.h"
+#include "TextLocalizer.h"
+#include "FPSComponent.h"
 #include "MovementGrid.h"
 #include "GridRenderer.h"
+#include "InputComponent.h"
 #include "GridMovementComponent.h"
+#include "PlayerCommands.h"
 #include "MovementCommands.h"
 #include "SpriteComponent.h"
-#include "PathfinderComponent.h"
-#include "TextLocalizer.h"
-#include "StateComponent.h"
-#include "FunctionHolder.h"
 
-void flgin::Flgin::Initialize()
+DigDug::Game::Game()
+	: m_Engine{}
+{}
+
+
+DigDug::Game::~Game()
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0)
-	{
-		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, std::string("SDL_Init Error: ") + SDL_GetError(), this });
-		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
-	}
-
-	SDL_GameController* controller{ };
-
-	for (int i{}, amt{ SDL_NumJoysticks() }; i < amt; ++i)
-	{
-		if (SDL_IsGameController(i))
-			controller = SDL_GameControllerOpen(i);
-	}
-
-	m_pWindow = SDL_CreateWindow(
-		"Flgin",
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
-		640,
-		480,
-		SDL_WINDOW_OPENGL
-	);
-	if (m_pWindow == nullptr) 
-	{
-		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, std::string("SDL_CreateWindow Error: ") + SDL_GetError(), this });
-		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
-	}
-
-	FRenderer.Init(m_pWindow);
-	FResourceManager.Init(FLocalizer.Get("dataPath"));
 }
 
-/*
-void flgin::Flgin::LoadGame() const
+void DigDug::Game::Run()
 {
-	Scene* scene{ FSceneManager.CreateScene("Demo") };
+	FLocalizer.Load("loca.csv", "en-uk");
+	m_Engine.Initialize();
+	InitTestScene();
+	if (!FSceneManager.IsSceneSet()) return;
+	m_Engine.Run();
+}
+
+void DigDug::Game::InitTestScene()
+{
+	using namespace flgin;
+	Scene* scene{ FSceneManager.CreateScene("DigDug") };
+	FSceneManager.ActivateSceneByName("DigDug");
 
 	GameObject* go{ new flgin::GameObject{} };
 	RenderComponent* renderComponent{ new RenderComponent{ go, scene, 0 } };
 	renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texBg")));
 	go->AddComponent(renderComponent);
-	scene.AddGameObject(go);
-	
+	scene->AddGameObject(go);
+
 	go = new GameObject{};
 	renderComponent = new RenderComponent{ go, scene, 0 };
 	renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texLogo")));
 	go->AddComponent(renderComponent);
 	go->SetPosition(216, 180);
-	scene.AddGameObject(go);
-	
+	scene->AddGameObject(go);
+
 	go = new GameObject{};
 	renderComponent = new RenderComponent{ go, scene, 3 };
 	go->AddComponent(renderComponent);
-	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 0,0 }, FLocalizer.Get("stringAssignment")});
+	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 0,0 }, FLocalizer.Get("stringAssignment") });
 	go->SetPosition(80.f, 20.f);
-	scene.AddGameObject(go);
-	
+	scene->AddGameObject(go);
+
 	go = new GameObject{};
 	renderComponent = new RenderComponent{ go, scene, 4 };
 	go->AddComponent(renderComponent);
 	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 20, {255, 255, 0} });
 	go->AddComponent(new FPSComponent{ go, .5f });
-	scene.AddGameObject(go);
+	scene->AddGameObject(go);
 
 	go = new GameObject{};
 	go->SetPosition(15.0f, 15.0f);
 	MovementGrid* grid{ new MovementGrid{ go, 16, 21, 30.0f } };
 	go->AddComponent(grid);
 	go->AddComponent(new GridRenderer{ go, scene, grid });
-	scene.AddGameObject(go);
+	scene->AddGameObject(go);
 
 	go = new GameObject{};
 	go->SetPosition(15.0f, 15.0f);
@@ -129,18 +104,18 @@ void flgin::Flgin::LoadGame() const
 	spriteComponent->SetPositionOffset(-15.f, -15.f);
 	spriteComponent->SetSpriteInfo(4, 1, 30.0f, 30.0f, 1.0f);
 	spriteComponent->SetDimensions(30.0f, 30.0f);
-	
+
 	go->AddComponent(spriteComponent);
 	go->AddComponent(gridMover);
 	go->AddComponent(inputComponent);
-	scene.AddGameObject(go);
+	scene->AddGameObject(go);
 
 	go = new GameObject{};
 	inputComponent = new InputComponent{ go };
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_B, quitCommand);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 1 });
 	go->AddComponent(inputComponent);
-	scene.AddGameObject(go);
+	scene->AddGameObject(go);
 
 	//go = new GameObject{};
 	//PathfinderComponent* pathfinderComponent{ new PathfinderComponent{ go, 100.0f, grid} };
@@ -154,58 +129,4 @@ void flgin::Flgin::LoadGame() const
 	//go->SetPosition(15.0f, 15.0f);
 	//scene.AddGameObject(go);
 	//FInputManager.AddPathfinder(pathfinderComponent);
-}
-*/
-
-void flgin::Flgin::Cleanup()
-{
-	FRenderer.Destroy();
-	SDL_DestroyWindow(m_pWindow);
-	m_pWindow = nullptr;
-	SDL_Quit();
-}
-
-void flgin::Flgin::Run()
-{
-	float lag{ 1.0f };
-	auto lastTime{ std::chrono::high_resolution_clock::now() };
-	Renderer& renderer{ FRenderer };
-	SceneManager& sceneManager{ FSceneManager };
-	InputManager& input{ FInputManager };
-	Invoker& invoker{ FInvoker };
-	Time& time{ FTime };
-	bool doContinue{ true };
-	float frameTime{ m_MsPerFrame / 1000.0f };
-	time.SetFixedTime(frameTime);
-	time.SetTimeScale(1.0f);
-
-	if (!sceneManager.IsSceneSet())
-	{
-		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to run engine, but no scene was set!" });
-		return;
-	}
-
-	while (doContinue)
-	{
-		auto currTime{ std::chrono::high_resolution_clock::now() };
-		float deltaTime{ std::chrono::duration<float>(currTime - lastTime).count() };
-		lastTime = currTime;
-		lag += deltaTime;
-		time.SetDeltaTime(deltaTime);
-
-		doContinue = input.ProcessInput();
-
-		invoker.Update();
-		sceneManager.Update();
-
-		while (lag >= frameTime)
-		{
-			sceneManager.FixedUpdate();
-			lag -= frameTime;
-		}
-
-		renderer.Render();
-	}
-
-	Cleanup();
 }

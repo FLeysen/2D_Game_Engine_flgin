@@ -30,10 +30,7 @@ bool flgin::InputManager::ProcessInput()
 	SDL_Event e{};
 	while (SDL_PollEvent(&e)) 
 	{
-		if (e.type == SDL_QUIT) 
-		{
-			return false;
-		}
+		if (e.type == SDL_QUIT) return false;
 		else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
 		{
 			for (InputComponent* player : m_pPlayers)

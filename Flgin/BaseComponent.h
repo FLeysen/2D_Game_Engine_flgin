@@ -12,6 +12,8 @@ namespace flgin
 		virtual void FixedUpdate() {}
 		GameObject* GetGameObject() { return m_pOwnerObject; };
 
+		BaseComponent(const BaseComponent&) = delete;
+		BaseComponent(BaseComponent&&) = delete;
 		BaseComponent& operator=(const BaseComponent&) = delete;
 		BaseComponent& operator=(BaseComponent&&) = delete;
 

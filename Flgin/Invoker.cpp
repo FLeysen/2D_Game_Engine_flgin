@@ -2,14 +2,14 @@
 #include "Time.h"
 #include "Invoker.h"
 
-flgin::FunctionHolderBase::FunctionHolderBase(float invocationTime, void* origin)
+flgin::InvokeHolderBase::InvokeHolderBase(float invocationTime, void* origin)
 	: m_ElapsedTime{ 0.0f }
 	, m_InvocationTime{ invocationTime }
 	, m_IsRepeating{ false }
 	, m_pOrigin{ origin }
 {}
 
-bool flgin::FunctionHolderBase::Update()
+bool flgin::InvokeHolderBase::Update()
 {
 	m_ElapsedTime += FTime.GetDeltaTime();
 	if (m_ElapsedTime > m_InvocationTime)
@@ -25,12 +25,12 @@ bool flgin::FunctionHolderBase::Update()
 	return false;
 }
 
-bool flgin::FunctionHolderBase::DoesOriginateFrom(void* owner)
+bool flgin::InvokeHolderBase::DoesOriginateFrom(void* owner)
 {
 	return owner == m_pOrigin;
 }
 
-void flgin::FunctionHolderBase::SetRepeating(bool repeating)
+void flgin::InvokeHolderBase::SetRepeating(bool repeating)
 {
 	m_IsRepeating = repeating;
 }
@@ -56,7 +56,7 @@ void flgin::Invoker::Update()
 	}
 }
 
-void flgin::Invoker::AddInvoke(FunctionHolderBase * pInvokeToAdd)
+void flgin::Invoker::AddInvoke(InvokeHolderBase * pInvokeToAdd)
 {
 	if (m_FunctionsHeld == MAX_INVOCATIONS)
 	{

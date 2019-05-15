@@ -7,7 +7,7 @@ namespace flgin
 	class RenderComponent : public BaseComponent
 	{
 	public:
-		RenderComponent(GameObject* const ownerObject, Scene& scene, unsigned int renderLayer = 2);
+		RenderComponent(GameObject* const ownerObject, Scene* pScene, unsigned int renderLayer = 2);
 		virtual ~RenderComponent() = default;
 		virtual void Render() const;
 		virtual void Update() override;

@@ -10,11 +10,11 @@
 
 namespace flgin
 {
-	class FunctionHolderBase
+	class InvokeHolderBase
 	{
 	public:
-		FunctionHolderBase(float invocationTime, void* origin);
-		virtual ~FunctionHolderBase() = default;
+		InvokeHolderBase(float invocationTime, void* origin);
+		virtual ~InvokeHolderBase() = default;
 		bool Update();
 		bool DoesOriginateFrom(void* owner);
 		void SetRepeating(bool repeating);
@@ -29,17 +29,17 @@ namespace flgin
 	};
 
 	template<typename returnType, typename... argList>
-	class FunctionHolder : public FunctionHolderBase
+	class InvokeHolder : public InvokeHolderBase
 	{
 	public:
 		//Origin is used to cancel invokes on a specific object, set this to nullptr if you only want it canceled by CancelAll
-		explicit FunctionHolder(void* origin, float invocationTime, std::function<returnType(argList...)> function, argList... arguments)
-			: FunctionHolderBase(invocationTime, origin), m_Function{ function }, m_Arguments{ arguments... } {}
+		explicit InvokeHolder(void* origin, float invocationTime, std::function<returnType(argList...)> function, argList... arguments)
+			: InvokeHolderBase(invocationTime, origin), m_Function{ function }, m_Arguments{ arguments... } {}
 
 	private:
-		void Invoke() 
+		returnType Invoke() 
 		{
-			CallFunction(m_Function, m_Arguments, std::index_sequence_for<argList...>());
+			return CallFunction(m_Function, m_Arguments, std::index_sequence_for<argList...>());
 		}
 		template<std::size_t... Is>
 		returnType CallFunction(std::function<returnType(argList...)>& func, const std::tuple<argList...>& tuple, std::index_sequence<Is...>)
@@ -62,12 +62,12 @@ namespace flgin
 		Invoker& operator=(Invoker&& other) = delete;
 
 		void Update();
-		void AddInvoke(FunctionHolderBase* pInvokeToAdd);
+		void AddInvoke(InvokeHolderBase* pInvokeToAdd);
 		void CancelOwnedInvokes(void* owner);
 		void CancelAllInvokes();
 
 	private:
-		FunctionHolderBase* m_pFunctionHolders[MAX_INVOCATIONS];
+		InvokeHolderBase* m_pFunctionHolders[MAX_INVOCATIONS];
 		int m_FunctionsHeld;
 	};
 }

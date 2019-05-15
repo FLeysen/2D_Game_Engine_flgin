@@ -4,31 +4,42 @@
 
 void flgin::SceneManager::Update()
 {
-	for(auto scene : m_spScenes)
-	{
-		scene->Update();
-	}
+	m_pCurrScene->Update();
 }
 
 void flgin::SceneManager::FixedUpdate()
 {
-	for (auto scene : m_spScenes)
-	{
-		scene->FixedUpdate();
-	}
+	m_pCurrScene->FixedUpdate();
 }
 
 void flgin::SceneManager::Render() const
 {
-	for (const auto scene : m_spScenes)
-	{
-		scene->Render();
-	}
+	m_pCurrScene->Render();
 }
 
-flgin::Scene& flgin::SceneManager::CreateScene(const std::string& name)
+void flgin::SceneManager::ActivateSceneByName(std::string&& name)
 {
-	const auto scene = std::shared_ptr<Scene>(new Scene(name));
-	m_spScenes.push_back(scene);
-	return *scene;
+	if (m_pScenes.find(name) == m_pScenes.cend())
+	{
+		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to activate nonexistant scene!" });
+		return;
+	}
+	m_pCurrScene = m_pScenes[name];
+}
+
+flgin::Scene* flgin::SceneManager::CreateScene(const std::string& name)
+{
+	if (m_pScenes.find(name) != m_pScenes.cend())
+	{
+		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to create scene, but a scene with the same name is already present!" });
+		return nullptr;
+	}
+	m_pScenes[name] = new Scene{ name };
+	return m_pScenes[name];
+}
+
+flgin::SceneManager::~SceneManager()
+{
+	for (std::pair<std::string, Scene*> scene : m_pScenes)
+		FLogger.SafeDelete(scene.second);
 }

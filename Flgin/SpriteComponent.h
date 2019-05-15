@@ -7,7 +7,7 @@ namespace flgin
 	class SpriteComponent final : public RenderComponent
 	{
 	public:
-		SpriteComponent(GameObject* const pOwnerObject, Scene& scene, unsigned int renderLayer = 2);
+		SpriteComponent(GameObject* const pOwnerObject, Scene* pScene, unsigned int renderLayer = 2);
 		~SpriteComponent() = default;
 		void Update() override;
 		void Render() const override;

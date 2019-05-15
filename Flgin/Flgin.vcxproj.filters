@@ -47,6 +47,9 @@
     <Filter Include="Localization">
       <UniqueIdentifier>{597aa6a9-4dfa-4fd2-932e-fca21ef308d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\State">
+      <UniqueIdentifier>{582198d9-d6ba-4425-977d-a79ca9bb0c58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioServices.h">
@@ -65,9 +68,6 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="ColliderComponent.h">
-      <Filter>Components\Filter</Filter>
-    </ClInclude>
-    <ClInclude Include="FreeMover.h">
       <Filter>Components\Filter</Filter>
     </ClInclude>
     <ClInclude Include="GridMovementComponent.h">
@@ -166,6 +166,18 @@
     <ClInclude Include="csv.h">
       <Filter>Localization</Filter>
     </ClInclude>
+    <ClInclude Include="FreeMover.h">
+      <Filter>Components\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionHolder.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexStateComponent.h">
+      <Filter>Components\State</Filter>
+    </ClInclude>
+    <ClInclude Include="StateComponent.h">
+      <Filter>Components\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ColliderComponent.cpp">
@@ -257,6 +269,12 @@
     </ClCompile>
     <ClCompile Include="TextLocalizer.cpp">
       <Filter>Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="ComplexStateComponent.cpp">
+      <Filter>Components\State</Filter>
+    </ClCompile>
+    <ClCompile Include="StateComponent.cpp">
+      <Filter>Components\State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

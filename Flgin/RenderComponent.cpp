@@ -9,7 +9,7 @@
 #include "Scene.h"
 #include "SDL.h"
 
-flgin::RenderComponent::RenderComponent(GameObject* const ownerObject, Scene& scene, unsigned int renderLayer)
+flgin::RenderComponent::RenderComponent(GameObject* const ownerObject, Scene* pScene, unsigned int renderLayer)
 	: BaseComponent(ownerObject)
 	, m_pTexture{ nullptr }
 	, m_XOffset{ 0.0f }
@@ -17,7 +17,7 @@ flgin::RenderComponent::RenderComponent(GameObject* const ownerObject, Scene& sc
 	, m_Height{}
 	, m_Width{}
 {
-	scene.AddRenderComponent(this, renderLayer);
+	pScene->AddRenderComponent(this, renderLayer);
 }
 
 void flgin::RenderComponent::Render() const

@@ -9,7 +9,7 @@ namespace flgin
 	class GridRenderer : public BaseComponent
 	{
 	public:
-		GridRenderer(GameObject* pOwnerObject, Scene& scene, MovementGrid* pGrid);
+		GridRenderer(GameObject* pOwnerObject, Scene* pScene, MovementGrid* pGrid);
 		~GridRenderer();
 		void Update() override;
 

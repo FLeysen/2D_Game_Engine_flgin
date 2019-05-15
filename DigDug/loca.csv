@@ -4,5 +4,6 @@ texBg;background.jpg
 texGameBg;backgroundSprite.png
 texLogo;logo.png
 texPlayer;ActualSprite.png
+texAngryPlayer;AngrySprite.png
 fontDefault;Lingua.otf
 stringAssignment;Programming 4 Assignment

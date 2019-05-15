@@ -2,22 +2,22 @@
 #include <string>
 #include <unordered_map>
 #include "Singleton.h"
-#define FTextLocalizer flgin::TextLocalizer::GetInstance()
+#define FLocalizer flgin::Localizer::GetInstance()
 
 namespace flgin
 {
-	class TextLocalizer final : public Singleton<TextLocalizer>
+	class Localizer final : public Singleton<Localizer>
 	{
 	public:
 		void Load(std::string&& filename, std::string&& locale);
 		const std::string& Get(std::string&& key);
 		
-		TextLocalizer() = default;
-		~TextLocalizer() = default;
-		TextLocalizer(TextLocalizer&&) = delete;
-		TextLocalizer(const TextLocalizer&) = delete;
-		TextLocalizer& operator=(TextLocalizer&&) = delete;
-		TextLocalizer& operator=(const TextLocalizer&) = delete;
+		Localizer() = default;
+		~Localizer() = default;
+		Localizer(Localizer&&) = delete;
+		Localizer(const Localizer&) = delete;
+		Localizer& operator=(Localizer&&) = delete;
+		Localizer& operator=(const Localizer&) = delete;
 
 	private:
 		std::unordered_map<std::string, std::string> m_Localizations;

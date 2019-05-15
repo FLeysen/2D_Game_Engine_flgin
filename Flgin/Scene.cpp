@@ -3,10 +3,10 @@
 #include "GameObject.h"
 #include "RenderComponent.h"
 
-unsigned int flgin::Scene::idCounter{ 0 };
-
 flgin::Scene::Scene(const std::string& name) 
-	: m_Name(name) 
+	: m_Name{ name }
+	, m_pGameObjects{}
+	, m_pRenderComponents{}
 {}
 
 flgin::Scene::~Scene()

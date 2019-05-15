@@ -7,8 +7,8 @@
 #pragma warning(pop)
 #include "Invoker.h"
 
-flgin::SpriteComponent::SpriteComponent(GameObject* const pOwnerObject, Scene& scene, unsigned int renderLayer)
-	: RenderComponent(pOwnerObject, scene, renderLayer)
+flgin::SpriteComponent::SpriteComponent(GameObject* const pOwnerObject, Scene* pScene, unsigned int renderLayer)
+	: RenderComponent(pOwnerObject, pScene, renderLayer)
 {}
 
 void flgin::SpriteComponent::Update()
@@ -55,7 +55,7 @@ void flgin::SpriteComponent::SetSpriteInfo(unsigned int columns, unsigned int ro
 	invoker.CancelOwnedInvokes(this);
 
 	std::function<void()> calculateFrame{ std::bind(&flgin::SpriteComponent::IncrementCurrentFrame, this) };
-	FunctionHolderBase* fnHolder{ new FunctionHolder<void>{this, frameTime, calculateFrame} };
+	InvokeHolderBase* fnHolder{ new InvokeHolder<void>{this, frameTime, calculateFrame} };
 	fnHolder->SetRepeating(true);
 	invoker.AddInvoke(fnHolder);
 }
