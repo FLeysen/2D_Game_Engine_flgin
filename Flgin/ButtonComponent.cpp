@@ -1,5 +1,6 @@
 #include "FlginPCH.h"
 #include "ButtonComponent.h"
+#include "FunctionHolder.h"
 
 flgin::ButtonComponent::ButtonComponent(GameObject* pOwnerObject, FunctionHolderBase* pFunc)
 	: BaseComponent(pOwnerObject)
@@ -8,5 +9,5 @@ flgin::ButtonComponent::ButtonComponent(GameObject* pOwnerObject, FunctionHolder
 
 flgin::ButtonComponent::~ButtonComponent()
 {
-
+	FLogger.SafeDelete(m_pFunc);
 }

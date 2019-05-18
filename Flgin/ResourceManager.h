@@ -1,17 +1,17 @@
 #pragma once
 #include "Singleton.h"
 #include <unordered_map>
+#include "Font.h"
+#include "Texture2D.h"
 #define FResourceManager flgin::ResourceManager::GetInstance()
 
 namespace flgin
 {
-	class Texture2D;
-	class Font;
 	class ResourceManager final : public Singleton<ResourceManager>
 	{
 	public:
 		ResourceManager() = default;
-		~ResourceManager();
+		~ResourceManager() = default;
 
 		void Init(const std::string& data);
 
@@ -20,7 +20,7 @@ namespace flgin
 
 	private:
 		std::string m_DataPath;
-		std::unordered_map<std::string, Texture2D*> m_pTextures;
-		std::unordered_multimap<std::string, Font*> m_pFonts;
+		std::unordered_map<std::string, Texture2D> m_Textures;
+		std::unordered_multimap<std::string, Font> m_Fonts;
 	};
 }

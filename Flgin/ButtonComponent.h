@@ -5,6 +5,7 @@ namespace flgin
 {
 	class FunctionHolderBase;
 	class RenderComponent;
+	class Texture2D;
 
 	class ButtonComponent final : public BaseComponent
 	{
@@ -15,5 +16,7 @@ namespace flgin
 
 	private:
 		FunctionHolderBase* m_pFunc;
+		Texture2D* m_pDefaultTex;
+
 	};
 }
