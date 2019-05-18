@@ -2,6 +2,7 @@
 #include <Xinput.h>
 #include <vector>
 #include "Singleton.h"
+#include "InputComponent.h"
 #define FInputManager flgin::InputManager::GetInstance()
 
 namespace flgin
@@ -10,7 +11,6 @@ namespace flgin
 	class PathfinderComponent;
 
 	class Command;
-	class InputComponent;
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
@@ -18,8 +18,9 @@ namespace flgin
 		~InputManager();
 		bool ProcessInput();
 		void AddCommand(Command* const command);
-		void AddPlayer(InputComponent* player);
-		void RemovePlayer(InputComponent* player);
+		void AddPlayer();
+		void RemovePlayer();
+		InputComponent* GetPlayer(unsigned int idx);
 		
 		template <class T>
 		void RemoveCommand()
@@ -59,7 +60,7 @@ namespace flgin
 
 	private:
 		std::vector<Command*> m_pCommands;
-		std::vector<InputComponent*> m_pPlayers;
+		std::vector<InputComponent> m_pPlayers;
 
 		//TODO: REMOVE TEST CODE
 		PathfinderComponent* m_pPathFinder;

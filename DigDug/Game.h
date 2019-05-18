@@ -9,6 +9,8 @@ namespace DigDug
 		~Game();
 		void Run();
 		void InitTestScene();
+		void InitMenuScene();
+		void InitPlayers();
 
 	private:
 		flgin::Flgin m_Engine;

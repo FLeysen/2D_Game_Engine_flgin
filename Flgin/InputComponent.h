@@ -1,6 +1,6 @@
 #pragma once
 #include "BaseComponent.h"
-#include <map>
+#include <unordered_map>
 namespace flgin
 {
 	class Command;
@@ -8,7 +8,10 @@ namespace flgin
 	{
 	public:
 		InputComponent(GameObject* const ownerObject);
-		~InputComponent();
+		~InputComponent() = default;
+		InputComponent(InputComponent&& other) : BaseComponent(other.m_pOwnerObject), m_KeyboardMappings{ other.m_KeyboardMappings }, m_ControllerMappings{ other.m_ControllerMappings } { }
+
+		bool ShouldDelete() override { return false; }
 		void AddControllerMapping(UINT8 key, Command* command);
 		void AddKeyboardMapping(int key, Command* command);
 		void Update() override;
@@ -16,7 +19,7 @@ namespace flgin
 		bool ProcessControllerKey(UINT8 key, bool isKeyUp = false);
 
 	private:
-		std::map<int, Command*> m_KeyboardMappings;
-		std::map<UINT8, Command*> m_ControllerMappings;
+		std::unordered_multimap<int, Command*> m_KeyboardMappings;
+		std::unordered_multimap<UINT8, Command*> m_ControllerMappings;
 	};
 }

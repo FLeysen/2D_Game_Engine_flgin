@@ -50,6 +50,9 @@
     <Filter Include="Components\State">
       <UniqueIdentifier>{582198d9-d6ba-4425-977d-a79ca9bb0c58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Menuing">
+      <UniqueIdentifier>{a0f080f1-8ca0-474d-a776-0f4a8fe0ecd7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioServices.h">
@@ -179,7 +182,10 @@
       <Filter>Prefabs</Filter>
     </ClInclude>
     <ClInclude Include="ButtonComponent.h">
-      <Filter>Components\Input</Filter>
+      <Filter>Components\Menuing</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuComponent.h">
+      <Filter>Components\Menuing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -280,7 +286,10 @@
       <Filter>Prefabs</Filter>
     </ClCompile>
     <ClCompile Include="ButtonComponent.cpp">
-      <Filter>Components\Input</Filter>
+      <Filter>Components\Menuing</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuComponent.cpp">
+      <Filter>Components\Menuing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

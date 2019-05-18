@@ -2,7 +2,6 @@
 #include "InputManager.h"
 #include "Command.h"
 #include "SDL.h"
-#include "InputComponent.h"
 
 //TODO: REMOVE TEST CODE:
 #include "PathfinderComponent.h"
@@ -33,21 +32,17 @@ bool flgin::InputManager::ProcessInput()
 		if (e.type == SDL_QUIT) return false;
 		else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
 		{
-			for (InputComponent* player : m_pPlayers)
+			for (InputComponent& player : m_pPlayers)
 			{
-				if (player)
-				{
-					if (!player->ProcessKeyboardKey(e.key.keysym.sym, e.type == SDL_KEYUP))
-						return false;
-				}
+				if (!player.ProcessKeyboardKey(e.key.keysym.sym, e.type == SDL_KEYUP))
+					return false;
 			}
 		}
 		else if (e.type == SDL_CONTROLLERBUTTONDOWN || e.type == SDL_CONTROLLERBUTTONUP)
 		{
 			SDL_JoystickID playerID{ e.cbutton.which };
 			if (playerID >= static_cast<SDL_JoystickID>(m_pPlayers.size())) continue;
-			if (!m_pPlayers[playerID]) continue;
-			if (!m_pPlayers[playerID]->ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP)) return false;
+			if (!m_pPlayers[playerID].ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP)) return false;
 		}
 		//TODO: REMOVE TEST CODE
 		//else if (e.type == SDL_MOUSEBUTTONUP)
@@ -63,17 +58,19 @@ void flgin::InputManager::AddCommand(Command* const command)
 	m_pCommands.push_back(command);
 }
 
-void flgin::InputManager::AddPlayer(InputComponent* player)
+void flgin::InputManager::AddPlayer()
 {
-	m_pPlayers.push_back(player);
+	m_pPlayers.push_back(InputComponent{ nullptr });
 }
 
-void flgin::InputManager::RemovePlayer(InputComponent* player)
+void flgin::InputManager::RemovePlayer()
 {
-	for (InputComponent* pl : m_pPlayers)
-	{
-		if (pl == player)
-			FLogger.SafeDelete(pl);
-	}
+	m_pPlayers.pop_back();
+}
+
+flgin::InputComponent* flgin::InputManager::GetPlayer(unsigned int idx)
+{
+	if (idx >= m_pPlayers.size()) return nullptr;
+	return &(m_pPlayers[idx]);
 }
 

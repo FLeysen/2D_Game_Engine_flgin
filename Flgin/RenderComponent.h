@@ -18,6 +18,8 @@ namespace flgin
 		void SetPositionOffset(float x, float y);
 		void SetDimensions(float width, float height);
 		void ResetDimensions();
+		float GetWidth() const { return m_Width; }
+		float GetHeight() const { return m_Height; }
 
 		RenderComponent();
 		RenderComponent(GameObject* const ownerObject);
