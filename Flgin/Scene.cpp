@@ -1,12 +1,14 @@
 #include "FlginPCH.h"
 #include "Scene.h"
 #include "GameObject.h"
-#include "RenderComponent.h"
 
 flgin::Scene::Scene(const std::string& name) 
 	: m_Name{ name }
 	, m_pGameObjects{}
-	, m_pRenderComponents{}
+	, m_RenderComponents{}
+	, m_SpriteComponents{}
+	, m_RenderCompCount{}
+	, m_SpriteCompCount{}
 {}
 
 flgin::Scene::~Scene()
@@ -21,38 +23,58 @@ void flgin::Scene::AddGameObject(GameObject* const object)
 	m_pGameObjects.push_back(object);
 }
 
-void flgin::Scene::AddRenderComponent(RenderComponent* const renderComponent, unsigned int layer)
+flgin::RenderComponent* flgin::Scene::CreateRenderComponent(GameObject* const ownerObject, unsigned int layer)
 {
 	if (layer > MAX_RENDERLAYERS)
 	{
-		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to add render component to nonexistant layer: " + layer, renderComponent });
-		return;
+		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to add render component to nonexistant layer: " + layer });
+		return nullptr;
 	}
-	m_pRenderComponents[layer].push_back(renderComponent);
+	if (m_RenderCompCount[layer] == MAX_RENDERERS_PER_LAYER)
+	{
+		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to add render component to full layer: " + layer });
+		return nullptr;
+	}
+	
+	return &(m_RenderComponents[layer][m_RenderCompCount[layer]++] = RenderComponent{ ownerObject });
+}
+
+flgin::SpriteComponent* flgin::Scene::CreateSpriteComponent(GameObject* const ownerObject, unsigned int layer)
+{
+	if (layer > MAX_RENDERLAYERS)
+	{
+		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to add sprite component to nonexistant layer: " + layer });
+		return nullptr;
+	}
+	if (m_SpriteCompCount[layer] == MAX_RENDERERS_PER_LAYER)
+	{
+		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to add sprite component to full layer: " + layer });
+		return nullptr;
+	}
+
+	return &(m_SpriteComponents[layer][m_SpriteCompCount[layer]++] = SpriteComponent{ ownerObject });
 }
 
 void flgin::Scene::Update()
 {
-	for(GameObject* const gameObject : m_pGameObjects)
+	for (GameObject* const gameObject : m_pGameObjects)
 		gameObject->Update();
 }
 
 void flgin::Scene::FixedUpdate()
 {
 	for (GameObject* const gameObject : m_pGameObjects)
-	{
 		gameObject->FixedUpdate();
-	}
 }
 
 void flgin::Scene::Render() const
 {
 	for (unsigned int i{}; i < MAX_RENDERLAYERS; ++i)
 	{
-		for (RenderComponent* const renderComponent : m_pRenderComponents[i])
-		{
-			renderComponent->Render();
-		}
+		for (unsigned int j{}; j < m_RenderCompCount[i]; ++j)
+			m_RenderComponents[i][j].Render();
+		for (unsigned int j{}; j < m_SpriteCompCount[i]; ++j)
+			m_SpriteComponents[i][j].Render();
 	}
 }
 

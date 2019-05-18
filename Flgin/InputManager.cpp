@@ -50,10 +50,10 @@ bool flgin::InputManager::ProcessInput()
 			if (!m_pPlayers[playerID]->ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP)) return false;
 		}
 		//TODO: REMOVE TEST CODE
-		else if (e.type == SDL_MOUSEBUTTONUP)
-		{
-			m_pPathFinder->SetTarget(float(e.button.x), float(e.button.y));
-		}
+		//else if (e.type == SDL_MOUSEBUTTONUP)
+		//{
+		//	m_pPathFinder->SetTarget(float(e.button.x), float(e.button.y));
+		//}
 	}
 	return true;	
 }

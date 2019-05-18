@@ -17,6 +17,7 @@ namespace flgin
 		TextComponent& operator=(TextComponent&&) = delete;
 
 	private:
+		bool m_WasTextChanged;
 		std::string m_Text;
 		Font* m_pFont;
 		Texture2D* m_pTexture;

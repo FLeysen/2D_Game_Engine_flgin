@@ -7,10 +7,6 @@
 #pragma warning(pop)
 #include "Invoker.h"
 
-flgin::SpriteComponent::SpriteComponent(GameObject* const pOwnerObject, Scene* pScene, unsigned int renderLayer)
-	: RenderComponent(pOwnerObject, pScene, renderLayer)
-{}
-
 void flgin::SpriteComponent::Update()
 {}
 

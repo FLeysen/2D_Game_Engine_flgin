@@ -10,6 +10,7 @@ namespace flgin
 
 		virtual void Update() = 0;
 		virtual void FixedUpdate() {}
+		virtual bool ShouldDelete() { return true; }
 		GameObject* GetGameObject() { return m_pOwnerObject; };
 
 		BaseComponent(const BaseComponent&) = delete;

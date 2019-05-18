@@ -172,11 +172,14 @@
     <ClInclude Include="FunctionHolder.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="ComplexStateComponent.h">
-      <Filter>Components\State</Filter>
-    </ClInclude>
     <ClInclude Include="StateComponent.h">
       <Filter>Components\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonComponent.h">
+      <Filter>Components\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -270,11 +273,14 @@
     <ClCompile Include="TextLocalizer.cpp">
       <Filter>Localization</Filter>
     </ClCompile>
-    <ClCompile Include="ComplexStateComponent.cpp">
-      <Filter>Components\State</Filter>
-    </ClCompile>
     <ClCompile Include="StateComponent.cpp">
       <Filter>Components\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonComponent.cpp">
+      <Filter>Components\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

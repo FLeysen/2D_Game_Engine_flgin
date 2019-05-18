@@ -9,16 +9,23 @@
 #include "Scene.h"
 #include "SDL.h"
 
-flgin::RenderComponent::RenderComponent(GameObject* const ownerObject, Scene* pScene, unsigned int renderLayer)
+flgin::RenderComponent::RenderComponent()
+	: BaseComponent(nullptr)
+	, m_pTexture{ nullptr }
+	, m_XOffset{ 0.0f }
+	, m_YOffset{ 0.0f }
+	, m_Height{}
+	, m_Width{}
+{}
+
+flgin::RenderComponent::RenderComponent(GameObject* const ownerObject)
 	: BaseComponent(ownerObject)
 	, m_pTexture{ nullptr }
 	, m_XOffset{ 0.0f }
 	, m_YOffset{ 0.0f }
 	, m_Height{}
 	, m_Width{}
-{
-	pScene->AddRenderComponent(this, renderLayer);
-}
+{}
 
 void flgin::RenderComponent::Render() const
 {

@@ -6,11 +6,11 @@ namespace flgin
 	class Scene;
 	class RenderComponent;
 	class MovementGrid;
-	class GridRenderer : public BaseComponent
+	class GridRenderer final : public BaseComponent
 	{
 	public:
 		GridRenderer(GameObject* pOwnerObject, Scene* pScene, MovementGrid* pGrid);
-		~GridRenderer();
+		~GridRenderer() = default;
 		void Update() override;
 
 	private:

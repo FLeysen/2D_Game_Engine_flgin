@@ -19,7 +19,7 @@ flgin::GameObject::~GameObject()
 {
 	Logger& logger{ FLogger };
 	for (BaseComponent* component : m_pComponents)
-		 logger.SafeDelete(component);
+		 if(component->ShouldDelete()) logger.SafeDelete(component);
 };
 
 void flgin::GameObject::Update()

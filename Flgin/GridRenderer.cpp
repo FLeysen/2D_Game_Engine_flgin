@@ -4,6 +4,7 @@
 #include "RenderComponent.h"
 #include "ResourceManager.h"
 #include "TextLocalizer.h"
+#include "Scene.h"
 
 flgin::GridRenderer::GridRenderer(GameObject* pOwnerObject, Scene* pScene, MovementGrid* pGrid)
 	: BaseComponent(pOwnerObject)
@@ -15,17 +16,10 @@ flgin::GridRenderer::GridRenderer(GameObject* pOwnerObject, Scene* pScene, Movem
 	negativeOffset += pGrid->GetNodeSize() / 2;
 	for (size_t i{}, size{ m_pRenderers.size() }; i < size; ++i)
 	{
-		m_pRenderers[i] = new RenderComponent{ pOwnerObject, pScene };
+		m_pRenderers[i] = pScene->CreateRenderComponent(pOwnerObject);
 		m_pRenderers[i]->SetTexture(pTex);
 		m_pRenderers[i]->SetPositionOffset(pGridNodes[i].GetPosition().x - negativeOffset.x, pGridNodes[i].GetPosition().y - negativeOffset.y);
 	}
-}
-
-flgin::GridRenderer::~GridRenderer()
-{
-	Logger& logger{ FLogger };
-	for (RenderComponent* renderComponent : m_pRenderers)
-		logger.SafeDelete(renderComponent);
 }
 
 void flgin::GridRenderer::Update()

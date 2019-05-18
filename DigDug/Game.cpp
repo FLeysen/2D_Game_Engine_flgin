@@ -33,7 +33,10 @@ void DigDug::Game::Run()
 {
 	FLocalizer.Load("loca.csv", "en-uk");
 	m_Engine.Initialize();
+
 	InitTestScene();
+	FSceneManager.ActivateSceneByName("DigDug");
+
 	if (!FSceneManager.IsSceneSet()) return;
 	m_Engine.Run();
 }
@@ -42,30 +45,29 @@ void DigDug::Game::InitTestScene()
 {
 	using namespace flgin;
 	Scene* scene{ FSceneManager.CreateScene("DigDug") };
-	FSceneManager.ActivateSceneByName("DigDug");
 
 	GameObject* go{ new flgin::GameObject{} };
-	RenderComponent* renderComponent{ new RenderComponent{ go, scene, 0 } };
+	RenderComponent* renderComponent{ scene->CreateRenderComponent(go, 0) };
 	renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texBg")));
 	go->AddComponent(renderComponent);
 	scene->AddGameObject(go);
 
 	go = new GameObject{};
-	renderComponent = new RenderComponent{ go, scene, 0 };
+	renderComponent = scene->CreateRenderComponent(go, 0);
 	renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texLogo")));
 	go->AddComponent(renderComponent);
 	go->SetPosition(216, 180);
 	scene->AddGameObject(go);
 
 	go = new GameObject{};
-	renderComponent = new RenderComponent{ go, scene, 3 };
+	renderComponent = scene->CreateRenderComponent(go, 3);
 	go->AddComponent(renderComponent);
 	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 0,0 }, FLocalizer.Get("stringGameName") });
 	go->SetPosition(80.f, 20.f);
 	scene->AddGameObject(go);
-	
+
 	go = new GameObject{};
-	renderComponent = new RenderComponent{ go, scene, 4 };
+	renderComponent = scene->CreateRenderComponent(go, 4);
 	go->AddComponent(renderComponent);
 	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 20, {255, 255, 0} });
 	go->AddComponent(new FPSComponent{ go, .5f });
@@ -102,7 +104,7 @@ void DigDug::Game::InitTestScene()
 	inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
 	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
 	
-	SpriteComponent* spriteComponent{ new SpriteComponent{ go, scene, 2 } };
+	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 2) };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
 	spriteComponent->SetPositionOffset(-15.f, -15.f);
 	spriteComponent->SetSpriteInfo(4, 1, 30.0f, 30.0f, 1.0f);
