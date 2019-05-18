@@ -12,7 +12,7 @@ namespace flgin
 		virtual void Render() const;
 		virtual void Update() override;
 
-		void SetTexture(Texture2D const* newTexture);
+		void SetTexture(Texture2D const* newTexture, bool maintainDimensions = false);
 		void SetPositionOffset(float x, float y);
 		void SetDimensions(float width, float height);
 		void ResetDimensions();

@@ -34,9 +34,7 @@ void flgin::Scene::AddRenderComponent(RenderComponent* const renderComponent, un
 void flgin::Scene::Update()
 {
 	for(GameObject* const gameObject : m_pGameObjects)
-	{
 		gameObject->Update();
-	}
 }
 
 void flgin::Scene::FixedUpdate()

@@ -16,6 +16,9 @@
 #include "PlayerCommands.h"
 #include "MovementCommands.h"
 #include "SpriteComponent.h"
+#include "DigDugStates.h"
+#include "Player.h"
+#include "DigDugCommands.h"
 
 DigDug::Game::Game()
 	: m_Engine{}
@@ -57,10 +60,10 @@ void DigDug::Game::InitTestScene()
 	go = new GameObject{};
 	renderComponent = new RenderComponent{ go, scene, 3 };
 	go->AddComponent(renderComponent);
-	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 0,0 }, FLocalizer.Get("stringAssignment") });
+	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 0,0 }, FLocalizer.Get("stringGameName") });
 	go->SetPosition(80.f, 20.f);
 	scene->AddGameObject(go);
-
+	
 	go = new GameObject{};
 	renderComponent = new RenderComponent{ go, scene, 4 };
 	go->AddComponent(renderComponent);
@@ -74,7 +77,7 @@ void DigDug::Game::InitTestScene()
 	go->AddComponent(grid);
 	go->AddComponent(new GridRenderer{ go, scene, grid });
 	scene->AddGameObject(go);
-
+	
 	go = new GameObject{};
 	go->SetPosition(15.0f, 15.0f);
 	InputComponent* inputComponent{ new InputComponent{ go } };
@@ -84,32 +87,43 @@ void DigDug::Game::InitTestScene()
 	DirectionalGridMove* gridMoveLeft{ new DirectionalGridMove{ gridMover, true, false } };
 	DirectionalGridMove* gridMoveDown{ new DirectionalGridMove{ gridMover, false, true } };
 	DirectionalGridMove* gridMoveUp{ new DirectionalGridMove{ gridMover, false, false } };
-
+	
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
-
+	
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, gridMoveRight);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_LEFT, gridMoveLeft);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_DOWN, gridMoveDown);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_UP, gridMoveUp);
-
+	
 	inputComponent->AddKeyboardMapping(SDLK_RIGHT, gridMoveRight);
 	inputComponent->AddKeyboardMapping(SDLK_LEFT, gridMoveLeft);
 	inputComponent->AddKeyboardMapping(SDLK_DOWN, gridMoveDown);
 	inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
 	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
-
+	
 	SpriteComponent* spriteComponent{ new SpriteComponent{ go, scene, 2 } };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
 	spriteComponent->SetPositionOffset(-15.f, -15.f);
 	spriteComponent->SetSpriteInfo(4, 1, 30.0f, 30.0f, 1.0f);
 	spriteComponent->SetDimensions(30.0f, 30.0f);
-
+	
+	Player* playerComponent{ new Player{ go } };
+	ToggleAngryCommand* angryToggleCommand{ new ToggleAngryCommand{playerComponent} };
+	inputComponent->AddKeyboardMapping(SDLK_i, angryToggleCommand);
+	
+	StateComponent* stateComponent{ new StateComponent{ go } };
+	DigDugState::SetAttachedSprite(spriteComponent);
+	DigDugState::SetPlayer(playerComponent);
+	stateComponent->SetCurrentState(DigDugState::GetDefaultState());
+	
 	go->AddComponent(spriteComponent);
 	go->AddComponent(gridMover);
 	go->AddComponent(inputComponent);
+	go->AddComponent(playerComponent);
+	go->AddComponent(stateComponent);
 	scene->AddGameObject(go);
-
+	
 	go = new GameObject{};
 	inputComponent = new InputComponent{ go };
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_B, quitCommand);

@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <algorithm>
 
 #include "Transform.h"
 #include "Texture2D.h"
@@ -23,17 +24,23 @@ namespace flgin
 		void RemoveComponentsOfType()
 		{
 			const type_info& typeInfo{ typeid(T) };
-			for (flgin::BaseComponent* const component : m_pComponents)
-			{
-				if (typeid(*component) == typeInfo)
-					FLogger.SafeDelete(component);
-			}
+			auto it{ std::remove_if(m_pComponents.begin(), m_pComponents.end(), 
+					[&typeInfo](BaseComponent* component)
+					{
+						if (typeid(*component) == typeInfo)
+						{
+							FLogger.SafeDelete(component);
+							return true;
+						}
+						return false;
+					}) };
+			m_pComponents.erase(it, m_pComponents.end());
 		}
 		template <class T> 
 		T* GetComponent()
 		{
 			const type_info& typeInfo{ typeid(T) };
-			for (flgin::BaseComponent* const component : m_pComponents)
+			for (BaseComponent* const component : m_pComponents)
 			{
 				if (typeid(*component) == typeInfo)					
 					return static_cast<T*>(component);

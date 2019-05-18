@@ -1,9 +1,10 @@
-key;en-uk
-dataPath;../Data/
-texBg;background.jpg
-texGameBg;backgroundSprite.png
-texLogo;logo.png
-texPlayer;ActualSprite.png
-texAngryPlayer;AngrySprite.png
-fontDefault;Lingua.otf
-stringAssignment;Programming 4 Assignment
+key;en-uk;nl-be
+dataPath;../Data/;../Data/
+texBg;background.jpg;background.jpg
+texGameBg;backgroundSprite.png;backgroundsprite.png
+texLogo;logo.png;logo.png
+texPlayer;ActualSprite.png;AngrySprite.png
+texAngryPlayer;AngrySprite.png;ActualSprite.png
+fontDefault;Lingua.otf;Lingua.otf
+stringAssignment;Programming 4 Assignment;Programmeren 4 Opdracht
+stringGameName;DigDug;GraafGraafde

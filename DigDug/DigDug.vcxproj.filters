@@ -13,6 +13,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="States">
+      <UniqueIdentifier>{2e1b718e-43c2-444f-8e49-3919127e9435}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Commands">
+      <UniqueIdentifier>{056d2820-0c23-43a4-a01f-6894615531d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -20,6 +26,15 @@
     </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Game Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugStates.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugCommands.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +46,15 @@
     </ClCompile>
     <ClCompile Include="DigDug.cpp">
       <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugStates.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugCommands.cpp">
+      <Filter>Commands</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

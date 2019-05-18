@@ -11,10 +11,10 @@ namespace flgin
 		virtual ~State() = default;
 		virtual void Enter() = 0;
 		virtual void Exit() = 0;
-		virtual bool Update(GameObject* pOrigin) = 0;
+		virtual bool Update() = 0;
 		State* GetTargetState() const { return m_pTargetState; }
 
-	private:
+	protected:
 		State* m_pTargetState;
 	};
 
@@ -23,7 +23,7 @@ namespace flgin
 	public:
 		StateComponent(GameObject* pOwnerObject);
 		void Update();
-		void SetCurrentState(State* pNewState) { m_pCurrentState = pNewState; }
+		void SetCurrentState(State* pNewState);
 
 		~StateComponent() = default;
 		StateComponent(StateComponent&&) = delete;

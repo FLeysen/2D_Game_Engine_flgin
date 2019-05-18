@@ -34,10 +34,10 @@ void flgin::RenderComponent::Render() const
 void flgin::RenderComponent::Update()
 {}
 
-void flgin::RenderComponent::SetTexture(flgin::Texture2D const* newTexture)
+void flgin::RenderComponent::SetTexture(flgin::Texture2D const* newTexture, bool maintainDimensions)
 {
 	m_pTexture = newTexture;
-	ResetDimensions();
+	if(!maintainDimensions) ResetDimensions();
 }
 
 void flgin::RenderComponent::SetPositionOffset(float x, float y)
