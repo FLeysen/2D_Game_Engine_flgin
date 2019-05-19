@@ -36,7 +36,7 @@ flgin::RenderComponent* flgin::Scene::CreateRenderComponent(GameObject* const ow
 		return nullptr;
 	}
 	
-	return &(m_RenderComponents[layer][m_RenderCompCount[layer]++] = RenderComponent{ ownerObject });
+	return &(m_RenderComponents[layer * MAX_RENDERERS_PER_LAYER + m_RenderCompCount[layer]++] = RenderComponent{ ownerObject });
 }
 
 flgin::SpriteComponent* flgin::Scene::CreateSpriteComponent(GameObject* const ownerObject, unsigned int layer)
@@ -52,7 +52,7 @@ flgin::SpriteComponent* flgin::Scene::CreateSpriteComponent(GameObject* const ow
 		return nullptr;
 	}
 
-	return &(m_SpriteComponents[layer][m_SpriteCompCount[layer]++] = SpriteComponent{ ownerObject });
+	return &(m_SpriteComponents[layer * MAX_RENDERERS_PER_LAYER + m_SpriteCompCount[layer]++] = SpriteComponent{ ownerObject });
 }
 
 void flgin::Scene::Update()
@@ -72,9 +72,9 @@ void flgin::Scene::Render() const
 	for (unsigned int i{}; i < MAX_RENDERLAYERS; ++i)
 	{
 		for (unsigned int j{}; j < m_RenderCompCount[i]; ++j)
-			m_RenderComponents[i][j].Render();
+			m_RenderComponents[i * MAX_RENDERERS_PER_LAYER + j].Render();
 		for (unsigned int j{}; j < m_SpriteCompCount[i]; ++j)
-			m_SpriteComponents[i][j].Render();
+			m_SpriteComponents[i * MAX_RENDERERS_PER_LAYER + j].Render();
 	}
 }
 
