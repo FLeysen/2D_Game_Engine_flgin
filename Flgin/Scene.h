@@ -20,6 +20,17 @@ namespace flgin
 		void Update();
 		void Render() const;
 
+		template <class T>
+		T* FindComponentOfType()
+		{
+			for (GameObject* const go : m_pGameObjects)
+			{
+				T* component{ go->GetComponent<T>() };
+				if (component) return component;
+			}
+			return nullptr;
+		}
+
 		~Scene();
 		Scene(const Scene& other) = delete;
 		Scene(Scene&& other) = delete;

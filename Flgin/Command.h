@@ -7,6 +7,6 @@ namespace flgin
 	public:
 		Command();
 		virtual ~Command() = default;
-		virtual bool Execute(GameObject& attachedObject, bool isInverseAction = false) = 0;
+		virtual void Execute(GameObject& attachedObject, bool isInverseAction = false) = 0;
 	};
 }

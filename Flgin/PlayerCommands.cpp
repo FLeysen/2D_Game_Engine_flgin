@@ -2,13 +2,14 @@
 #include "PlayerCommands.h"
 #include "GameObject.h"
 #include <Xinput.h>
+#include "InputManager.h"
 
-bool flgin::QuitCommand::Execute(GameObject&, bool)
+void flgin::QuitCommand::Execute(GameObject&, bool)
 {
-	return false;
+	FInputManager.Quit();
 }
 
-bool flgin::RumbleCommand::Execute(GameObject&, bool isInverseAction)
+void flgin::RumbleCommand::Execute(GameObject&, bool isInverseAction)
 {
 	if (!isInverseAction)
 	{
@@ -24,5 +25,4 @@ bool flgin::RumbleCommand::Execute(GameObject&, bool isInverseAction)
 		vib.wRightMotorSpeed = rumbleValue;
 		XInputSetState(m_UserID, &vib);
 	}
-	return true;
 }

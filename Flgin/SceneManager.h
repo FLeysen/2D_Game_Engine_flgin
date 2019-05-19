@@ -17,6 +17,7 @@ namespace flgin
 		void Update();
 		void Render() const;
 		void ActivateSceneByName(std::string&& name);
+		Scene* GetCurrentScene() const { return m_pCurrScene; }
 
 	private:
 		Scene* m_pCurrScene{ nullptr };

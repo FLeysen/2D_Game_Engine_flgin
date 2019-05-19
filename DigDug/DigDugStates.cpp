@@ -5,11 +5,6 @@
 #include "ResourceManager.h"
 #include "TextLocalizer.h"
 
-DigDug::IdleState DigDug::DigDugState::m_IdleState{};
-DigDug::AngryState DigDug::DigDugState::m_AngryState{};
-DigDug::Player* DigDug::DigDugState::m_pPlayer{};
-flgin::SpriteComponent* DigDug::DigDugState::m_pSpriteComponent{ nullptr };
-
 void DigDug::DigDugState::SetAttachedSprite(flgin::SpriteComponent* pSprite)
 {
 	m_pSpriteComponent = pSprite;
@@ -33,7 +28,10 @@ bool DigDug::IdleState::Update()
 {
 	if (m_pPlayer->IsAngry())
 	{
-		m_pTargetState = &m_AngryState;
+		AngryState* angryState{ new AngryState{} };
+		angryState->SetAttachedSprite(m_pSpriteComponent);
+		angryState->SetPlayer(m_pPlayer);
+		m_pTargetState = angryState;
 		return true;
 	}
 	return false;
@@ -52,7 +50,10 @@ bool DigDug::AngryState::Update()
 {
 	if (!m_pPlayer->IsAngry())
 	{
-		m_pTargetState = &m_IdleState;
+		IdleState* idleState{ new IdleState{} };
+		idleState->SetAttachedSprite(m_pSpriteComponent);
+		idleState->SetPlayer(m_pPlayer);
+		m_pTargetState = idleState;
 		return true;
 	}
 	return false;

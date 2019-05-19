@@ -8,7 +8,7 @@ namespace flgin
 	{
 	public:
 		DirectionalGridMove(GridMovementComponent* attachedMover, bool isHorizontal = true, bool isPositiveDirection = true);
-		bool Execute(GameObject& attachedObject, bool isInverseAction);
+		void Execute(GameObject& attachedObject, bool isInverseAction);
 
 	private:
 		bool m_IsHeld;

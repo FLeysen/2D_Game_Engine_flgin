@@ -14,7 +14,7 @@ namespace DigDug
 	{
 	public:
 		ToggleAngryCommand(Player* pPlayer) : Command(), m_pPlayer{ pPlayer } {}
-		bool Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
+		void Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
 
 	private:
 		Player* m_pPlayer;
@@ -24,7 +24,7 @@ namespace DigDug
 	{
 	public:
 		MenuNextCommand(flgin::MenuComponent* pMenu) : Command(), m_pMenu{ pMenu }{}
-		bool Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
+		void Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
 
 	private:
 		flgin::MenuComponent* m_pMenu;
@@ -34,7 +34,7 @@ namespace DigDug
 	{
 	public:
 		MenuPreviousCommand(flgin::MenuComponent* pMenu) : Command(), m_pMenu{ pMenu }{}
-		bool Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
+		void Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
 
 	private:
 		flgin::MenuComponent* m_pMenu;
@@ -43,12 +43,10 @@ namespace DigDug
 	class MenuConfirmCommand final : public flgin::Command
 	{
 	public:
-		MenuConfirmCommand(flgin::MenuComponent* pMenu) : Command(), m_pMenu{ pMenu }, m_ExecuteReturn{ true }{}
-		bool Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
-		void SetExecuteReturn(bool value) { m_ExecuteReturn = value; }
+		MenuConfirmCommand(flgin::MenuComponent* pMenu) : Command(), m_pMenu{ pMenu }{}
+		void Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
 
 	private:
-		bool m_ExecuteReturn;
 		flgin::MenuComponent* m_pMenu;
 	};
 }

@@ -22,16 +22,18 @@ namespace flgin
 	{
 	public:
 		StateComponent(GameObject* pOwnerObject);
+		~StateComponent();
 		void Update();
 		void SetCurrentState(State* pNewState);
 
-		~StateComponent() = default;
 		StateComponent(StateComponent&&) = delete;
 		StateComponent(const StateComponent&) = delete;
 		StateComponent& operator=(StateComponent&&) = delete;
 		StateComponent& operator=(const StateComponent&) = delete;
 
 	private:
+		void RawSetCurrentState(State* pNewState);
+
 		State* m_pCurrentState;
 	};
 }

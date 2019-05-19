@@ -15,8 +15,8 @@ namespace flgin
 		void AddControllerMapping(UINT8 key, Command* command);
 		void AddKeyboardMapping(int key, Command* command);
 		void Update() override;
-		bool ProcessKeyboardKey(int key, bool isKeyUp = false);
-		bool ProcessControllerKey(UINT8 key, bool isKeyUp = false);
+		void ProcessKeyboardKey(int key, bool isKeyUp = false);
+		void ProcessControllerKey(UINT8 key, bool isKeyUp = false);
 
 	private:
 		std::unordered_multimap<int, Command*> m_KeyboardMappings;

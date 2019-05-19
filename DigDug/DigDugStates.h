@@ -16,22 +16,18 @@ namespace DigDug
 	class DigDugState : public flgin::State
 	{
 	public:
-		DigDugState() : flgin::State() {}
+		DigDugState() : flgin::State(), m_pSpriteComponent{}, m_pPlayer{} {}
 		virtual ~DigDugState() = default;
 		virtual void Enter() = 0;
 		virtual void Exit() = 0;
 		virtual bool Update() = 0;
 
-
-		static void SetAttachedSprite(flgin::SpriteComponent* pSprite);
-		static void SetPlayer(Player* pPlayer);
-		static IdleState* GetDefaultState() { return &m_IdleState; };
+		void SetAttachedSprite(flgin::SpriteComponent* pSprite);
+		void SetPlayer(Player* pPlayer);
 
 	protected:
-		static IdleState m_IdleState;
-		static AngryState m_AngryState;
-		static flgin::SpriteComponent* m_pSpriteComponent;
-		static Player* m_pPlayer;
+		flgin::SpriteComponent* m_pSpriteComponent;
+		Player* m_pPlayer;
 	};
 
 	class IdleState final : public DigDugState

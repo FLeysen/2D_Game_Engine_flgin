@@ -10,10 +10,14 @@ namespace DigDug
 		void Run();
 		void InitTestScene();
 		void InitMenuScene();
-		void InitPlayers();
+		void InitSinglePlayer();
+		void InitTwoPlayer();
+		void InitVersus();
 
 	private:
 		flgin::Flgin m_Engine;
+		bool m_TwoPlayer;
+		bool m_Versus;
 	};
 }
 

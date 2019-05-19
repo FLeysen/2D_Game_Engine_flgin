@@ -7,9 +7,6 @@
 
 namespace flgin
 {
-	// TODO: REMOVE TEST CODE
-	class PathfinderComponent;
-
 	class Command;
 	class InputManager final : public Singleton<InputManager>
 	{
@@ -20,6 +17,7 @@ namespace flgin
 		void AddCommand(Command* const command);
 		void AddPlayer();
 		void RemovePlayer();
+		void Quit() { m_ShouldContinue = false; }
 		InputComponent* GetPlayer(unsigned int idx);
 		
 		template <class T>
@@ -56,13 +54,9 @@ namespace flgin
 			}
 		}
 
-		void AddPathfinder(PathfinderComponent* pathfinder);
-
 	private:
+		bool m_ShouldContinue;
 		std::vector<Command*> m_pCommands;
 		std::vector<InputComponent> m_pPlayers;
-
-		//TODO: REMOVE TEST CODE
-		PathfinderComponent* m_pPathFinder;
 	};
 }

@@ -2,20 +2,13 @@
 #include "InputManager.h"
 #include "Command.h"
 #include "SDL.h"
-
-//TODO: REMOVE TEST CODE:
-#include "PathfinderComponent.h"
 #include "SceneManager.h"
 
 flgin::InputManager::InputManager()
 	: m_pCommands{}
-	, m_pPathFinder{}
+	, m_pPlayers{}
+	, m_ShouldContinue{ true }
 {}
-
-void flgin::InputManager::AddPathfinder(PathfinderComponent* pathfinder)
-{
-	m_pPathFinder = pathfinder;
-}
 
 flgin::InputManager::~InputManager()
 {
@@ -33,24 +26,21 @@ bool flgin::InputManager::ProcessInput()
 		else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
 		{
 			for (InputComponent& player : m_pPlayers)
-			{
-				if (!player.ProcessKeyboardKey(e.key.keysym.sym, e.type == SDL_KEYUP))
-					return false;
-			}
+				player.ProcessKeyboardKey(e.key.keysym.sym, e.type == SDL_KEYUP);
 		}
 		else if (e.type == SDL_CONTROLLERBUTTONDOWN || e.type == SDL_CONTROLLERBUTTONUP)
 		{
 			SDL_JoystickID playerID{ e.cbutton.which };
-			if (playerID >= static_cast<SDL_JoystickID>(m_pPlayers.size())) continue;
-			if (!m_pPlayers[playerID].ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP)) return false;
+			if (playerID >= static_cast<SDL_JoystickID>(m_pPlayers.size())) 
+				continue;
+			m_pPlayers[playerID].ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP);
 		}
-		//TODO: REMOVE TEST CODE
-		//else if (e.type == SDL_MOUSEBUTTONUP)
-		//{
-		//	m_pPathFinder->SetTarget(float(e.button.x), float(e.button.y));
-		//}
+		else if (e.type == SDL_CONTROLLERAXISMOTION)
+		{
+			//Axes not yet supported
+		}
 	}
-	return true;	
+	return m_ShouldContinue;	
 }
 
 void flgin::InputManager::AddCommand(Command* const command)
