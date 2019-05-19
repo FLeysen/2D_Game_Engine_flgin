@@ -9,6 +9,7 @@ namespace flgin
 namespace DigDug
 {
 	class Player;
+	class Game;
 
 	class ToggleAngryCommand final : public flgin::Command
 	{
@@ -48,5 +49,15 @@ namespace DigDug
 
 	private:
 		flgin::MenuComponent* m_pMenu;
+	};
+
+	class ReturnToMenuCommand final : public flgin::Command
+	{
+	public:
+		ReturnToMenuCommand(Game& game) : Command(), m_Game{ game } {}
+		void Execute(flgin::GameObject&, bool = false) override;
+
+	private:
+		Game& m_Game;
 	};
 }

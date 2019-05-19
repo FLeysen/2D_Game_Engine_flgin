@@ -8,7 +8,7 @@ namespace DigDug
 		Game();
 		~Game();
 		void Run();
-		void InitTestScene();
+		void InitGameScene();
 		void InitMenuScene();
 		void InitSinglePlayer();
 		void InitTwoPlayer();
@@ -16,8 +16,6 @@ namespace DigDug
 
 	private:
 		flgin::Flgin m_Engine;
-		bool m_TwoPlayer;
-		bool m_Versus;
 	};
 }
 

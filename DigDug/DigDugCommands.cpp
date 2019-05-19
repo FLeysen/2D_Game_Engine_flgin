@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "MenuComponent.h"
 #include "InputManager.h"
+#include "Game.h"
 
 void DigDug::ToggleAngryCommand::Execute(flgin::GameObject&, bool isInverseAction)
 {
@@ -22,4 +23,9 @@ void DigDug::MenuNextCommand::Execute(flgin::GameObject&, bool isInverseAction)
 void DigDug::MenuConfirmCommand::Execute(flgin::GameObject&, bool isInverseAction)
 {
 	if (!isInverseAction) m_pMenu->PressCurrentButton();
+}
+
+void DigDug::ReturnToMenuCommand::Execute(flgin::GameObject &, bool)
+{
+	m_Game.InitMenuScene();
 }
