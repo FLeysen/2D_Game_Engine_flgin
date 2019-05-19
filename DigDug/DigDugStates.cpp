@@ -53,6 +53,8 @@ bool DigDug::AngryState::Update()
 		IdleState* idleState{ new IdleState{} };
 		idleState->SetAttachedSprite(m_pSpriteComponent);
 		idleState->SetPlayer(m_pPlayer);
+		//TODO: REMOVE TEST CODE
+		m_pPlayer->LoseLife();
 		m_pTargetState = idleState;
 		return true;
 	}

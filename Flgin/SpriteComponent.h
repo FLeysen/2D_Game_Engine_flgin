@@ -12,12 +12,13 @@ namespace flgin
 		void Update() override;
 		void Render() const override;
 
-		void SetSpriteInfo(unsigned int columns, unsigned int rows, float spriteWidth, float spriteHeight, float frameTime);
+		void SetSpriteInfo(unsigned int columns, unsigned int rows, float spriteWidth, float spriteHeight, float frameTime, bool shouldAnimate = true);
 		void SetFlips(bool horizontal, bool vertical);
 		void SetRotation(float angleInDegrees);
 		void SetRotationalOffset(float xOffsetFromCenter, float yOffsetFromCenter);
 		void IncrementCurrentFrame();
 
+#pragma region ro5
 		SpriteComponent()
 			: RenderComponent(nullptr)
 			, m_CurrentFrame{}
@@ -73,6 +74,7 @@ namespace flgin
 		};
 		SpriteComponent(const SpriteComponent& other) = delete;
 		SpriteComponent& operator=(const SpriteComponent&) = delete;
+#pragma endregion
 
 	private:
 		unsigned int m_CurrentFrame;

@@ -38,7 +38,7 @@ void flgin::SpriteComponent::Render() const
 		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, std::string("SpriteComponent failed to render: ") + SDL_GetError(), (void*)this });
 }
 
-void flgin::SpriteComponent::SetSpriteInfo(unsigned int columns, unsigned int rows, float spriteWidth, float spriteHeight, float frameTime)
+void flgin::SpriteComponent::SetSpriteInfo(unsigned int columns, unsigned int rows, float spriteWidth, float spriteHeight, float frameTime, bool shouldAnimate)
 {
 	m_CurrentFrame = 0;
 	m_Columns = columns;
@@ -50,10 +50,13 @@ void flgin::SpriteComponent::SetSpriteInfo(unsigned int columns, unsigned int ro
 	Invoker& invoker{ FInvoker };
 	invoker.CancelOwnedInvokes(this);
 
-	std::function<void()> calculateFrame{ std::bind(&flgin::SpriteComponent::IncrementCurrentFrame, this) };
-	InvokeHolderBase* fnHolder{ new InvokeHolder<void>{this, frameTime, calculateFrame} };
-	fnHolder->SetRepeating(true);
-	invoker.AddInvoke(fnHolder);
+	if (shouldAnimate)
+	{
+		std::function<void()> calculateFrame{ std::bind(&flgin::SpriteComponent::IncrementCurrentFrame, this) };
+		InvokeHolderBase* fnHolder{ new InvokeHolder<void>{this, frameTime, calculateFrame} };
+		fnHolder->SetRepeating(true);
+		invoker.AddInvoke(fnHolder);
+	}
 }
 
 void flgin::SpriteComponent::SetFlips(bool horizontal, bool vertical)

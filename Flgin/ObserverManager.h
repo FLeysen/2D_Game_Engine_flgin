@@ -1,16 +1,18 @@
 #pragma once
-#include "Observer.h"
-#include <vector>
+#include "Singleton.h"
+#define FObserverManager flgin::ObserverManager::GetInstance()
+
 namespace flgin
 {
-	class Subject
+	class Observer;
+	class ObserverManager final : public Singleton<ObserverManager>
 	{
 	public:
-		Subject();
-		void AddObserver(Observer* observer);
-		void RemoveObserver(Observer* observer);
+		ObserverManager();
+		~ObserverManager();
+		void Add(Observer* observer) { m_pObservers.push_back(observer); }
 		template <class T>
-		T* GetObserver()
+		T* Get()
 		{
 			const type_info& typeInfo{ typeid(T) };
 			for (Observer* const observer : m_pObservers)
@@ -20,9 +22,7 @@ namespace flgin
 			}
 			return nullptr;
 		}
-
-	protected:
-		void Notify(Observer::Event event);
+		void Clear();
 
 	private:
 		std::vector<Observer*> m_pObservers;

@@ -47,8 +47,8 @@ void flgin::Flgin::Initialize()
 		"Flgin",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		640,
-		480,
+		630,
+		460,
 		SDL_WINDOW_OPENGL
 	);
 	if (m_pWindow == nullptr) 

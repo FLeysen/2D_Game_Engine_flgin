@@ -5,11 +5,8 @@ namespace flgin
 	class Observer
 	{
 	public:
-		enum class Event
-		{
-			ScoreAwarded
-		};
-
+		typedef unsigned int Event;
+		Observer();
 		virtual ~Observer() {}
 		virtual void Notify(Event event, const Subject* const subject) = 0;
 	};

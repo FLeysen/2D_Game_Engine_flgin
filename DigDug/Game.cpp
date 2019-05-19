@@ -24,6 +24,8 @@
 #include "MenuComponent.h"
 #include "FunctionHolder.h"
 #include "Invoker.h"
+#include "ObserverManager.h"
+#include "LivesObserver.h"
 
 DigDug::Game::Game()
 	: m_Engine{}
@@ -53,8 +55,9 @@ void DigDug::Game::InitGameScene()
 	Scene* scene{ FSceneManager.CreateScene("GameScene") };
 	FInvoker.CancelAllInvokes();
 
+	GameObject* go{  };
 #ifdef _DEBUG
-	GameObject* go{ new flgin::GameObject{} };
+	go = new GameObject{};
 	RenderComponent* renderComponent{ scene->CreateRenderComponent(go, 4) };
 	go->AddComponent(renderComponent);
 	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 20, {255, 255, 0} });
@@ -63,10 +66,17 @@ void DigDug::Game::InitGameScene()
 #endif
 
 	go = new GameObject{};
-	go->SetPosition(20.0f, 45.0f);
+	go->SetPosition(15.f, 45.0f);
 	MovementGrid* grid{ new MovementGrid{ go, 13, 21, 30.0f } };
 	go->AddComponent(grid);
 	go->AddComponent(new GridRenderer{ go, scene, grid });
+	scene->AddGameObject(go);
+
+	go = new GameObject{};
+	SpriteComponent* livesSprite{ scene->CreateSpriteComponent(go) };
+	livesSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texLives")));
+	LivesObserver* livesObserver{ new LivesObserver{ 4, livesSprite } };
+	go->SetPosition(0.f, 425.f);
 	scene->AddGameObject(go);
 	
 	go = new GameObject{};
@@ -104,8 +114,9 @@ void DigDug::Game::InitGameScene()
 	spriteComponent->SetDimensions(30.0f, 30.0f);
 	
 	Player* playerComponent{ new Player{ go } };
+	playerComponent->AddObserver(livesObserver);
 	ToggleAngryCommand* angryToggleCommand{ new ToggleAngryCommand{playerComponent} };
-	inputComponent->AddKeyboardMapping(SDLK_e, angryToggleCommand);
+	inputComponent->BufferedAddKeyboardMapping(SDLK_e, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
 	
 	StateComponent* stateComponent{ new StateComponent{ go } };
@@ -129,6 +140,7 @@ void DigDug::Game::InitMenuScene()
 	FSceneManager.ActivateSceneByName("MenuScene");
 	FSceneManager.RemoveSceneByName("GameScene");
 	FInvoker.CancelAllInvokes();
+	FObserverManager.Clear();
 
 	GameObject* go{ new flgin::GameObject{} };
 	RenderComponent* renderComponent{ scene->CreateRenderComponent(go, 0) };
@@ -254,7 +266,7 @@ void DigDug::Game::InitTwoPlayer()
 	
 	Player* playerComponent{ new Player{ go } };
 	ToggleAngryCommand* angryToggleCommand{ new ToggleAngryCommand{playerComponent} };
-	inputComponent->AddKeyboardMapping(SDLK_p, angryToggleCommand);
+	inputComponent->BufferedAddKeyboardMapping(SDLK_p, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
 
 	StateComponent* stateComponent{ new StateComponent{ go } };

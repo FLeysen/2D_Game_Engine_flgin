@@ -49,7 +49,7 @@ void flgin::SceneManager::RemoveSceneByName(std::string&& name)
 	auto it{ m_pScenes.find(name) };
 	if (it == m_pScenes.end())
 	{
-		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to remove scene" + name + ", but a scene with no such name exists!" });
+		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to remove scene " + name + ", but a scene with no such name exists!" });
 		return;
 	}
 	FLogger.SafeDelete(it->second);

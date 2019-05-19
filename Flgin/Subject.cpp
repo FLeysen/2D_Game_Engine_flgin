@@ -13,7 +13,8 @@ void flgin::Subject::AddObserver(flgin::Observer* observer)
 
 void flgin::Subject::RemoveObserver(flgin::Observer* observer)
 {
-	m_pObservers.erase(std::remove(m_pObservers.begin(), m_pObservers.end(), observer), m_pObservers.end());
+	auto it{ std::find(m_pObservers.begin(), m_pObservers.end(), observer) };
+	m_pObservers.erase(it);
 }
 
 void flgin::Subject::Notify(flgin::Observer::Event event)

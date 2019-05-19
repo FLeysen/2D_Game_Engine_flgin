@@ -19,6 +19,9 @@
     <Filter Include="Commands">
       <UniqueIdentifier>{056d2820-0c23-43a4-a01f-6894615531d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Observers">
+      <UniqueIdentifier>{d167883f-ef0e-482a-a1f9-b9de7801fc6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -35,6 +38,12 @@
     </ClInclude>
     <ClInclude Include="DigDugCommands.h">
       <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="LivesObserver.h">
+      <Filter>Observers</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverEvents.h">
+      <Filter>Observers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +64,9 @@
     </ClCompile>
     <ClCompile Include="DigDugCommands.cpp">
       <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="LivesObserver.cpp">
+      <Filter>Observers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,5 +1,8 @@
 key;en-uk;nl-be
 dataPath;../Data/;../Data/
+fontDefault;Lingua.otf;Lingua.otf
+stringAssignment;Programming 4 Assignment;Programmeren 4 Opdracht
+stringGameName;DigDug;GraafGraafde
 texBg;background.jpg;background.jpg
 texGameBg;backgroundSprite.png;backgroundsprite.png
 texLogo;logo.png;logo.png
@@ -7,6 +10,4 @@ texPlayer;ActualSprite.png;AngrySprite.png
 texAngryPlayer;AngrySprite.png;ActualSprite.png
 texButton;ButtonRegular.png;ButtonRegular.png
 texButtonSelected;ButtonSelected.png;ButtonSelected.png
-fontDefault;Lingua.otf;Lingua.otf
-stringAssignment;Programming 4 Assignment;Programmeren 4 Opdracht
-stringGameName;DigDug;GraafGraafde
+texLives;FourHearts.png;FourHearts.png

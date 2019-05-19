@@ -139,9 +139,6 @@
     <ClInclude Include="Observer.h">
       <Filter>Observer</Filter>
     </ClInclude>
-    <ClInclude Include="ScoreObserver.h">
-      <Filter>Observer</Filter>
-    </ClInclude>
     <ClInclude Include="Subject.h">
       <Filter>Observer</Filter>
     </ClInclude>
@@ -186,6 +183,9 @@
     </ClInclude>
     <ClInclude Include="MenuComponent.h">
       <Filter>Components\Menuing</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverManager.h">
+      <Filter>Observer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -252,9 +252,6 @@
     <ClCompile Include="Invoker.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="ScoreObserver.cpp">
-      <Filter>Observer</Filter>
-    </ClCompile>
     <ClCompile Include="Subject.cpp">
       <Filter>Observer</Filter>
     </ClCompile>
@@ -290,6 +287,12 @@
     </ClCompile>
     <ClCompile Include="MenuComponent.cpp">
       <Filter>Components\Menuing</Filter>
+    </ClCompile>
+    <ClCompile Include="ObserverManager.cpp">
+      <Filter>Observer</Filter>
+    </ClCompile>
+    <ClCompile Include="Observer.cpp">
+      <Filter>Observer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
