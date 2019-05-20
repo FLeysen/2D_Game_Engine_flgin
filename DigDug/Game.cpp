@@ -26,6 +26,7 @@
 #include "Invoker.h"
 #include "ObserverManager.h"
 #include "LivesObserver.h"
+#include "ScoreObserver.h"
 
 DigDug::Game::Game()
 	: m_Engine{}
@@ -78,6 +79,15 @@ void DigDug::Game::InitGameScene()
 	LivesObserver* livesObserver{ new LivesObserver{ 4, livesSprite } };
 	go->SetPosition(0.f, 425.f);
 	scene->AddGameObject(go);
+
+	go = new GameObject{};
+	RenderComponent* scoreRenderer{ scene->CreateRenderComponent(go) };
+	go->AddComponent(scoreRenderer);
+	TextComponent* textRenderer{ new TextComponent{ go, FLocalizer.Get("fontDefault"), 30, {255, 255, 255} } };
+	go->AddComponent(textRenderer);
+	ScoreObserver* scoreObserver{ new ScoreObserver{ textRenderer } };
+	go->SetPosition(170.f, 425.f);
+	scene->AddGameObject(go);
 	
 	go = new GameObject{};
 	go->SetPosition(15.0f, 15.0f);
@@ -115,6 +125,7 @@ void DigDug::Game::InitGameScene()
 	
 	Player* playerComponent{ new Player{ go } };
 	playerComponent->AddObserver(livesObserver);
+	playerComponent->AddObserver(scoreObserver);
 	ToggleAngryCommand* angryToggleCommand{ new ToggleAngryCommand{playerComponent} };
 	inputComponent->BufferedAddKeyboardMapping(SDLK_e, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
@@ -235,7 +246,7 @@ void DigDug::Game::InitTwoPlayer()
 	Scene* scene{ FSceneManager.GetCurrentScene() };
 	GameObject* go{ new GameObject{} };
 	MovementGrid* grid{ scene->FindComponentOfType<MovementGrid>() };
-	go->SetPosition(150.0f, 15.0f);
+	go->SetPosition(650.0f, 15.0f);
 	InputComponent* inputComponent{ FInputManager.GetPlayer(1) };
 	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid} };
 	QuitCommand* quitCommand{ new QuitCommand{} };
@@ -281,14 +292,35 @@ void DigDug::Game::InitTwoPlayer()
 	go->AddComponent(playerComponent);
 	go->AddComponent(stateComponent);
 	scene->AddGameObject(go);
+
+
+	go = new GameObject{};
+	SpriteComponent* livesSprite{ scene->CreateSpriteComponent(go) };
+	livesSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texLives")));
+	livesSprite->SetRotation(180.0f);
+	livesSprite->SetPositionOffset(45.0f, 30.f);
+	livesSprite->SetFlips(false, true);
+	LivesObserver* livesObserver{ new LivesObserver{ 4, livesSprite } };
+	go->SetPosition(585.f, 425.f);
+	scene->AddGameObject(go);
+	playerComponent->AddObserver(livesObserver);
+
+	go = new GameObject{};
+	RenderComponent* scoreRenderer{ scene->CreateRenderComponent(go) };
+	go->AddComponent(scoreRenderer);
+	TextComponent* textRenderer{ new TextComponent{ go, FLocalizer.Get("fontDefault"), 30, {255, 255, 255} } };
+	go->AddComponent(textRenderer);
+	ScoreObserver* scoreObserver{ new ScoreObserver{ textRenderer } };
+	go->SetPosition(380.f, 425.f);
+	scene->AddGameObject(go);
+	playerComponent->AddObserver(scoreObserver);
 }
 
 void DigDug::Game::InitVersus()
 {
 	InitSinglePlayer();
-	FSceneManager.ActivateSceneByName("GameScene");
-	if (!FInputManager.GetPlayer(1))
-	{
-		return;
-	}
+}
+
+void DigDug::Game::InitEndScene()
+{
 }

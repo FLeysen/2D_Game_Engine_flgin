@@ -77,4 +77,3 @@ void flgin::Scene::Render() const
 			m_SpriteComponents[i * MAX_RENDERERS_PER_LAYER + j].Render();
 	}
 }
-

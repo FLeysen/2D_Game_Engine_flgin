@@ -13,6 +13,7 @@ namespace DigDug
 		void InitSinglePlayer();
 		void InitTwoPlayer();
 		void InitVersus();
+		void InitEndScene();
 
 	private:
 		flgin::Flgin m_Engine;

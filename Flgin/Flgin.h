@@ -8,7 +8,6 @@ namespace flgin
 	{
 	public:
 		void Initialize();
-		//void LoadGame() const;
 		void Cleanup();
 		void Run();
 

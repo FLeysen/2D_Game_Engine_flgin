@@ -44,7 +44,7 @@ namespace flgin
 		std::string m_Name;
 		std::vector<GameObject*> m_pGameObjects;
 		static const unsigned int MAX_RENDERLAYERS{ 5 };
-		static const unsigned int MAX_RENDERERS_PER_LAYER{ 350 };
+		static const unsigned int MAX_RENDERERS_PER_LAYER{ 300 };
 		RenderComponent m_RenderComponents[MAX_RENDERLAYERS * MAX_RENDERERS_PER_LAYER];
 		SpriteComponent m_SpriteComponents[MAX_RENDERLAYERS * MAX_RENDERERS_PER_LAYER];
 		unsigned int m_RenderCompCount[MAX_RENDERLAYERS];

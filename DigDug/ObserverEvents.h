@@ -3,6 +3,6 @@ namespace DigDug
 {
 	enum ObserverEvent : unsigned int
 	{
-		LifeLost
+		LivesChanged, ScoreChanged
 	};
 }

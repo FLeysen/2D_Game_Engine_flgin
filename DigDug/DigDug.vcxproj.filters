@@ -45,6 +45,9 @@
     <ClInclude Include="ObserverEvents.h">
       <Filter>Observers</Filter>
     </ClInclude>
+    <ClInclude Include="ScoreObserver.h">
+      <Filter>Observers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -66,6 +69,9 @@
       <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="LivesObserver.cpp">
+      <Filter>Observers</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreObserver.cpp">
       <Filter>Observers</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,7 +2,14 @@
 #include "Player.h"
 #include "ObserverEvents.h"
 
-void DigDug::Player::LoseLife()
+void DigDug::Player::ChangeLives(int amount)
 {
-	Notify(ObserverEvent::LifeLost);
+	m_Lives += amount;
+	Notify(ObserverEvent::LivesChanged);
+}
+
+void DigDug::Player::ChangeScore(int amount)
+{
+	m_Score += amount;
+	Notify(ObserverEvent::ScoreChanged);
 }
