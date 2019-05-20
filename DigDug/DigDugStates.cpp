@@ -28,6 +28,10 @@ bool DigDug::IdleState::Update()
 {
 	if (m_pPlayer->IsAngry())
 	{
+		//TODO: REMOVE TEST CODE 
+		m_pPlayer->ChangeLives(-1);
+		m_pPlayer->ChangeScore(rand() % 3000);
+
 		AngryState* angryState{ new AngryState{} };
 		angryState->SetAttachedSprite(m_pSpriteComponent);
 		angryState->SetPlayer(m_pPlayer);

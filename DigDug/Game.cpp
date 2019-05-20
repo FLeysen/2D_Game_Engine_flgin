@@ -27,9 +27,11 @@
 #include "ObserverManager.h"
 #include "LivesObserver.h"
 #include "ScoreObserver.h"
+#include "GameOverObserver.h"
 
 DigDug::Game::Game()
 	: m_Engine{}
+	, m_HasTwoScores{ false }
 {}
 
 
@@ -126,6 +128,7 @@ void DigDug::Game::InitGameScene()
 	Player* playerComponent{ new Player{ go } };
 	playerComponent->AddObserver(livesObserver);
 	playerComponent->AddObserver(scoreObserver);
+	playerComponent->AddObserver(new GameOverObserver{ this });
 	ToggleAngryCommand* angryToggleCommand{ new ToggleAngryCommand{playerComponent} };
 	inputComponent->BufferedAddKeyboardMapping(SDLK_e, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
@@ -169,8 +172,8 @@ void DigDug::Game::InitMenuScene()
 	go = new GameObject{};
 	renderComponent = scene->CreateRenderComponent(go, 3);
 	go->AddComponent(renderComponent);
-	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 0,0 }, FLocalizer.Get("stringGameName") });
-	go->SetPosition(80.f, 20.f);
+	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 255, 255 }, FLocalizer.Get("stringGameName") });
+	go->SetPosition(260.f, 20.f);
 	scene->AddGameObject(go);
 
 #ifdef _DEBUG
@@ -208,7 +211,6 @@ void DigDug::Game::InitMenuScene()
 
 	std::function<void()> launch{ std::bind(&Game::InitSinglePlayer, this) };
 	FunctionHolder<void>* actionLaunch{ new FunctionHolder<void>{ launch } };
-	//FunctionHolder<void>* action{ new FunctionHolder<void>{ []() { FSceneManager.ActivateSceneByName("GameScene"); } } };
 	go = Button::Create(scene, menu, "PLAY", { 255, 255, 255 }, FLocalizer.Get("fontDefault"), FLocalizer.Get("texButton"), FLocalizer.Get("texButtonSelected"), actionLaunch);
 	go->SetPosition(200.0f, 80.0f);
 
@@ -222,7 +224,6 @@ void DigDug::Game::InitMenuScene()
 	go = Button::Create(scene, menu, "VERSUS", { 255, 255, 255 }, FLocalizer.Get("fontDefault"), FLocalizer.Get("texButton"), FLocalizer.Get("texButtonSelected"), actionLaunchVersus);
 	go->SetPosition(200.0f, 260.0f);
 
-	//std::function<void()> quit{ std::bind(&InputManager::Quit, FInputManager) };
 	FunctionHolder<void>* actionQuit{ new FunctionHolder<void>{ []() { FInputManager.Quit(); } } };
 	go = Button::Create(scene, menu, "QUIT", { 255, 255, 255 }, FLocalizer.Get("fontDefault"), FLocalizer.Get("texButton"), FLocalizer.Get("texButtonSelected"), actionQuit);
 	go->SetPosition(200.0f, 360.0f);
@@ -235,6 +236,7 @@ void DigDug::Game::InitSinglePlayer()
 	InitGameScene();
 	FSceneManager.ActivateSceneByName("GameScene");
 	FSceneManager.RemoveSceneByName("MenuScene");
+	m_HasTwoScores = false;
 }
 
 void DigDug::Game::InitTwoPlayer()
@@ -242,7 +244,8 @@ void DigDug::Game::InitTwoPlayer()
 	using namespace flgin;
 
 	InitSinglePlayer();
-
+	
+	m_HasTwoScores = true;
 	Scene* scene{ FSceneManager.GetCurrentScene() };
 	GameObject* go{ new GameObject{} };
 	MovementGrid* grid{ scene->FindComponentOfType<MovementGrid>() };
@@ -293,7 +296,6 @@ void DigDug::Game::InitTwoPlayer()
 	go->AddComponent(stateComponent);
 	scene->AddGameObject(go);
 
-
 	go = new GameObject{};
 	SpriteComponent* livesSprite{ scene->CreateSpriteComponent(go) };
 	livesSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texLives")));
@@ -304,6 +306,7 @@ void DigDug::Game::InitTwoPlayer()
 	go->SetPosition(585.f, 425.f);
 	scene->AddGameObject(go);
 	playerComponent->AddObserver(livesObserver);
+	playerComponent->AddObserver(new GameOverObserver{ this });
 
 	go = new GameObject{};
 	RenderComponent* scoreRenderer{ scene->CreateRenderComponent(go) };
@@ -323,4 +326,42 @@ void DigDug::Game::InitVersus()
 
 void DigDug::Game::InitEndScene()
 {
+	using namespace flgin;
+	
+	UINT scoreP1{ FInputManager.GetPlayer(0)->GetGameObject()->GetComponent<Player>()->GetScore() };
+	UINT scoreP2{ m_HasTwoScores ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetScore() : 0 };
+
+	InitMenuScene();
+
+	Scene* scene{ FSceneManager.GetCurrentScene() };
+	GameObject* go{ new GameObject{} };
+	RenderComponent* renderComponent{ scene->CreateRenderComponent(go, 3) };
+	go->AddComponent(renderComponent);
+	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 255, 255}, FLocalizer.Get("stringP1") });
+	go->SetPosition(10.f, 380.f);
+	scene->AddGameObject(go);
+
+	go = new GameObject{};
+	renderComponent = scene->CreateRenderComponent(go, 3);
+	go->AddComponent(renderComponent);
+	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 255, 255}, std::to_string(scoreP1) });
+	go->SetPosition(10.f, 420.f);
+	scene->AddGameObject(go);
+
+	if (m_HasTwoScores)
+	{
+		go = new GameObject{};
+		renderComponent = scene->CreateRenderComponent(go, 3);
+		go->AddComponent(renderComponent);
+		go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255, 255,255}, FLocalizer.Get("stringP2") });
+		go->SetPosition(450.f, 380.f);
+		scene->AddGameObject(go);
+
+		go = new GameObject{};
+		renderComponent = scene->CreateRenderComponent(go, 3);
+		go->AddComponent(renderComponent);
+		go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 36, {255,255,255 }, std::to_string(scoreP2) });
+		go->SetPosition(450.f, 420.f);
+		scene->AddGameObject(go);
+	}
 }

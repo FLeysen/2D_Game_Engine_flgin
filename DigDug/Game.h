@@ -16,6 +16,7 @@ namespace DigDug
 		void InitEndScene();
 
 	private:
+		bool m_HasTwoScores;
 		flgin::Flgin m_Engine;
 	};
 }
