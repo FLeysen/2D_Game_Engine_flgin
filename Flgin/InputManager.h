@@ -15,6 +15,7 @@ namespace flgin
 		~InputManager();
 		bool ProcessInput();
 		void AddCommand(Command* const command);
+		void ClearCommands();
 		void AddPlayer();
 		void RemovePlayer();
 		void Quit() { m_ShouldContinue = false; }

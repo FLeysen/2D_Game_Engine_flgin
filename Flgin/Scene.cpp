@@ -46,13 +46,13 @@ flgin::SpriteComponent* flgin::Scene::CreateSpriteComponent(GameObject* const ow
 		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to add sprite component to nonexistant layer: " + layer });
 		return nullptr;
 	}
-	if (m_SpriteCompCount[layer] == MAX_RENDERERS_PER_LAYER)
+	if (m_SpriteCompCount[layer] == MAX_SPRITES_PER_LAYER)
 	{
 		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to add sprite component to full layer: " + layer });
 		return nullptr;
 	}
 
-	return &(m_SpriteComponents[layer * MAX_RENDERERS_PER_LAYER + m_SpriteCompCount[layer]++] = SpriteComponent{ ownerObject });
+	return &(m_SpriteComponents[layer * MAX_SPRITES_PER_LAYER + m_SpriteCompCount[layer]++] = SpriteComponent{ ownerObject });
 }
 
 void flgin::Scene::Update()
@@ -74,6 +74,6 @@ void flgin::Scene::Render() const
 		for (unsigned int j{}; j < m_RenderCompCount[i]; ++j)
 			m_RenderComponents[i * MAX_RENDERERS_PER_LAYER + j].Render();
 		for (unsigned int j{}; j < m_SpriteCompCount[i]; ++j)
-			m_SpriteComponents[i * MAX_RENDERERS_PER_LAYER + j].Render();
+			m_SpriteComponents[i * MAX_SPRITES_PER_LAYER + j].Render();
 	}
 }

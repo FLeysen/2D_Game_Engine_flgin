@@ -109,6 +109,8 @@ void flgin::Flgin::Run()
 		}
 
 		renderer.Render();
+
+		sceneManager.ExecuteSwap();
 	}
 
 	Cleanup();

@@ -12,9 +12,7 @@ flgin::InputManager::InputManager()
 
 flgin::InputManager::~InputManager()
 {
-	Logger& logger{ FLogger };
-	for (Command* command : m_pCommands)
-		logger.SafeDelete(command);
+	ClearCommands();
 }
 
 bool flgin::InputManager::ProcessInput()
@@ -46,6 +44,14 @@ bool flgin::InputManager::ProcessInput()
 void flgin::InputManager::AddCommand(Command* const command)
 {
 	m_pCommands.push_back(command);
+}
+
+void flgin::InputManager::ClearCommands()
+{
+	Logger& logger{ FLogger };
+	for (Command* command : m_pCommands)
+		logger.SafeDelete(command);
+	m_pCommands.clear();
 }
 
 void flgin::InputManager::AddPlayer()

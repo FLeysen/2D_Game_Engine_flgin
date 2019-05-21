@@ -15,6 +15,10 @@ namespace DigDug
 		void InitVersus();
 		void InitEndScene();
 
+		void SetSwappingToSingle();
+		void SetSwappingToTwoPlayer();
+		void SetSwappingToVerus();
+
 	private:
 		bool m_HasTwoScores;
 		flgin::Flgin m_Engine;

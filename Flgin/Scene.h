@@ -2,6 +2,15 @@
 #include "SceneManager.h"
 #include "SpriteComponent.h"
 #include "RenderComponent.h"
+#ifndef MAX_RENDERLAYERS
+#define MAX_RENDERLAYERS 5
+#endif
+#ifndef MAX_RENDERERS_PER_LAYER
+#define MAX_RENDERERS_PER_LAYER 300
+#endif
+#ifndef MAX_SPRITES_PER_LAYER
+#define MAX_SPRITES_PER_LAYER 10
+#endif
 
 namespace flgin
 {
@@ -43,10 +52,8 @@ namespace flgin
 
 		std::string m_Name;
 		std::vector<GameObject*> m_pGameObjects;
-		static const unsigned int MAX_RENDERLAYERS{ 5 };
-		static const unsigned int MAX_RENDERERS_PER_LAYER{ 300 };
 		RenderComponent m_RenderComponents[MAX_RENDERLAYERS * MAX_RENDERERS_PER_LAYER];
-		SpriteComponent m_SpriteComponents[MAX_RENDERLAYERS * MAX_RENDERERS_PER_LAYER];
+		SpriteComponent m_SpriteComponents[MAX_RENDERLAYERS * MAX_SPRITES_PER_LAYER];
 		unsigned int m_RenderCompCount[MAX_RENDERLAYERS];
 		unsigned int m_SpriteCompCount[MAX_RENDERLAYERS];
 	};

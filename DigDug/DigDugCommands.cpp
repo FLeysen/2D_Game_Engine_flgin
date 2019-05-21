@@ -4,6 +4,8 @@
 #include "MenuComponent.h"
 #include "InputManager.h"
 #include "Game.h"
+#include "SceneManager.h"
+#include "FunctionHolder.h"
 
 void DigDug::ToggleAngryCommand::Execute(flgin::GameObject&, bool isInverseAction)
 {
@@ -27,5 +29,6 @@ void DigDug::MenuConfirmCommand::Execute(flgin::GameObject&, bool isInverseActio
 
 void DigDug::ReturnToMenuCommand::Execute(flgin::GameObject &, bool)
 {
-	m_Game.InitMenuScene();
+	flgin::FunctionHolder<void>* pFunc{ new flgin::FunctionHolder<void>{ std::bind(&DigDug::Game::InitMenuScene, m_Game) } };
+	FSceneManager.SwapScene(pFunc);
 }
