@@ -32,9 +32,6 @@
     <Filter Include="Utilities">
       <UniqueIdentifier>{52b783b2-d77d-4525-8c25-f16bc33dc2c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components\Filter">
-      <UniqueIdentifier>{83839d41-a7ed-4cf9-aff8-ca70b4d63955}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Components\Input">
       <UniqueIdentifier>{3e224c43-a6ff-41d4-89a1-f4aedd886a9e}</UniqueIdentifier>
     </Filter>
@@ -52,6 +49,9 @@
     </Filter>
     <Filter Include="Components\Menuing">
       <UniqueIdentifier>{a0f080f1-8ca0-474d-a776-0f4a8fe0ecd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Collision">
+      <UniqueIdentifier>{83839d41-a7ed-4cf9-aff8-ca70b4d63955}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -71,7 +71,7 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="ColliderComponent.h">
-      <Filter>Components\Filter</Filter>
+      <Filter>Components\Collision</Filter>
     </ClInclude>
     <ClInclude Include="GridMovementComponent.h">
       <Filter>Components\Input</Filter>
@@ -167,7 +167,7 @@
       <Filter>Localization</Filter>
     </ClInclude>
     <ClInclude Include="FreeMover.h">
-      <Filter>Components\Filter</Filter>
+      <Filter>Components\Collision</Filter>
     </ClInclude>
     <ClInclude Include="FunctionHolder.h">
       <Filter>Utilities</Filter>
@@ -187,13 +187,16 @@
     <ClInclude Include="ObserverManager.h">
       <Filter>Observer</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>Components\Collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ColliderComponent.cpp">
-      <Filter>Components\Filter</Filter>
+      <Filter>Components\Collision</Filter>
     </ClCompile>
     <ClCompile Include="FreeMover.cpp">
-      <Filter>Components\Filter</Filter>
+      <Filter>Components\Collision</Filter>
     </ClCompile>
     <ClCompile Include="GridMovementComponent.cpp">
       <Filter>Components\Input</Filter>
@@ -293,6 +296,9 @@
     </ClCompile>
     <ClCompile Include="Observer.cpp">
       <Filter>Observer</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>Components\Collision</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

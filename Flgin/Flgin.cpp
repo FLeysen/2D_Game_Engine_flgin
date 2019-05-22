@@ -26,6 +26,7 @@
 #include "TextLocalizer.h"
 #include "StateComponent.h"
 #include "FunctionHolder.h"
+#include "CollisionManager.h"
 
 void flgin::Flgin::Initialize()
 {
@@ -78,6 +79,7 @@ void flgin::Flgin::Run()
 	InputManager& input{ FInputManager };
 	Invoker& invoker{ FInvoker };
 	Time& time{ FTime };
+	CollisionManager& collision{ FCollisionManager };
 	bool doContinue{ true };
 	float frameTime{ m_MsPerFrame / 1000.0f };
 	time.SetFixedTime(frameTime);
@@ -107,6 +109,8 @@ void flgin::Flgin::Run()
 			sceneManager.FixedUpdate();
 			lag -= frameTime;
 		}
+
+		collision.HandleCollisions();
 
 		renderer.Render();
 

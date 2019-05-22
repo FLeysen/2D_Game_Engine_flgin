@@ -12,6 +12,8 @@ namespace flgin
 	public:
 		GameObject();
 
+		void SetActive(bool active) { m_IsActive = active; }
+		bool IsActive() const { return m_IsActive; }
 		void Update();
 		void FixedUpdate();
 
@@ -55,6 +57,7 @@ namespace flgin
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
+		bool m_IsActive;
 	    Transform m_Transform;
 		std::vector<BaseComponent*> m_pComponents;
 	};

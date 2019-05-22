@@ -12,30 +12,33 @@ void flgin::SpriteComponent::Update()
 
 void flgin::SpriteComponent::Render() const
 {
-	if (!m_pTexture)
+	if (m_pOwnerObject->IsActive())
 	{
-		FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "SpriteComponent does not have an attached texture!", (void*)this });
-		return;
+		if (!m_pTexture)
+		{
+			FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "SpriteComponent does not have an attached texture!", (void*)this });
+			return;
+		}
+
+		const glm::vec2& pos{ m_pOwnerObject->GetPosition() };
+		SDL_Rect destRect{ };
+		destRect.x = static_cast<int>(pos.x + m_XOffset);
+		destRect.y = static_cast<int>(pos.y + m_YOffset);
+		destRect.w = static_cast<int>(m_Width);
+		destRect.h = static_cast<int>(m_Height);
+
+		int result{ SDL_RenderCopyEx(
+				FRenderer.GetSDLRenderer(),
+				m_pTexture->GetSDLTexture(),
+				&m_SourceRect,
+				&destRect,
+				m_Rotation,
+				&m_RotationalCenter,
+				m_Flips) };
+
+		if (result != 0)
+			FLogger.Log(StatusCode{ StatusCode::Status::FAIL, std::string("SpriteComponent failed to render: ") + SDL_GetError(), (void*)this });
 	}
-
-	const glm::vec2& pos{ m_pOwnerObject->GetPosition() };
-	SDL_Rect destRect{ };
-	destRect.x = static_cast<int>(pos.x + m_XOffset);
-	destRect.y = static_cast<int>(pos.y + m_YOffset);
-	destRect.w = static_cast<int>(m_Width);
-	destRect.h = static_cast<int>(m_Height);
-
-	int result{ SDL_RenderCopyEx(
-			FRenderer.GetSDLRenderer(),
-			m_pTexture->GetSDLTexture(),
-			&m_SourceRect,
-			&destRect,
-			m_Rotation,
-			&m_RotationalCenter,
-			m_Flips) };
-
-	if (result != 0)
-		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, std::string("SpriteComponent failed to render: ") + SDL_GetError(), (void*)this });
 }
 
 void flgin::SpriteComponent::SetSpriteInfo(unsigned int columns, unsigned int rows, float spriteWidth, float spriteHeight, float frameTime, bool shouldAnimate)

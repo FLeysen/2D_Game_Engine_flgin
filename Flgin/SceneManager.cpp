@@ -81,6 +81,6 @@ void flgin::SceneManager::RemoveCurrentScene()
 	}
 	else
 	{
-		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, "Attempted to remove current scene, but no scene was set!" });
+		FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "Attempted to remove current scene, but no scene was set!" });
 	}
 }

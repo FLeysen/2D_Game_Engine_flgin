@@ -13,6 +13,7 @@
 flgin::GameObject::GameObject()
 	: m_pComponents{}
 	, m_Transform{}
+	, m_IsActive{ true }
 {}
 
 flgin::GameObject::~GameObject()
@@ -24,8 +25,11 @@ flgin::GameObject::~GameObject()
 
 void flgin::GameObject::Update()
 {
-	for (BaseComponent* component : m_pComponents)
-		component->Update();
+	if (m_IsActive)
+	{
+		for (BaseComponent* component : m_pComponents)
+			component->Update();
+	}
 }
 
 void flgin::GameObject::SetPosition(float x, float y)
@@ -54,6 +58,9 @@ void flgin::GameObject::RemoveComponent(BaseComponent* const component)
 
 void flgin::GameObject::FixedUpdate()
 {
-	for (BaseComponent* component : m_pComponents)
-		component->FixedUpdate();
+	if (m_IsActive)
+	{
+		for (BaseComponent* component : m_pComponents)
+			component->FixedUpdate();
+	}
 }

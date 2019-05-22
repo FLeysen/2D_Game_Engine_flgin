@@ -28,6 +28,10 @@
 #include "LivesObserver.h"
 #include "ScoreObserver.h"
 #include "GameOverObserver.h"
+#include "ColliderComponent.h"
+#include "CollisionManager.h"
+#include "RockStates.h"
+#include "FreeMover.h"
 
 DigDug::Game::Game()
 	: m_Engine{}
@@ -58,6 +62,7 @@ void DigDug::Game::InitGameScene()
 	Scene* scene{ FSceneManager.CreateScene("GameScene") };
 	FInvoker.CancelAllInvokes();
 	FInputManager.ClearCommands();
+	FCollisionManager.ClearColliders();
 
 	GameObject* go{  };
 #ifdef _DEBUG
@@ -139,11 +144,38 @@ void DigDug::Game::InitGameScene()
 	idleState->SetAttachedSprite(spriteComponent);
 	idleState->SetPlayer(playerComponent);
 	stateComponent->SetCurrentState(idleState);
-	
+
+	ColliderComponent* colliderComponent{ new ColliderComponent{ go, "Player", 30.f, 30.f } };
+	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ []() {} });
+
+	go->AddComponent(colliderComponent);
 	go->AddComponent(spriteComponent);
 	go->AddComponent(gridMover);
 	go->AddComponent(inputComponent);
 	go->AddComponent(playerComponent);
+	go->AddComponent(stateComponent);
+	scene->AddGameObject(go);
+
+	go = new GameObject{};
+	GridNode* node{ grid->GetNodeNearestTo(150.0f, 150.0f) };
+	go->SetPosition(node->GetPosition().x, node->GetPosition().y);
+	FreeMover* freeMoveComponent{ new FreeMover{go, 0.f} };
+	ColliderComponent* rockColliderComponent{ new ColliderComponent{ go, "Rock", 30.f, 30.f } };
+	renderComponent = scene->CreateRenderComponent(go, 3);
+	renderComponent->SetPositionOffset(-15.f, -15.f);
+	renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texRock")));
+
+	stateComponent = new StateComponent{ go };
+	StuckState* stuckState{ new StuckState{} };
+	stuckState->SetAttachedCollider(rockColliderComponent);
+	stuckState->SetAttachedMover(freeMoveComponent);
+	stuckState->SetNode(node);
+	stuckState->SetPlayer1Collider(colliderComponent);
+	stateComponent->SetCurrentState(stuckState);
+
+	go->AddComponent(freeMoveComponent);
+	go->AddComponent(renderComponent);
+	go->AddComponent(rockColliderComponent);
 	go->AddComponent(stateComponent);
 	scene->AddGameObject(go);
 }
@@ -157,6 +189,7 @@ void DigDug::Game::InitMenuScene()
 	FInvoker.CancelAllInvokes();
 	FObserverManager.Clear();
 	FInputManager.ClearCommands();	
+	FCollisionManager.ClearColliders();
 	if (FInputManager.GetPlayer(1)) FInputManager.GetPlayer(1)->Clear();
 
 	GameObject* go{ new flgin::GameObject{} };

@@ -13,3 +13,4 @@ texAngryPlayer;AngrySprite.png;ActualSprite.png
 texButton;ButtonRegular.png;ButtonRegular.png
 texButtonSelected;ButtonSelected.png;ButtonSelected.png
 texLives;FourHearts.png;FourHearts.png
+texRock;BigHeart.png;BigHeart.png

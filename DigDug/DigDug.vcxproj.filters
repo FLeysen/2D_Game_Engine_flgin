@@ -51,6 +51,9 @@
     <ClInclude Include="GameOverObserver.h">
       <Filter>Observers</Filter>
     </ClInclude>
+    <ClInclude Include="RockStates.h">
+      <Filter>States</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -79,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="GameOverObserver.cpp">
       <Filter>Observers</Filter>
+    </ClCompile>
+    <ClCompile Include="RockStates.cpp">
+      <Filter>States</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

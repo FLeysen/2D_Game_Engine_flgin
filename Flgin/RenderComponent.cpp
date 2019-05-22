@@ -29,13 +29,16 @@ flgin::RenderComponent::RenderComponent(GameObject* const ownerObject)
 
 void flgin::RenderComponent::Render() const
 {
-	if (!m_pTexture)
+	if (m_pOwnerObject->IsActive())
 	{
-		FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "RenderComponent does not have an attached texture!", (void*)this });
-		return;
+		if (!m_pTexture)
+		{
+			FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "RenderComponent does not have an attached texture!", (void*)this });
+			return;
+		}
+		const glm::vec2& pos{ m_pOwnerObject->GetPosition() };
+		FRenderer.RenderTexture(*m_pTexture, pos.x + m_XOffset, pos.y + m_YOffset, m_Width, m_Height);
 	}
-	const glm::vec2& pos{ m_pOwnerObject->GetPosition() };
-	FRenderer.RenderTexture(*m_pTexture, pos.x + m_XOffset, pos.y + m_YOffset, m_Width, m_Height);
 }
 
 void flgin::RenderComponent::Update()
