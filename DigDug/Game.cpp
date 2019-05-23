@@ -148,6 +148,7 @@ void DigDug::Game::InitGameScene()
 	ColliderComponent* colliderComponent{ new ColliderComponent{ go, "Player", 30.f, 30.f } };
 	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ []() {} });
 
+	go->SetTag("Player");
 	go->AddComponent(colliderComponent);
 	go->AddComponent(spriteComponent);
 	go->AddComponent(gridMover);
@@ -160,7 +161,7 @@ void DigDug::Game::InitGameScene()
 	GridNode* node{ grid->GetNodeNearestTo(150.0f, 150.0f) };
 	go->SetPosition(node->GetPosition().x, node->GetPosition().y);
 	FreeMover* freeMoveComponent{ new FreeMover{go, 0.f} };
-	ColliderComponent* rockColliderComponent{ new ColliderComponent{ go, "Rock", 30.f, 30.f } };
+	ColliderComponent* rockColliderComponent{ new ColliderComponent{ go, "Rock", 30.f, 32.f } };
 	renderComponent = scene->CreateRenderComponent(go, 3);
 	renderComponent->SetPositionOffset(-15.f, -15.f);
 	renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texRock")));
@@ -170,7 +171,6 @@ void DigDug::Game::InitGameScene()
 	stuckState->SetAttachedCollider(rockColliderComponent);
 	stuckState->SetAttachedMover(freeMoveComponent);
 	stuckState->SetNode(node);
-	stuckState->SetPlayer1Collider(colliderComponent);
 	stateComponent->SetCurrentState(stuckState);
 
 	go->AddComponent(freeMoveComponent);
@@ -324,7 +324,12 @@ void DigDug::Game::InitTwoPlayer()
 	idleState->SetAttachedSprite(spriteComponent);
 	idleState->SetPlayer(playerComponent);
 	stateComponent->SetCurrentState(idleState);
+
+	ColliderComponent* colliderComponent{ new ColliderComponent{ go, "Player", 30.f, 30.f } };
+	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ []() {} });
 	
+	go->AddComponent(colliderComponent);
+	go->SetTag("Player");
 	go->AddComponent(spriteComponent);
 	go->AddComponent(gridMover);
 	go->AddComponent(inputComponent);

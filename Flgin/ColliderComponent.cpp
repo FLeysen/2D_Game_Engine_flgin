@@ -35,7 +35,7 @@ void flgin::ColliderComponent::SetOnCollisionFunction(FunctionHolderBase* pFunc)
 
 void flgin::ColliderComponent::CheckAndExecuteCollision(ColliderComponent& other)
 {
-	if (m_pOwnerObject->IsActive())
+	if (m_pOwnerObject->IsActive() && other.m_pOwnerObject->IsActive())
 	{
 		if (!IsColliding(other)) return;
 

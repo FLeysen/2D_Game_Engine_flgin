@@ -17,14 +17,12 @@ void DigDug::StuckState::Exit()
 
 bool DigDug::StuckState::Update()
 {
-	if (!m_HitPlayerOne && !m_HitPlayerTwo) return false;
+	if (!m_pCollidedWith) return false;
 
-	AwaitingFallState* fallState{ new AwaitingFallState{ m_HitPlayerOne, m_HitPlayerTwo } };
+	AwaitingFallState* fallState{ new AwaitingFallState{ m_pCollidedWith } };
 	fallState->SetAttachedCollider(m_pCollider);
 	fallState->SetAttachedMover(m_pFreeMover);
 	fallState->SetNode(m_pNode);
-	fallState->SetPlayer1Collider(m_pPlayer1Collider);
-	fallState->SetPlayer2Collider(m_pPlayer2Collider);
 	m_pTargetState = fallState;
 	return true;
 }
@@ -39,19 +37,16 @@ void DigDug::AwaitingFallState::Exit()
 
 bool DigDug::AwaitingFallState::Update()
 {
-	if (m_HitPlayerOne || m_HitPlayerTwo)
+	if (m_StillColliding)
 	{
-		m_HitPlayerOne = false;
-		m_HitPlayerTwo = false;
+		m_StillColliding = false;
 		return false;
 	}
 
-	FallingState* fallState{ new FallingState{ m_P1Dropped, m_P2Dropped } };
+	FallingState* fallState{ new FallingState{ m_pCollidedWith } };
 	fallState->SetAttachedCollider(m_pCollider);
 	fallState->SetAttachedMover(m_pFreeMover);
 	fallState->SetNode(m_pNode);
-	fallState->SetPlayer1Collider(m_pPlayer1Collider);
-	fallState->SetPlayer2Collider(m_pPlayer2Collider);
 	m_pTargetState = fallState;
 	return true;
 }
@@ -59,10 +54,8 @@ bool DigDug::AwaitingFallState::Update()
 void DigDug::AwaitingFallState::CheckPlayerHit()
 {
 	flgin::ColliderComponent* other{ m_pCollider->GetCollisionHit() };
-	if (other == m_pPlayer1Collider)
-		m_HitPlayerOne = true;
-	else if (other == m_pPlayer2Collider)
-		m_HitPlayerTwo = true;
+	if (other->GetGameObject()->CompareTag("Player"))
+		m_StillColliding = true;
 }
 
 void DigDug::FallingState::Enter()
@@ -77,24 +70,20 @@ void DigDug::FallingState::Exit()
 
 bool DigDug::FallingState::Update()
 {
+	if (m_pCollider->GetGameObject()->GetPosition().y < 500.f) 
+		return false;
+	m_pCollider->GetGameObject()->SetActive(false);
 	return false;
 }
 
 void DigDug::FallingState::CheckPlayerHit()
 {
 	flgin::ColliderComponent* other{ m_pCollider->GetCollisionHit() };
-	if (other == m_pPlayer1Collider)
-	{
-		m_pPlayer1Collider->GetGameObject()->GetComponent<Player>()->ChangeLives(-1);
-	}
-	else if (other == m_pPlayer2Collider)
-	{
-		m_pPlayer2Collider->GetGameObject()->GetComponent<Player>()->ChangeLives(-1);
-	}
+	if (other->GetGameObject()->CompareTag("Player"))
+		other->GetGameObject()->GetComponent<Player>()->ChangeLives(-1);
 	else
 	{
 		//TODO: INSERT ENEMY DESTRUCTION CODE HERE, SHOULD COLLIDE ONLY WITH ENEMIES AND PLAYERS
-		(m_HitPlayerOne ? m_pPlayer1Collider : m_pPlayer2Collider)->GetGameObject()->GetComponent<Player>()->ChangeScore(100);
 	}
 	m_pCollider->GetGameObject()->SetActive(false);
 }
@@ -104,8 +93,6 @@ void DigDug::StuckState::CheckPlayerHit()
 	if (m_pNode->GetDownNode()->IsBlocked()) return;
 
 	flgin::ColliderComponent* other{ m_pCollider->GetCollisionHit() };
-	if (other == m_pPlayer1Collider)
-		m_HitPlayerOne = true;
-	else if (other == m_pPlayer2Collider)
-		m_HitPlayerTwo = true;
+	if (other->GetGameObject()->CompareTag("Player"))
+		m_pCollidedWith = other;
 }

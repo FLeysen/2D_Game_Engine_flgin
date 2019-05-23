@@ -10,10 +10,14 @@
 #pragma warning(pop)
 #include "Texture2D.h"
 
+unsigned int flgin::GameObject::m_Limit{ 0 };
+std::unordered_map<std::string, unsigned int> flgin::GameObject::m_Tags{ {"Default", 0} };
+
 flgin::GameObject::GameObject()
 	: m_pComponents{}
 	, m_Transform{}
 	, m_IsActive{ true }
+	, m_Tag{ 0 }
 {}
 
 flgin::GameObject::~GameObject()
@@ -63,4 +67,21 @@ void flgin::GameObject::FixedUpdate()
 		for (BaseComponent* component : m_pComponents)
 			component->FixedUpdate();
 	}
+}
+
+void flgin::GameObject::SetTag(std::string&& tag)
+{
+	if (m_Tags.find(tag) != m_Tags.cend())
+	{
+		m_Tag = m_Tags[tag];
+		return;
+	}
+	m_Tag = m_Tags[tag] = ++m_Limit;
+}
+
+bool flgin::GameObject::CompareTag(std::string&& tag) const
+{
+	if (m_Tags.find(tag) != m_Tags.cend()) return m_Tag == m_Tags[tag];
+	FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "Attempted to compare tag with nonexistant tag: " + tag });
+	return false;
 }

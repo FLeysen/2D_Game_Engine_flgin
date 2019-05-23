@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <algorithm>
+#include <unordered_map>
 
 #include "Transform.h"
 #include "Texture2D.h"
@@ -16,6 +17,9 @@ namespace flgin
 		bool IsActive() const { return m_IsActive; }
 		void Update();
 		void FixedUpdate();
+
+		void SetTag(std::string&& tag);
+		bool CompareTag(std::string&& tag) const;
 
 		void SetPosition(float x, float y);
 		glm::vec2 GetPosition() const;
@@ -58,7 +62,11 @@ namespace flgin
 
 	private:
 		bool m_IsActive;
+		UINT m_Tag;
 	    Transform m_Transform;
 		std::vector<BaseComponent*> m_pComponents;
+
+		static UINT m_Limit;
+		static std::unordered_map<std::string, UINT> m_Tags;
 	};
 }
