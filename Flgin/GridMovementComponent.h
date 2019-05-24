@@ -7,15 +7,21 @@
 
 namespace flgin
 {
+	enum class MovementDirection : UINT8
+	{
+		Up, Down, Left, Right
+	};
+
 	class MovementGrid;
 	class GridMovementComponent : public BaseComponent
 	{
 	public:
-		GridMovementComponent(GameObject* const ownerObject, float maxVelocity, MovementGrid* pAttachedGrid, float acceptableTurnDist = 1.0f);
+		GridMovementComponent(GameObject* const ownerObject, float maxVelocity, MovementGrid* pAttachedGrid, float acceptableTurnDist = 60.0f, bool canDig = false);
 		void Update() override;
 		void SetMoving(bool isHorizontal, bool isPositiveDirection);
 		void StopMoving();
 		glm::vec2 GetVelocity();
+		MovementDirection GetMovementDirection() const { return m_LastMovedDir; }
 
 	protected:
 		void MoveLeft();
@@ -24,9 +30,11 @@ namespace flgin
 		void MoveUp();
 		void ClampVelocity();
 
+		bool m_AllowedToDig;
 		bool m_WasStopped;
+		MovementDirection m_LastMovedDir;
 		float m_MaxVelocity;
-		float m_MaxTurnDistance;
+		float m_MaxTurnDistance; //Uses deltatime, raw distance can be much shorter on higher fps
 		glm::vec2 m_CurrentVelocity;
 		glm::vec2 m_TargetPos;
 		MovementGrid* m_pMovementGrid;

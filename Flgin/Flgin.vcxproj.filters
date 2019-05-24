@@ -133,9 +133,6 @@
     <ClInclude Include="Invoker.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="Observer.h">
       <Filter>Observer</Filter>
     </ClInclude>
@@ -189,6 +186,9 @@
     </ClInclude>
     <ClInclude Include="CollisionManager.h">
       <Filter>Components\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

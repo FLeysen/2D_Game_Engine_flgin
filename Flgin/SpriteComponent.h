@@ -17,6 +17,8 @@ namespace flgin
 		void SetRotation(float angleInDegrees);
 		void SetRotationalOffset(float xOffsetFromCenter, float yOffsetFromCenter);
 		void IncrementCurrentFrame();
+		bool GetFlippedHorizontal() const { return m_Flips & SDL_FLIP_HORIZONTAL; }
+		bool GetFlippedVertical() const { return m_Flips & SDL_FLIP_VERTICAL; }
 
 #pragma region ro5
 		SpriteComponent()

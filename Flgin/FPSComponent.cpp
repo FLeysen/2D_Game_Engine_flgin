@@ -1,6 +1,6 @@
 #include "FlginPCH.h"
 #include "FPSComponent.h"
-#include "Time.h"
+#include "Timer.h"
 #include "TextComponent.h"
 #include <string>
 #include "Invoker.h"
@@ -16,6 +16,7 @@ flgin::FPSComponent::FPSComponent(GameObject* const ownerObject, const float tim
 	, m_TimeBetweenUpdates{ timeBetweenUpdates }
 	, m_ElapsedTime{ 0.0f }
 	, m_ElapsedFrames{ 0 }
+	, m_Text{ ownerObject->GetComponent<TextComponent>() }
 {}
 
 void flgin::FPSComponent::Update()
@@ -35,4 +36,13 @@ void flgin::FPSComponent::Update()
 		m_ElapsedFrames = 0;
 	}
 	++m_ElapsedFrames;
+	
+	/*
+	float fps{ 1 / FTime.GetRawDeltaTime() };
+
+	if (m_Text)
+		m_Text->SetText(std::to_string(int(fps)) + " FPS");
+	else
+		FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "FPSComponent could not find an attached TextComponent.", this });
+	*/
 }

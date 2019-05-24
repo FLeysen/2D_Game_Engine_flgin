@@ -1,9 +1,9 @@
 #include "FlginPCH.h"
 #include "GridMovementComponent.h"
 #include "MovementGrid.h"
-#include "Time.h"
+#include "Timer.h"
 
-flgin::GridMovementComponent::GridMovementComponent(GameObject* const ownerObject, float maxVelocity, MovementGrid* pAttachedGrid, float acceptableTurnDist)
+flgin::GridMovementComponent::GridMovementComponent(GameObject* const ownerObject, float maxVelocity, MovementGrid* pAttachedGrid, float acceptableTurnDist, bool canDig)
 	: BaseComponent(ownerObject)
 	, m_WasStopped{ false }
 	, m_CurrentVelocity{ 0,0 }
@@ -11,6 +11,8 @@ flgin::GridMovementComponent::GridMovementComponent(GameObject* const ownerObjec
 	, m_pMovementGrid{ pAttachedGrid }
 	, m_MaxTurnDistance{ acceptableTurnDist }
 	, m_TargetPos{ ownerObject->GetPosition() }
+	, m_AllowedToDig{ canDig }
+	, m_LastMovedDir{ MovementDirection::Right }
 {
 	if (m_pMovementGrid)
 	{
@@ -68,16 +70,17 @@ void flgin::GridMovementComponent::MoveLeft()
 	}
 
 	glm::vec2 nodePos{ nearestNode->GetPosition() };
-	if (abs(pos.y - nodePos.y) < m_MaxTurnDistance)
+	if (abs(pos.y - nodePos.y) < m_MaxTurnDistance * FTime.GetDeltaTime())
 	{
 		m_TargetPos.y = nodePos.y;
 		m_TargetPos.x += m_CurrentVelocity.x * FTime.GetDeltaTime();
+		m_LastMovedDir = MovementDirection::Left;
 		if (m_TargetPos.x < nodePos.x)
 		{
 			GridNode* leftNode{ nearestNode->GetLeftNode() };
 			if (!leftNode)
 				m_TargetPos.x = nodePos.x;
-			else if (leftNode->IsBlocked())
+			else if (leftNode->IsBlocked() && !m_AllowedToDig)
 				m_TargetPos.x = nodePos.x;
 
 			else if (pos.x < leftNode->GetPosition().x && !leftNode->GetLeftNode())
@@ -97,16 +100,17 @@ void flgin::GridMovementComponent::MoveRight()
 	}
 
 	glm::vec2 nodePos{ nearestNode->GetPosition() };
-	if (abs(pos.y - nodePos.y) < m_MaxTurnDistance)
+	if (abs(pos.y - nodePos.y) < m_MaxTurnDistance * FTime.GetDeltaTime())
 	{
 		m_TargetPos.y = nodePos.y;
 		m_TargetPos.x += m_CurrentVelocity.x * FTime.GetDeltaTime();
+		m_LastMovedDir = MovementDirection::Right;
 		if (m_TargetPos.x > nodePos.x)
 		{
 			GridNode* rightNode{ nearestNode->GetRightNode() };
 			if (!rightNode)
 				m_TargetPos.x = nodePos.x;
-			else if (rightNode->IsBlocked())
+			else if (rightNode->IsBlocked() && !m_AllowedToDig)
 				m_TargetPos.x = nodePos.x;
 
 			else if (pos.x > rightNode->GetPosition().x && !rightNode->GetRightNode())
@@ -126,16 +130,17 @@ void flgin::GridMovementComponent::MoveDown()
 	}
 
 	glm::vec2 nodePos{ nearestNode->GetPosition() };
-	if (abs(pos.x - nodePos.x) < m_MaxTurnDistance)
+	if (abs(pos.x - nodePos.x) < m_MaxTurnDistance * FTime.GetDeltaTime())
 	{
 		m_TargetPos.x = nodePos.x;
 		m_TargetPos.y += m_CurrentVelocity.y * FTime.GetDeltaTime();
+		m_LastMovedDir = MovementDirection::Down;
 		if (m_TargetPos.y > nodePos.y)
 		{
 			GridNode* downNode{ nearestNode->GetDownNode() };
 			if (!downNode)
 				m_TargetPos.y = nodePos.y;
-			else if (downNode->IsBlocked())
+			else if (downNode->IsBlocked() && !m_AllowedToDig)
 				m_TargetPos.y = nodePos.y;
 
 			else if (pos.y > downNode->GetPosition().y && !downNode->GetDownNode())
@@ -155,16 +160,17 @@ void flgin::GridMovementComponent::MoveUp()
 	}
 
 	glm::vec2 nodePos{ nearestNode->GetPosition() };
-	if (abs(pos.x - nodePos.x) < m_MaxTurnDistance)
+	if (abs(pos.x - nodePos.x) < m_MaxTurnDistance * FTime.GetDeltaTime())
 	{
 		m_TargetPos.x = nodePos.x;
 		m_TargetPos.y += m_CurrentVelocity.y * FTime.GetDeltaTime();
+		m_LastMovedDir = MovementDirection::Up;
 		if (m_TargetPos.y < nodePos.y)
 		{
 			GridNode* upNode{ nearestNode->GetUpNode() };
 			if (!upNode)
 				m_TargetPos.y = nodePos.y;
-			else if (upNode->IsBlocked())
+			else if (upNode->IsBlocked() && !m_AllowedToDig)
 				m_TargetPos.y = nodePos.y;
 
 			else if (pos.y < upNode->GetPosition().y && !upNode->GetUpNode())

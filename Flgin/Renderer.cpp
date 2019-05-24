@@ -7,7 +7,7 @@
 void flgin::Renderer::Init(SDL_Window * window)
 {
 	m_pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (m_pRenderer == nullptr) 
+	if (!m_pRenderer) 
 		FLogger.Log(StatusCode{ StatusCode::Status::FAIL, std::string("SDL_CreateRenderer Error: ") + SDL_GetError() });
 }
 

@@ -33,7 +33,9 @@ void DigDug::AwaitingFallState::Enter()
 }
 
 void DigDug::AwaitingFallState::Exit()
-{}
+{
+	m_pNode->SetBlocked(false);
+}
 
 bool DigDug::AwaitingFallState::Update()
 {

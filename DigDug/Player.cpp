@@ -5,6 +5,7 @@
 void DigDug::Player::ChangeLives(int amount)
 {
 	m_Lives += amount;
+	m_IsDying = true;
 	Notify(ObserverEvent::LivesChanged);
 }
 

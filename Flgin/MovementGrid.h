@@ -40,7 +40,7 @@ namespace flgin
 		GridNode* GetRightNode() { return m_pRightNode; }
 		GridNode* GetUpNode() { return m_pUpNode; }
 		GridNode* GetDownNode() { return m_pDownNode; }
-		bool SetBlocked(bool isBlocked) { m_IsBlocked = isBlocked; }
+		void SetBlocked(bool isBlocked) { m_IsBlocked = isBlocked; }
 		bool IsBlocked() const { return m_IsBlocked; }
 
 	private:

@@ -1,7 +1,7 @@
 #include "FlginPCH.h"
 #include "PathfinderComponent.h"
 #include <algorithm>
-#include "Time.h"
+#include "Timer.h"
 
 flgin::PathfinderComponent::PathfinderComponent(GameObject* const pOwnerObject, float maxVelocity, MovementGrid* pAttachedGrid, float acceptableTurnDist)
 	: GridMovementComponent(pOwnerObject, maxVelocity, pAttachedGrid, acceptableTurnDist)

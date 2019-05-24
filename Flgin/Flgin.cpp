@@ -13,7 +13,7 @@
 #include "FPSComponent.h"
 #include "TextComponent.h"
 #include "Logger.h"
-#include "Time.h"
+#include "Timer.h"
 #include "Invoker.h"
 #include "InputComponent.h"
 #include "PlayerCommands.h"

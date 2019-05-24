@@ -7,9 +7,9 @@
 #include "SceneManager.h"
 #include "FunctionHolder.h"
 
-void DigDug::ToggleAngryCommand::Execute(flgin::GameObject&, bool isInverseAction)
+void DigDug::DieCommand::Execute(flgin::GameObject&, bool isInverseAction)
 {
-	if(!isInverseAction) m_pPlayer->SetAngry(!m_pPlayer->IsAngry());
+	if (!isInverseAction) m_pPlayer->ChangeLives(-1);
 }
 
 void DigDug::MenuPreviousCommand::Execute(flgin::GameObject&, bool isInverseAction)

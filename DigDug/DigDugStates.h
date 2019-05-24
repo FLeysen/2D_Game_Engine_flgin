@@ -5,6 +5,8 @@ namespace flgin
 {
 	class SpriteComponent;
 	class Texture2D;
+	class GridMovementComponent;
+	enum class MovementDirection : UINT8;
 }
 
 namespace DigDug
@@ -38,15 +40,22 @@ namespace DigDug
 		void Enter() override;
 		bool Update() override;
 		void Exit() override {}
+
+	private:
+		flgin::GridMovementComponent* m_pGridMover;
 	};
 
-	class AngryState final : public DigDugState
+	class MovingState final : public DigDugState
 	{
 	public:
-		AngryState();
-		~AngryState() = default;
+		MovingState() : DigDugState() {}
+		~MovingState() = default;
 		void Enter() override;
 		void Exit() override {}
 		bool Update() override;
+
+	private:
+		flgin::MovementDirection m_PreviousDirection;
+		flgin::GridMovementComponent* m_pGridMover;
 	};
 }

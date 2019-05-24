@@ -1,6 +1,6 @@
 #include "FlginPCH.h"
 #include "FreeMover.h"
-#include "Time.h"
+#include "Timer.h"
 
 flgin::FreeMover::FreeMover(GameObject* pOwnerObject, float maxVelocity)
 	: FreeMover(pOwnerObject, maxVelocity, maxVelocity, 0.f, 0.f)

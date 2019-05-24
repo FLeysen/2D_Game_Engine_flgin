@@ -11,10 +11,10 @@ namespace DigDug
 	class Player;
 	class Game;
 
-	class ToggleAngryCommand final : public flgin::Command
+	class DieCommand final : public flgin::Command
 	{
 	public:
-		ToggleAngryCommand(Player* pPlayer) : Command(), m_pPlayer{ pPlayer } {}
+		DieCommand(Player* pPlayer) : Command(), m_pPlayer{ pPlayer } {}
 		void Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
 
 	private:

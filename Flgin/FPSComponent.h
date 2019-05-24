@@ -2,6 +2,7 @@
 #include "BaseComponent.h"
 namespace flgin
 {
+	class TextComponent;
 	class FPSComponent final : public BaseComponent
 	{
 	public:
@@ -13,5 +14,6 @@ namespace flgin
 		int m_ElapsedFrames;
 		float m_TimeBetweenUpdates;
 		float m_ElapsedTime;
+		TextComponent* m_Text;
 	};
 }

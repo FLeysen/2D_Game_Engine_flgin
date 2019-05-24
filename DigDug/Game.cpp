@@ -32,6 +32,7 @@
 #include "CollisionManager.h"
 #include "RockStates.h"
 #include "FreeMover.h"
+#include "Rock.h"
 
 DigDug::Game::Game()
 	: m_Engine{}
@@ -100,7 +101,8 @@ void DigDug::Game::InitGameScene()
 	go = new GameObject{};
 	go->SetPosition(15.0f, 15.0f);
 	InputComponent* inputComponent{ FInputManager.GetPlayer(0) };
-	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid} };
+	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid, 90.f, true } };
+	go->AddComponent(gridMover);
 	inputComponent->Clear();
 	QuitCommand* quitCommand{ new QuitCommand{} };
 	ReturnToMenuCommand* returnCommand{ new ReturnToMenuCommand{*this} };
@@ -135,7 +137,7 @@ void DigDug::Game::InitGameScene()
 	playerComponent->AddObserver(livesObserver);
 	playerComponent->AddObserver(scoreObserver);
 	playerComponent->AddObserver(new GameOverObserver{ this });
-	ToggleAngryCommand* angryToggleCommand{ new ToggleAngryCommand{playerComponent} };
+	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
 	inputComponent->AddKeyboardMapping(SDLK_e, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
 	
@@ -151,33 +153,35 @@ void DigDug::Game::InitGameScene()
 	go->SetTag("Player");
 	go->AddComponent(colliderComponent);
 	go->AddComponent(spriteComponent);
-	go->AddComponent(gridMover);
 	go->AddComponent(inputComponent);
 	go->AddComponent(playerComponent);
 	go->AddComponent(stateComponent);
 	scene->AddGameObject(go);
 
-	go = new GameObject{};
-	GridNode* node{ grid->GetNodeNearestTo(150.0f, 150.0f) };
-	go->SetPosition(node->GetPosition().x, node->GetPosition().y);
-	FreeMover* freeMoveComponent{ new FreeMover{go, 0.f} };
-	ColliderComponent* rockColliderComponent{ new ColliderComponent{ go, "Rock", 30.f, 32.f } };
-	renderComponent = scene->CreateRenderComponent(go, 3);
-	renderComponent->SetPositionOffset(-15.f, -15.f);
-	renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texRock")));
+	Rock::Create(scene, grid->GetNodeNearestTo(150.f, 150.f), FLocalizer.Get("texRock"));
 
-	stateComponent = new StateComponent{ go };
-	StuckState* stuckState{ new StuckState{} };
-	stuckState->SetAttachedCollider(rockColliderComponent);
-	stuckState->SetAttachedMover(freeMoveComponent);
-	stuckState->SetNode(node);
-	stateComponent->SetCurrentState(stuckState);
+	//TODO: TEST CODE, PLEASE REMOVE
+	for (unsigned int i{ 0 }; i < grid->GetGridSize() - 21; ++i)
+	{
+		if (rand() % 4 != 0)
+		{
+			if (grid->GetGrid()[i + 21].IsBlocked()) continue;
+			grid->GetGrid()[i + 21].SetBlocked(true);
+			go = new GameObject{};
+			renderComponent = scene->CreateRenderComponent(go, 2);
+			renderComponent->SetPositionOffset(-15.f, -15.f);
+			renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texDirt" + std::to_string(i * 4 / (grid->GetGridSize() - 21)))));
 
-	go->AddComponent(freeMoveComponent);
-	go->AddComponent(renderComponent);
-	go->AddComponent(rockColliderComponent);
-	go->AddComponent(stateComponent);
-	scene->AddGameObject(go);
+			colliderComponent = new ColliderComponent{ go, "Dirt", 7.5f, 7.5f, 15.f, 15.f };
+			colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ [go, grid, colliderComponent]() { if (colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Rock")) return; go->SetActive(false); grid->GetNodeNearestTo(go->GetPosition().x, go->GetPosition().y)->SetBlocked(false); } });
+			FCollisionManager.AddIgnore("Dirt", "Dirt");
+
+			go->AddComponent(colliderComponent);
+			go->AddComponent(renderComponent);
+			go->SetPosition(grid->GetGrid()[i].GetPosition().x, grid->GetGrid()[i + 21].GetPosition().y);
+			scene->AddGameObject(go);
+		}
+	}
 }
 
 void DigDug::Game::InitMenuScene()
@@ -287,7 +291,7 @@ void DigDug::Game::InitTwoPlayer()
 	MovementGrid* grid{ scene->FindComponentOfType<MovementGrid>() };
 	go->SetPosition(650.0f, 15.0f);
 	InputComponent* inputComponent{ FInputManager.GetPlayer(1) };
-	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid} };
+	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid, 90.0f, true } };
 	QuitCommand* quitCommand{ new QuitCommand{} };
 	DirectionalGridMove* gridMoveRight{ new DirectionalGridMove{ gridMover, true, true } };
 	DirectionalGridMove* gridMoveLeft{ new DirectionalGridMove{ gridMover, true, false } };
@@ -315,7 +319,7 @@ void DigDug::Game::InitTwoPlayer()
 	spriteComponent->SetDimensions(30.0f, 30.0f);
 	
 	Player* playerComponent{ new Player{ go } };
-	ToggleAngryCommand* angryToggleCommand{ new ToggleAngryCommand{playerComponent} };
+	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
 	inputComponent->AddKeyboardMapping(SDLK_p, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
 

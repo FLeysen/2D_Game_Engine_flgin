@@ -3,22 +3,6 @@
 #include "FunctionHolder.h"
 #include "ColliderComponent.h"
 
-/*
-void flgin::CollisionManager::AddCollider(ColliderComponent* pCollider, UINT layer)
-{
-	if (layer >= m_Limit)
-	{
-		for (UINT i{ m_Limit }; i <= layer; ++i)
-		{
-			m_pColliders[i] = {};
-			m_IgnoredLayers[i] = {};
-		}
-		m_Limit = layer + 1;
-	}
-	m_pColliders[layer].push_back(pCollider);
-}
-*/
-
 void flgin::CollisionManager::AddCollider(ColliderComponent* pCollider, std::string&& layer)
 {
 	if (m_LayerNames.find(layer) == m_LayerNames.cend())
@@ -40,18 +24,6 @@ void flgin::CollisionManager::AddIgnore(std::string&& layer, std::string&& ignor
 	else
 		FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "Cannot add ignore layer " + ignoredLayer + " to layer " + layer + " (should be higher or equal index)" });
 }
-
-/*
-void flgin::CollisionManager::AddIgnore(UINT layer, UINT ignoredLayer)
-{
-	if (layer <= ignoredLayer)
-	{
-		m_IgnoredLayers[layer].emplace(ignoredLayer);
-	}
-	else
-		FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "Cannot add ignore layer " + std::to_string(ignoredLayer) + " to layer " + std::to_string(layer) + " (should be higher or equal)" });
-}
-*/
 
 void flgin::CollisionManager::HandleCollisions()
 {

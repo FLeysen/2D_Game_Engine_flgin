@@ -22,6 +22,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Prefabs">
+      <UniqueIdentifier>{fbf84da1-0278-4bad-b8d1-0f28c166d154}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -54,6 +57,9 @@
     <ClInclude Include="RockStates.h">
       <Filter>States</Filter>
     </ClInclude>
+    <ClInclude Include="Rock.h">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -85,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="RockStates.cpp">
       <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="Rock.cpp">
+      <Filter>Prefabs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

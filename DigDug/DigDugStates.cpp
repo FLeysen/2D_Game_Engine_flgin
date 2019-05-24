@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "ResourceManager.h"
 #include "TextLocalizer.h"
+#include "GridMovementComponent.h"
 
 void DigDug::DigDugState::SetAttachedSprite(flgin::SpriteComponent* pSprite)
 {
@@ -22,44 +23,60 @@ DigDug::IdleState::IdleState()
 void DigDug::IdleState::Enter()
 {
 	m_pSpriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")), true);
+	m_pGridMover = m_pPlayer->GetGameObject()->GetComponent<flgin::GridMovementComponent>();
 }
 
 bool DigDug::IdleState::Update()
 {
-	if (m_pPlayer->IsAngry())
+	if (m_pGridMover->GetVelocity().x != 0.f || m_pGridMover->GetVelocity().y != 0.f)
 	{
-		//TODO: REMOVE TEST CODE 
-		m_pPlayer->ChangeLives(-1);
-		m_pPlayer->ChangeScore(rand() % 3000);
-
-		AngryState* angryState{ new AngryState{} };
-		angryState->SetAttachedSprite(m_pSpriteComponent);
-		angryState->SetPlayer(m_pPlayer);
-		m_pTargetState = angryState;
+		MovingState* movingState{ new MovingState{} };
+		movingState->SetAttachedSprite(m_pSpriteComponent);
+		movingState->SetPlayer(m_pPlayer);
+		m_pTargetState = movingState;
 		return true;
 	}
 	return false;
 }
 
-DigDug::AngryState::AngryState()
-	: DigDugState()
-{}
-
-void DigDug::AngryState::Enter()
+void DigDug::MovingState::Enter()
 {
-	m_pSpriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texAngryPlayer")), true);
+	m_pGridMover = m_pPlayer->GetGameObject()->GetComponent<flgin::GridMovementComponent>();
+	m_pSpriteComponent->SetRotationalOffset(0.f, 0.f);
+	m_PreviousDirection = m_pGridMover->GetMovementDirection();
 }
 
-bool DigDug::AngryState::Update()
+bool DigDug::MovingState::Update()
 {
-	if (!m_pPlayer->IsAngry())
+	if (m_pGridMover->GetVelocity().x != 0.f || m_pGridMover->GetVelocity().y != 0.f)
 	{
-		IdleState* idleState{ new IdleState{} };
-		idleState->SetAttachedSprite(m_pSpriteComponent);
-		idleState->SetPlayer(m_pPlayer);
-		m_pTargetState = idleState;
-		return true;
+		switch (m_pGridMover->GetMovementDirection())
+		{
+		case flgin::MovementDirection::Up:
+			m_pSpriteComponent->SetRotation(270.f);
+			if (m_PreviousDirection == flgin::MovementDirection::Right) m_pSpriteComponent->SetFlips(false, false);
+			else if (m_PreviousDirection == flgin::MovementDirection::Down) m_pSpriteComponent->SetFlips(false, !m_pSpriteComponent->GetFlippedVertical());
+			break;
+		case flgin::MovementDirection::Down:
+			m_pSpriteComponent->SetRotation(90.f);
+			if (m_PreviousDirection == flgin::MovementDirection::Left) m_pSpriteComponent->SetFlips(false, true);
+			else if (m_PreviousDirection == flgin::MovementDirection::Up) m_pSpriteComponent->SetFlips(false, !m_pSpriteComponent->GetFlippedVertical());
+			break;
+		case flgin::MovementDirection::Left:
+			m_pSpriteComponent->SetRotation(180.f);
+			m_pSpriteComponent->SetFlips(false, true);
+			break;
+		case flgin::MovementDirection::Right:
+			m_pSpriteComponent->SetRotation(0.f);
+			m_pSpriteComponent->SetFlips(false, false);
+			break;
+		}
+		m_PreviousDirection = m_pGridMover->GetMovementDirection();
+		return false;
 	}
-	return false;
+	IdleState* idle{ new IdleState{} };
+	idle->SetAttachedSprite(m_pSpriteComponent);
+	idle->SetPlayer(m_pPlayer);
+	m_pTargetState = idle;
+	return true;
 }
-
