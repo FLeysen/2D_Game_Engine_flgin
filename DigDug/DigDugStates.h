@@ -7,6 +7,7 @@ namespace flgin
 	class Texture2D;
 	class GridMovementComponent;
 	enum class MovementDirection : UINT8;
+	class FreeMover;
 }
 
 namespace DigDug
@@ -57,5 +58,33 @@ namespace DigDug
 	private:
 		flgin::MovementDirection m_PreviousDirection;
 		flgin::GridMovementComponent* m_pGridMover;
+	};
+
+	class DeathState final : public DigDugState
+	{
+	public:
+		DeathState() : DigDugState(), m_Duration{}, m_Elapsed{}, m_pGridMover{} {}
+		~DeathState() = default;
+		void Enter() override;
+		bool Update() override;
+		void Exit() override;
+
+	private:
+		float m_Elapsed;
+		float m_Duration;
+		flgin::GridMovementComponent* m_pGridMover;
+	};
+
+	class FiringState final : public DigDugState
+	{
+	public:
+		FiringState() : DigDugState() {}
+		~FiringState() = default;
+		void Enter() override;
+		bool Update() override;
+		void Exit() override;
+
+	private:
+		flgin::FreeMover* m_pPumpMover;
 	};
 }

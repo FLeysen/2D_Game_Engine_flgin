@@ -32,3 +32,8 @@ void DigDug::ReturnToMenuCommand::Execute(flgin::GameObject &, bool)
 	flgin::FunctionHolder<void>* pFunc{ new flgin::FunctionHolder<void>{ std::bind(&DigDug::Game::InitMenuScene, m_Game) } };
 	FSceneManager.SwapScene(pFunc);
 }
+
+void DigDug::FireCommand::Execute(flgin::GameObject& commander, bool isInverse)
+{
+	commander.GetComponent<Player>()->SetFiring(!isInverse);
+}

@@ -13,6 +13,7 @@ flgin::GridMovementComponent::GridMovementComponent(GameObject* const ownerObjec
 	, m_TargetPos{ ownerObject->GetPosition() }
 	, m_AllowedToDig{ canDig }
 	, m_LastMovedDir{ MovementDirection::Right }
+	, m_Enabled{ true }
 {
 	if (m_pMovementGrid)
 	{
@@ -27,19 +28,22 @@ flgin::GridMovementComponent::GridMovementComponent(GameObject* const ownerObjec
 void flgin::GridMovementComponent::Update()
 {
 	m_WasStopped = false;
-	m_TargetPos = m_pOwnerObject->GetPosition();
+	
+	if (m_Enabled)
+	{
+		m_TargetPos = m_pOwnerObject->GetPosition();
+		if (m_CurrentVelocity.x < 0.0f)
+			MoveLeft();
+		else if (m_CurrentVelocity.x > 0.0f)
+			MoveRight();
 
-	if (m_CurrentVelocity.x < 0.0f)
-		MoveLeft();
-	else if (m_CurrentVelocity.x > 0.0f)
-		MoveRight();
+		if (m_CurrentVelocity.y > 0.0f)
+			MoveDown();
+		else if (m_CurrentVelocity.y < 0.0f)
+			MoveUp();
 
-	if (m_CurrentVelocity.y > 0.0f)
-		MoveDown();
-	else if (m_CurrentVelocity.y < 0.0f)
-		MoveUp();
-
-	m_pOwnerObject->SetPosition(m_TargetPos.x, m_TargetPos.y);
+		m_pOwnerObject->SetPosition(m_TargetPos.x, m_TargetPos.y);
+	}
 }
 
 void flgin::GridMovementComponent::SetMoving(bool isHorizontal, bool isPositiveDirection)

@@ -17,12 +17,17 @@ void flgin::CollisionManager::AddCollider(ColliderComponent* pCollider, std::str
 
 void flgin::CollisionManager::AddIgnore(std::string&& layer, std::string&& ignoredLayer)
 {
-	if (m_LayerNames[layer] <= m_LayerNames[ignoredLayer])
+	if (m_LayerNames.find(ignoredLayer) != m_LayerNames.cend() && m_LayerNames.find(layer) != m_LayerNames.cend())
 	{
-		m_IgnoredLayers[m_LayerNames[layer]].emplace(m_LayerNames[ignoredLayer]);
+		if (m_LayerNames[layer] <= m_LayerNames[ignoredLayer])
+		{
+			m_IgnoredLayers[m_LayerNames[layer]].emplace(m_LayerNames[ignoredLayer]);
+		}
+		else
+			FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "Cannot add ignore layer " + ignoredLayer + " to layer " + layer + " (should be higher or equal index)" });
 	}
 	else
-		FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "Cannot add ignore layer " + ignoredLayer + " to layer " + layer + " (should be higher or equal index)" });
+		FLogger.Log(StatusCode{ StatusCode::Status::WARNING, "Cannot add ignore layer " + ignoredLayer + " to layer " + layer + " (at least one of the layers does not exist)" });
 }
 
 void flgin::CollisionManager::HandleCollisions()

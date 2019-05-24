@@ -15,7 +15,6 @@ namespace flgin
 	class FunctionHolder : public FunctionHolderBase
 	{
 	public:
-		//Origin is used to cancel Functions on a specific object, set this to nullptr if you only want it canceled by CancelAll
 		explicit FunctionHolder(std::function<returnType(argList...)> function, argList... arguments)
 			: FunctionHolderBase(), m_Function{ function }, m_Arguments{ arguments... } {}
 		void Call() override
@@ -46,7 +45,6 @@ namespace flgin
 	class ConditionalFunctionHolder : public ConditionalFunctionHolderBase
 	{
 	public:
-		//Origin is used to cancel Functions on a specific object, set this to nullptr if you only want it canceled by CancelAll
 		explicit ConditionalFunctionHolder(std::function<bool(argList...)> function, argList... arguments)
 			: ConditionalFunctionHolderBase(), m_Function{ function }, m_Arguments{ arguments... } {}
 		bool Call() override

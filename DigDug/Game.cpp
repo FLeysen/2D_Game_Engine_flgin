@@ -36,7 +36,7 @@
 
 DigDug::Game::Game()
 	: m_Engine{}
-	, m_HasTwoScores{ false }
+	, m_TwoScores{ false }
 {}
 
 
@@ -60,6 +60,7 @@ void DigDug::Game::Run()
 void DigDug::Game::InitGameScene()
 {
 	using namespace flgin;
+
 	Scene* scene{ FSceneManager.CreateScene("GameScene") };
 	FInvoker.CancelAllInvokes();
 	FInputManager.ClearCommands();
@@ -97,6 +98,19 @@ void DigDug::Game::InitGameScene()
 	ScoreObserver* scoreObserver{ new ScoreObserver{ textRenderer } };
 	go->SetPosition(170.f, 425.f);
 	scene->AddGameObject(go);
+
+	GameObject* pump{ new GameObject{} };
+	pump->SetTag("Pump");
+	SpriteComponent* pumpSprite{ scene->CreateSpriteComponent(pump) };
+	pumpSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPump")));
+	pumpSprite->SetDimensions(180.f, 18.f);
+	pumpSprite->SetSpriteInfo(1, 10, 180.f, 18.f, 0.1f, true);
+	FreeMover* pumpMover{ new FreeMover{pump, 0.f} };
+	ColliderComponent* pumpCollider{ new ColliderComponent{pump, "Pump", 30.f, 30.f} };
+	pump->AddComponent(pumpMover);
+	pump->AddComponent(pumpSprite);
+	pump->AddComponent(pumpCollider);
+	scene->AddGameObject(pump);
 	
 	go = new GameObject{};
 	go->SetPosition(15.0f, 15.0f);
@@ -126,17 +140,22 @@ void DigDug::Game::InitGameScene()
 	inputComponent->AddKeyboardMapping(SDLK_w, gridMoveUp);
 	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
 	inputComponent->AddKeyboardMapping(SDLK_r, returnCommand);
+	inputComponent->AddKeyboardMapping(SDLK_q, new FireCommand{});
 	
-	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 2) };
+	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 4) };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
 	spriteComponent->SetPositionOffset(-15.f, -15.f);
-	spriteComponent->SetSpriteInfo(4, 1, 30.0f, 30.0f, 1.0f);
+	spriteComponent->SetSpriteInfo(6, 1, 30.0f, 30.0f, 0.4f);
 	spriteComponent->SetDimensions(30.0f, 30.0f);
 	
-	Player* playerComponent{ new Player{ go } };
+	Player* playerComponent{ new Player{ go, pump } };
 	playerComponent->AddObserver(livesObserver);
 	playerComponent->AddObserver(scoreObserver);
-	playerComponent->AddObserver(new GameOverObserver{ this });
+	playerComponent->AddObserver(new GameOverObserver{ *this });
+	playerComponent->SetInitPos(go->GetPosition().x, go->GetPosition().y);
+	pumpCollider->SetOnCollisionFunction(new FunctionHolder<void>{ [playerComponent]() { playerComponent->SetFiring(false); } });
+
+	//TODO: REMOVE TEST CODE
 	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
 	inputComponent->AddKeyboardMapping(SDLK_e, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
@@ -149,6 +168,7 @@ void DigDug::Game::InitGameScene()
 
 	ColliderComponent* colliderComponent{ new ColliderComponent{ go, "Player", 30.f, 30.f } };
 	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ []() {} });
+	FCollisionManager.AddIgnore("Pump", "Player");
 
 	go->SetTag("Player");
 	go->AddComponent(colliderComponent);
@@ -173,7 +193,7 @@ void DigDug::Game::InitGameScene()
 			renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texDirt" + std::to_string(i * 4 / (grid->GetGridSize() - 21)))));
 
 			colliderComponent = new ColliderComponent{ go, "Dirt", 7.5f, 7.5f, 15.f, 15.f };
-			colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ [go, grid, colliderComponent]() { if (colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Rock")) return; go->SetActive(false); grid->GetNodeNearestTo(go->GetPosition().x, go->GetPosition().y)->SetBlocked(false); } });
+			colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ [go, grid, colliderComponent]() { if (!colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player")) return; go->SetActive(false); grid->GetNodeNearestTo(go->GetPosition().x, go->GetPosition().y)->SetBlocked(false); } });
 			FCollisionManager.AddIgnore("Dirt", "Dirt");
 
 			go->AddComponent(colliderComponent);
@@ -276,7 +296,7 @@ void DigDug::Game::InitSinglePlayer()
 	InitGameScene();
 	FSceneManager.RemoveCurrentScene();
 	FSceneManager.ActivateSceneByName("GameScene");
-	m_HasTwoScores = false;
+	m_TwoScores = false;
 }
 
 void DigDug::Game::InitTwoPlayer()
@@ -285,13 +305,28 @@ void DigDug::Game::InitTwoPlayer()
 
 	InitSinglePlayer();
 	
-	m_HasTwoScores = true;
+	m_TwoScores = true;
 	Scene* scene{ FSceneManager.GetCurrentScene() };
+
+	GameObject* pump{ new GameObject{} };
+	pump->SetTag("Pump");
+	SpriteComponent* pumpSprite{ scene->CreateSpriteComponent(pump) };
+	pumpSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPump")));
+	pumpSprite->SetDimensions(180.f, 18.f);
+	pumpSprite->SetSpriteInfo(1, 10, 180.f, 18.f, 0.1f, true);
+	FreeMover* pumpMover{ new FreeMover{pump, 0.f} };
+	ColliderComponent* pumpCollider{ new ColliderComponent{pump, "Pump", 30.f, 30.f} };
+	pump->AddComponent(pumpMover);
+	pump->AddComponent(pumpSprite);
+	pump->AddComponent(pumpCollider);
+	scene->AddGameObject(pump);
+
 	GameObject* go{ new GameObject{} };
 	MovementGrid* grid{ scene->FindComponentOfType<MovementGrid>() };
 	go->SetPosition(650.0f, 15.0f);
 	InputComponent* inputComponent{ FInputManager.GetPlayer(1) };
 	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid, 90.0f, true } };
+	go->AddComponent(gridMover);
 	QuitCommand* quitCommand{ new QuitCommand{} };
 	DirectionalGridMove* gridMoveRight{ new DirectionalGridMove{ gridMover, true, true } };
 	DirectionalGridMove* gridMoveLeft{ new DirectionalGridMove{ gridMover, true, false } };
@@ -311,16 +346,21 @@ void DigDug::Game::InitTwoPlayer()
 	inputComponent->AddKeyboardMapping(SDLK_LEFT, gridMoveLeft);
 	inputComponent->AddKeyboardMapping(SDLK_DOWN, gridMoveDown);
 	inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
+	inputComponent->AddKeyboardMapping(SDLK_p, FInputManager.GetCommand<FireCommand>());
 	
-	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 2) };
+	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 4) };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
 	spriteComponent->SetPositionOffset(-15.f, -15.f);
-	spriteComponent->SetSpriteInfo(4, 1, 30.0f, 30.0f, 1.0f);
+	spriteComponent->SetSpriteInfo(6, 1, 30.0f, 30.0f, 0.4f);
 	spriteComponent->SetDimensions(30.0f, 30.0f);
-	
-	Player* playerComponent{ new Player{ go } };
+	spriteComponent->SetRotationalOffset(0.f, 0.f);
+	spriteComponent->SetRotation(180.f);
+	spriteComponent->SetFlips(false, true);
+
+	Player* playerComponent{ new Player{ go, pump } };
+	playerComponent->SetInitPos(go->GetPosition().x, go->GetPosition().y);
 	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
-	inputComponent->AddKeyboardMapping(SDLK_p, angryToggleCommand);
+	inputComponent->AddKeyboardMapping(SDLK_o, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
 
 	StateComponent* stateComponent{ new StateComponent{ go } };
@@ -331,11 +371,11 @@ void DigDug::Game::InitTwoPlayer()
 
 	ColliderComponent* colliderComponent{ new ColliderComponent{ go, "Player", 30.f, 30.f } };
 	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ []() {} });
-	
+	pumpCollider->SetOnCollisionFunction(new FunctionHolder<void>{ [playerComponent]() { playerComponent->SetFiring(false); } });
+
 	go->AddComponent(colliderComponent);
 	go->SetTag("Player");
 	go->AddComponent(spriteComponent);
-	go->AddComponent(gridMover);
 	go->AddComponent(inputComponent);
 	go->AddComponent(playerComponent);
 	go->AddComponent(stateComponent);
@@ -351,7 +391,7 @@ void DigDug::Game::InitTwoPlayer()
 	go->SetPosition(585.f, 425.f);
 	scene->AddGameObject(go);
 	playerComponent->AddObserver(livesObserver);
-	playerComponent->AddObserver(new GameOverObserver{ this });
+	playerComponent->AddObserver(new GameOverObserver{ *this });
 
 	go = new GameObject{};
 	RenderComponent* scoreRenderer{ scene->CreateRenderComponent(go) };
@@ -374,7 +414,7 @@ void DigDug::Game::InitEndScene()
 	using namespace flgin;
 	
 	UINT scoreP1{ FInputManager.GetPlayer(0)->GetGameObject()->GetComponent<Player>()->GetScore() };
-	UINT scoreP2{ m_HasTwoScores ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetScore() : 0 };
+	UINT scoreP2{ m_TwoScores ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetScore() : 0 };
 
 	InitMenuScene();
 
@@ -393,7 +433,7 @@ void DigDug::Game::InitEndScene()
 	go->SetPosition(10.f, 420.f);
 	scene->AddGameObject(go);
 
-	if (m_HasTwoScores)
+	if (m_TwoScores)
 	{
 		go = new GameObject{};
 		renderComponent = scene->CreateRenderComponent(go, 3);

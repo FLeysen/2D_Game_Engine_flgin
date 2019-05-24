@@ -11,7 +11,7 @@
 #include "Texture2D.h"
 
 unsigned int flgin::GameObject::m_Limit{ 0 };
-std::unordered_map<std::string, unsigned int> flgin::GameObject::m_Tags{ {"Default", 0} };
+std::unordered_map<std::string, unsigned int> flgin::GameObject::m_Tags{ {"Untagged", 0} };
 
 flgin::GameObject::GameObject()
 	: m_pComponents{}

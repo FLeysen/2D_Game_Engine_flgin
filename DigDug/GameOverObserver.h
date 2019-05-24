@@ -12,11 +12,11 @@ namespace DigDug
 	class GameOverObserver : public flgin::Observer
 	{
 	public:
-		GameOverObserver(Game* pGame) : Observer(), m_pGame{ pGame } {}
+		GameOverObserver(const Game& game);
 		void Notify(Event event, const flgin::Subject* const subject) override;
 		~GameOverObserver() = default;
 
 	private:
-		Game* m_pGame;
+		const Game& m_Game;
 	};
 }

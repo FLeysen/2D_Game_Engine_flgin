@@ -20,8 +20,8 @@ namespace DigDug
 		void SetSwappingToVerus();
 
 	private:
-		bool m_HasTwoScores;
 		flgin::Flgin m_Engine;
+		bool m_TwoScores;
 	};
 }
 

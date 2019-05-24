@@ -7,6 +7,7 @@ namespace flgin
 	{
 	public:
 		Subject();
+		virtual ~Subject() = default;
 		void AddObserver(Observer* observer);
 		void RemoveObserver(Observer* observer);
 		template <class T>

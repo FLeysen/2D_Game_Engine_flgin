@@ -39,7 +39,7 @@ namespace flgin
 		}
 
 		template <class T>
-		void GetCommand()
+		T* GetCommand()
 		{
 			const type_info& typeInfo{ typeid(T) };
 			for (size_t i{}, commandAmount{ m_pCommands.size() }; i < commandAmount; ++i)
@@ -47,12 +47,10 @@ namespace flgin
 				if (m_pCommands[i])
 				{
 					if (typeid(*m_pCommands[i]) == typeInfo)
-					{
-						delete m_pCommands[i];
-						m_pCommands[i] = nullptr;
-					}
+						return static_cast<T*>(m_pCommands[i]);
 				}
 			}
+			return nullptr;
 		}
 
 	private:

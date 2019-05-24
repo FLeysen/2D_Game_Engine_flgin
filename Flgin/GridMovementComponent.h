@@ -22,6 +22,8 @@ namespace flgin
 		void StopMoving();
 		glm::vec2 GetVelocity();
 		MovementDirection GetMovementDirection() const { return m_LastMovedDir; }
+		void Enable() { m_Enabled = true; }
+		void Disable() { m_Enabled = false; }
 
 	protected:
 		void MoveLeft();
@@ -30,6 +32,7 @@ namespace flgin
 		void MoveUp();
 		void ClampVelocity();
 
+		bool m_Enabled;
 		bool m_AllowedToDig;
 		bool m_WasStopped;
 		MovementDirection m_LastMovedDir;

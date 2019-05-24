@@ -60,4 +60,11 @@ namespace DigDug
 	private:
 		Game& m_Game;
 	};
+
+	class FireCommand final : public flgin::Command
+	{
+	public:
+		FireCommand() : Command() {}
+		void Execute(flgin::GameObject& commander, bool isInverse = false) override;
+	};
 }
