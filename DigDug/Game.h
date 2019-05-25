@@ -21,7 +21,6 @@ namespace DigDug
 
 	private:
 		flgin::Flgin m_Engine;
-		bool m_TwoScores;
 	};
 }
 

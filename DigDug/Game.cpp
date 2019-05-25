@@ -41,7 +41,6 @@
 
 DigDug::Game::Game()
 	: m_Engine{}
-	, m_TwoScores{ false }
 {}
 
 
@@ -328,7 +327,7 @@ void DigDug::Game::InitSinglePlayer()
 	InitGameScene();
 	FSceneManager.RemoveCurrentScene();
 	FSceneManager.ActivateSceneByName("GameScene");
-	m_TwoScores = false;
+	FInputManager.SetActivePlayers(1U);
 }
 
 void DigDug::Game::InitTwoPlayer()
@@ -337,7 +336,7 @@ void DigDug::Game::InitTwoPlayer()
 
 	InitSinglePlayer();
 	
-	m_TwoScores = true;
+	FInputManager.SetActivePlayers(2);
 	Scene* scene{ FSceneManager.GetCurrentScene() };
 
 	GameObject* pump{ new GameObject{} };
@@ -560,7 +559,7 @@ void DigDug::Game::InitEndScene()
 	using namespace flgin;
 	
 	UINT scoreP1{ FInputManager.GetPlayer(0)->GetGameObject()->GetComponent<Player>()->GetScore() };
-	UINT scoreP2{ m_TwoScores ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetScore() : 0 };
+	UINT scoreP2{ FInputManager.GetActivePlayerCount() > 1U ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetScore() : 0 };
 
 	InitMenuScene();
 
@@ -579,7 +578,7 @@ void DigDug::Game::InitEndScene()
 	go->SetPosition(10.f, 420.f);
 	scene->AddGameObject(go);
 
-	if (m_TwoScores)
+	if (FInputManager.GetActivePlayerCount() > 1U)
 	{
 		go = new GameObject{};
 		renderComponent = scene->CreateRenderComponent(go, 3);

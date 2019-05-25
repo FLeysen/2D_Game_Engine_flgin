@@ -8,6 +8,7 @@ flgin::InputManager::InputManager()
 	: m_pCommands{}
 	, m_pPlayers{}
 	, m_ShouldContinue{ true }
+	, m_ActivePlayers{ 1 }
 {}
 
 flgin::InputManager::~InputManager()

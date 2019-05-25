@@ -16,6 +16,7 @@
 #include "MovementGrid.h"
 #include "ObserverManager.h"
 #include "NextLevelObserver.h"
+#include "FygarController.h"
 
 flgin::GameObject * DigDug::NPCFygar::Create(flgin::Scene* scene, const glm::vec2& pos)
 {
@@ -67,11 +68,14 @@ flgin::GameObject * DigDug::NPCFygar::Create(flgin::Scene* scene, const glm::vec
 		if (colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player"))
 			colliderComponent->GetCollisionHit()->GetGameObject()->GetComponent<Player>()->ChangeLives(-1); } });
 
+	FygarController* fygarController{ new FygarController{fygar, fygarComponent, gridMover, grid} };
+
 	fygar->SetTag("Fygar");
 	fygar->AddComponent(colliderComponent);
 	fygar->AddComponent(spriteComponent);
 	fygar->AddComponent(fygarComponent);
 	fygar->AddComponent(stateComponent);
+	fygar->AddComponent(fygarController);
 	scene->AddGameObject(fygar);
 
 	NextLevelObserver* ob{ FObserverManager.Get<NextLevelObserver>() };

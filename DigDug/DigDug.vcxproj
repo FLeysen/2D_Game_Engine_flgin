@@ -183,6 +183,7 @@
     <ClInclude Include="DigDugStates.h" />
     <ClInclude Include="Fygar.h" />
     <ClInclude Include="FygarCommands.h" />
+    <ClInclude Include="FygarController.h" />
     <ClInclude Include="FygarStates.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameOverObserver.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="DigDugStates.cpp" />
     <ClCompile Include="Fygar.cpp" />
     <ClCompile Include="FygarCommands.cpp" />
+    <ClCompile Include="FygarController.cpp" />
     <ClCompile Include="FygarStates.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameOverObserver.cpp" />

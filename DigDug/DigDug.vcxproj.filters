@@ -25,7 +25,7 @@
     <Filter Include="Prefabs">
       <UniqueIdentifier>{fbf84da1-0278-4bad-b8d1-0f28c166d154}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components">
+    <Filter Include="Controllers">
       <UniqueIdentifier>{587a91ac-1676-4f96-83b6-f2323ef05a2c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -78,6 +78,9 @@
     <ClInclude Include="NextLevelObserver.h">
       <Filter>Observers</Filter>
     </ClInclude>
+    <ClInclude Include="FygarController.h">
+      <Filter>Controllers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -127,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="NextLevelObserver.cpp">
       <Filter>Observers</Filter>
+    </ClCompile>
+    <ClCompile Include="FygarController.cpp">
+      <Filter>Controllers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
