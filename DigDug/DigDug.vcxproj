@@ -181,6 +181,9 @@
   <ItemGroup>
     <ClInclude Include="DigDugCommands.h" />
     <ClInclude Include="DigDugStates.h" />
+    <ClInclude Include="Fygar.h" />
+    <ClInclude Include="FygarCommands.h" />
+    <ClInclude Include="FygarStates.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameOverObserver.h" />
     <ClInclude Include="LivesObserver.h" />
@@ -195,6 +198,9 @@
     <ClCompile Include="DigDug.cpp" />
     <ClCompile Include="DigDugCommands.cpp" />
     <ClCompile Include="DigDugStates.cpp" />
+    <ClCompile Include="Fygar.cpp" />
+    <ClCompile Include="FygarCommands.cpp" />
+    <ClCompile Include="FygarStates.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameOverObserver.cpp" />
     <ClCompile Include="LivesObserver.cpp" />

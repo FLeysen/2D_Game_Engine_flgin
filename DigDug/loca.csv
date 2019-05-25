@@ -20,3 +20,6 @@ texDirt1;BrownDirt.png;BrownDirt.png
 texDirt2;RedDirt.png;RedDirt.png
 texDirt3;DarkRedDirt.png;DarkRedDirt.png
 texPump;Pump.png;Pump.png
+texFire;FygarFire.png;FygarFire.png
+texFygar;FygarMove.png;FygarMove.png
+texFygarBreathe;FygarBreathe.png;FygarBreathe.png

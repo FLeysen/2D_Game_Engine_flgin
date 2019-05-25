@@ -63,6 +63,15 @@
     <ClInclude Include="Rock.h">
       <Filter>Prefabs</Filter>
     </ClInclude>
+    <ClInclude Include="FygarCommands.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="FygarStates.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="Fygar.h">
+      <Filter>States</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -97,6 +106,15 @@
     </ClCompile>
     <ClCompile Include="Rock.cpp">
       <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="FygarCommands.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="FygarStates.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="Fygar.cpp">
+      <Filter>States</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

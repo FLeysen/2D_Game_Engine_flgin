@@ -7,16 +7,19 @@ DigDug::Player::Player(flgin::GameObject * pOwnerObject, flgin::GameObject * pPu
 	: Subject()
 	, BaseComponent(pOwnerObject)
 	, m_pPump{ pPump }
-	, m_Lives{ 4 }
+	, m_Lives{ 3 }
 	, m_IsDying{ false }
 	, m_IsFiring{ false }
 { m_pPump->SetActive(false); }
 
 void DigDug::Player::ChangeLives(int amount)
 {
-	m_Lives += amount;
-	m_IsDying = true;
-	Notify(ObserverEvent::LivesChanged);
+	if (!m_IsDying)
+	{
+		m_Lives += amount;
+		m_IsDying = true;
+		Notify(ObserverEvent::LivesChanged);
+	}
 }
 
 void DigDug::Player::ChangeScore(int amount)

@@ -33,6 +33,9 @@
 #include "RockStates.h"
 #include "FreeMover.h"
 #include "Rock.h"
+#include "Fygar.h"
+#include "FygarCommands.h"
+#include "FygarStates.h"
 
 DigDug::Game::Game()
 	: m_Engine{}
@@ -86,7 +89,7 @@ void DigDug::Game::InitGameScene()
 	go = new GameObject{};
 	SpriteComponent* livesSprite{ scene->CreateSpriteComponent(go) };
 	livesSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texLives")));
-	LivesObserver* livesObserver{ new LivesObserver{ 4, livesSprite } };
+	LivesObserver* livesObserver{ new LivesObserver{ 3, livesSprite } };
 	go->SetPosition(0.f, 425.f);
 	scene->AddGameObject(go);
 
@@ -124,10 +127,12 @@ void DigDug::Game::InitGameScene()
 	DirectionalGridMove* gridMoveLeft{ new DirectionalGridMove{ gridMover, true, false } };
 	DirectionalGridMove* gridMoveDown{ new DirectionalGridMove{ gridMover, false, true } };
 	DirectionalGridMove* gridMoveUp{ new DirectionalGridMove{ gridMover, false, false } };
+	FireCommand* fireCommand{ new FireCommand{} };
 
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_BACK, returnCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_X, fireCommand);
 
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, gridMoveRight);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_LEFT, gridMoveLeft);
@@ -140,7 +145,7 @@ void DigDug::Game::InitGameScene()
 	inputComponent->AddKeyboardMapping(SDLK_w, gridMoveUp);
 	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
 	inputComponent->AddKeyboardMapping(SDLK_r, returnCommand);
-	inputComponent->AddKeyboardMapping(SDLK_q, new FireCommand{});
+	inputComponent->AddKeyboardMapping(SDLK_q, fireCommand);
 	
 	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 4) };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
@@ -181,6 +186,7 @@ void DigDug::Game::InitGameScene()
 	Rock::Create(scene, grid->GetNodeNearestTo(150.f, 150.f), FLocalizer.Get("texRock"));
 
 	//TODO: TEST CODE, PLEASE REMOVE
+	RenderComponent* renComp{};
 	for (unsigned int i{ 0 }; i < grid->GetGridSize() - 21; ++i)
 	{
 		if (rand() % 4 != 0)
@@ -188,16 +194,16 @@ void DigDug::Game::InitGameScene()
 			if (grid->GetGrid()[i + 21].IsBlocked()) continue;
 			grid->GetGrid()[i + 21].SetBlocked(true);
 			go = new GameObject{};
-			renderComponent = scene->CreateRenderComponent(go, 2);
-			renderComponent->SetPositionOffset(-15.f, -15.f);
-			renderComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texDirt" + std::to_string(i * 4 / (grid->GetGridSize() - 21)))));
+			renComp = scene->CreateRenderComponent(go, 2);
+			renComp->SetPositionOffset(-15.f, -15.f);
+			renComp->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texDirt" + std::to_string(i * 4 / (grid->GetGridSize() - 21)))));
 
 			colliderComponent = new ColliderComponent{ go, "Dirt", 7.5f, 7.5f, 15.f, 15.f };
 			colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ [go, grid, colliderComponent]() { if (!colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player")) return; go->SetActive(false); grid->GetNodeNearestTo(go->GetPosition().x, go->GetPosition().y)->SetBlocked(false); } });
 			FCollisionManager.AddIgnore("Dirt", "Dirt");
 
 			go->AddComponent(colliderComponent);
-			go->AddComponent(renderComponent);
+			go->AddComponent(renComp);
 			go->SetPosition(grid->GetGrid()[i].GetPosition().x, grid->GetGrid()[i + 21].GetPosition().y);
 			scene->AddGameObject(go);
 		}
@@ -332,10 +338,14 @@ void DigDug::Game::InitTwoPlayer()
 	DirectionalGridMove* gridMoveLeft{ new DirectionalGridMove{ gridMover, true, false } };
 	DirectionalGridMove* gridMoveDown{ new DirectionalGridMove{ gridMover, false, true } };
 	DirectionalGridMove* gridMoveUp{ new DirectionalGridMove{ gridMover, false, false } };
-	
+	ReturnToMenuCommand* returnCommand{ FInputManager.GetCommand<ReturnToMenuCommand>() };
+	FireCommand* fireCommand{ FInputManager.GetCommand<FireCommand>() };
+
 	inputComponent->Clear();
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_BACK, returnCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_X, fireCommand);
 
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, gridMoveRight);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_LEFT, gridMoveLeft);
@@ -346,7 +356,8 @@ void DigDug::Game::InitTwoPlayer()
 	inputComponent->AddKeyboardMapping(SDLK_LEFT, gridMoveLeft);
 	inputComponent->AddKeyboardMapping(SDLK_DOWN, gridMoveDown);
 	inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
-	inputComponent->AddKeyboardMapping(SDLK_p, FInputManager.GetCommand<FireCommand>());
+	inputComponent->AddKeyboardMapping(SDLK_p, fireCommand);
+	inputComponent->AddKeyboardMapping(SDLK_o, returnCommand);
 	
 	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 4) };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
@@ -359,8 +370,9 @@ void DigDug::Game::InitTwoPlayer()
 
 	Player* playerComponent{ new Player{ go, pump } };
 	playerComponent->SetInitPos(go->GetPosition().x, go->GetPosition().y);
+	//TODO: REMOVE TEST CODE
 	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
-	inputComponent->AddKeyboardMapping(SDLK_o, angryToggleCommand);
+	inputComponent->AddKeyboardMapping(SDLK_i, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
 
 	StateComponent* stateComponent{ new StateComponent{ go } };
@@ -387,7 +399,7 @@ void DigDug::Game::InitTwoPlayer()
 	livesSprite->SetRotation(180.0f);
 	livesSprite->SetPositionOffset(45.0f, 30.f);
 	livesSprite->SetFlips(false, true);
-	LivesObserver* livesObserver{ new LivesObserver{ 4, livesSprite } };
+	LivesObserver* livesObserver{ new LivesObserver{ 3, livesSprite } };
 	go->SetPosition(585.f, 425.f);
 	scene->AddGameObject(go);
 	playerComponent->AddObserver(livesObserver);
@@ -406,7 +418,96 @@ void DigDug::Game::InitTwoPlayer()
 
 void DigDug::Game::InitVersus()
 {
+	using namespace flgin;
+
 	InitSinglePlayer();
+
+	Scene* scene{ FSceneManager.GetCurrentScene() };
+	
+	GameObject* flame{ new GameObject{} };
+	flame->SetTag("Flame");
+	SpriteComponent* flameSprite{ scene->CreateSpriteComponent(flame) };
+	flameSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texFire")));
+	flameSprite->SetDimensions(30.f, 24.f);
+	flameSprite->SetPositionOffset(-15.f, -12.f);
+	flameSprite->SetSpriteInfo(6, 1, 30.f, 24.f, 0.3f, true);
+	ColliderComponent* flameCollider{ new ColliderComponent{flame, "Flame", 20.f, 17.f} };
+	flameCollider->SetOnCollisionFunction(new FunctionHolder<void>{
+	[flameCollider]() {
+	if (flameCollider->GetCollisionHit()->GetGameObject()->CompareTag("Player"))
+		flameCollider->GetCollisionHit()->GetGameObject()->GetComponent<Player>()->ChangeLives(-1); } });
+	FCollisionManager.AddIgnore("Pump", "Flame");
+
+	flame->AddComponent(flameCollider);
+	flame->AddComponent(flameSprite);
+	scene->AddGameObject(flame);
+
+
+	GameObject* fygar{ new GameObject{} };
+	MovementGrid* grid{ scene->FindComponentOfType<MovementGrid>() };
+	fygar->SetPosition(650.0f, 15.0f);
+	InputComponent* inputComponent{ FInputManager.GetPlayer(1) };
+	GridMovementComponent* gridMover{ new GridMovementComponent{ fygar, 100.0f, grid, 90.0f, false } };
+	fygar->AddComponent(gridMover);
+	QuitCommand* quitCommand{ new QuitCommand{} };
+	DirectionalGridMove* gridMoveRight{ new DirectionalGridMove{ gridMover, true, true } };
+	DirectionalGridMove* gridMoveLeft{ new DirectionalGridMove{ gridMover, true, false } };
+	DirectionalGridMove* gridMoveDown{ new DirectionalGridMove{ gridMover, false, true } };
+	DirectionalGridMove* gridMoveUp{ new DirectionalGridMove{ gridMover, false, false } };
+	ReturnToMenuCommand* returnCommand{ FInputManager.GetCommand<ReturnToMenuCommand>() };
+	BreatheFireCommand* fireBreatheCommand{ FInputManager.GetCommand<BreatheFireCommand>() };
+	if (!fireBreatheCommand) fireBreatheCommand = new BreatheFireCommand{};
+
+	inputComponent->Clear();
+	inputComponent->AttachToGameObject(fygar);
+
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
+	
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, gridMoveRight);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_LEFT, gridMoveLeft);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_DOWN, gridMoveDown);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_UP, gridMoveUp);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_X, fireBreatheCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_BACK, returnCommand);
+
+	inputComponent->AddKeyboardMapping(SDLK_RIGHT, gridMoveRight);
+	inputComponent->AddKeyboardMapping(SDLK_LEFT, gridMoveLeft);
+	inputComponent->AddKeyboardMapping(SDLK_DOWN, gridMoveDown);
+	inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
+	inputComponent->AddKeyboardMapping(SDLK_p, fireBreatheCommand);
+	inputComponent->AddKeyboardMapping(SDLK_o, returnCommand);
+
+	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(fygar, 4) };
+	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texFygar")));
+	spriteComponent->SetPositionOffset(-15.f, -15.f);
+	spriteComponent->SetSpriteInfo(4, 1, 30.0f, 30.0f, 0.4f);
+	spriteComponent->SetDimensions(30.0f, 30.0f);
+	spriteComponent->SetRotationalOffset(0.f, 0.f);
+	spriteComponent->SetRotation(180.f);
+	spriteComponent->SetFlips(false, true);
+
+	Fygar* fygarComponent{ new Fygar{ fygar, flame } };
+	StateComponent* stateComponent{ new StateComponent{ fygar } };
+	FygarIdleState* idleState{ new FygarIdleState{} };
+	idleState->SetSprite(spriteComponent);
+	idleState->SetFygar(fygarComponent);
+	idleState->SetMover(gridMover);
+	stateComponent->SetCurrentState(idleState);
+
+	ColliderComponent* colliderComponent{ new ColliderComponent{ fygar, "Fygar", 30.f, 30.f } };
+	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{
+		[colliderComponent]() {
+		if (colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player"))
+			colliderComponent->GetCollisionHit()->GetGameObject()->GetComponent<Player>()->ChangeLives(-1); } });
+
+	fygar->SetTag("Fygar");
+	fygar->AddComponent(colliderComponent);
+	fygar->AddComponent(spriteComponent);
+	fygar->AddComponent(inputComponent);
+	fygar->AddComponent(fygarComponent);
+	fygar->AddComponent(stateComponent);
+	scene->AddGameObject(fygar);
 }
 
 void DigDug::Game::InitEndScene()

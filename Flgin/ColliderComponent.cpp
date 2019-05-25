@@ -29,7 +29,7 @@ flgin::ColliderComponent::~ColliderComponent()
 
 void flgin::ColliderComponent::SetOnCollisionFunction(FunctionHolderBase* pFunc)
 {
-	FLogger.SafeDelete(m_pOnCollisionFunction);
+	FLogger.SafeDelete(m_pOnCollisionFunction, true);
 	m_pOnCollisionFunction = pFunc;
 }
 

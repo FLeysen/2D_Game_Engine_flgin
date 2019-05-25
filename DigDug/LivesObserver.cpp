@@ -10,8 +10,9 @@ DigDug::LivesObserver::LivesObserver(unsigned int lives, flgin::SpriteComponent*
 	, m_SizePerLife{}
 	, m_pLivesSprite{ pSprite }
 {
+	m_pLivesSprite->SetDimensions(m_pLivesSprite->GetWidth() * 0.75f, m_pLivesSprite->GetHeight());
 	m_pLivesSprite->SetSpriteInfo(m_InitLives, 1, m_pLivesSprite->GetWidth(), m_pLivesSprite->GetHeight(), 0.f, false);
-	m_SizePerLife = m_pLivesSprite->GetWidth() / m_InitLives;
+	m_SizePerLife = m_pLivesSprite->GetWidth() / 3.f;
 }
 
 void DigDug::LivesObserver::Notify(Event event, const flgin::Subject* const pSubject)
