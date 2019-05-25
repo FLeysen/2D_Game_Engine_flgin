@@ -74,7 +74,7 @@ bool DigDug::FallingState::Update()
 {
 	if (m_pCollider->GetGameObject()->GetPosition().y < 500.f) 
 		return false;
-	m_pCollider->GetGameObject()->SetActive(false);
+	GrantScore();
 	return false;
 }
 
@@ -83,10 +83,48 @@ void DigDug::FallingState::CheckPlayerHit()
 	flgin::ColliderComponent* other{ m_pCollider->GetCollisionHit() };
 	if (other->GetGameObject()->CompareTag("Player"))
 		other->GetGameObject()->GetComponent<Player>()->ChangeLives(-1);
-	else
+	else if (other->GetGameObject()->CompareTag("Fygar") || other->GetGameObject()->CompareTag("Pooka"))
 	{
-		//TODO: INSERT ENEMY DESTRUCTION CODE HERE, SHOULD COLLIDE ONLY WITH ENEMIES AND PLAYERS
+		++m_AmountCrushed;
+		other->GetGameObject()->SetActive(false);
 	}
+	else if (other->GetGameObject()->CompareTag("Dirt"))
+		GrantScore();
+}
+
+void DigDug::FallingState::GrantScore()
+{
+	int amount{ 0 };
+	switch (m_AmountCrushed)
+	{
+	case 0:
+		break;
+	case 1:
+		amount = 1000;
+		break;
+	case 2:
+		amount = 2500;
+		break;
+	case 3:
+		amount = 4000;
+		break;
+	case 4:
+		amount = 6000;
+		break;
+	case 5:
+		amount = 8000;
+		break;
+	case 6:
+		amount = 10000;
+		break;
+	case 7:
+		amount = 12000;
+		break;
+	case 8:
+		amount = 15000;
+		break;
+	}
+	m_pCollidedWith->GetGameObject()->GetComponent<Player>()->ChangeScore(amount);
 	m_pCollider->GetGameObject()->SetActive(false);
 }
 

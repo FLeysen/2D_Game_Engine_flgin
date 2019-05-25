@@ -68,5 +68,10 @@ namespace DigDug
 		void Exit() override;
 		bool Update() override;
 		void CheckPlayerHit() override;
+
+	private:
+		void GrantScore();
+
+		UINT m_AmountCrushed;
 	};
 }

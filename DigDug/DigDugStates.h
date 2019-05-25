@@ -15,6 +15,7 @@ namespace DigDug
 	class Player;
 	class IdleState;
 	class AngryState;
+	class Fygar;
 
 	class DigDugState : public flgin::State
 	{
@@ -83,8 +84,10 @@ namespace DigDug
 		void Enter() override;
 		bool Update() override;
 		void Exit() override;
+		void SetHit(Fygar* hit) { m_pHit = hit; }
 
 	private:
 		flgin::FreeMover* m_pPumpMover;
+		Fygar* m_pHit;
 	};
 }

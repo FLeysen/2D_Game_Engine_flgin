@@ -10,6 +10,7 @@ namespace flgin
 namespace DigDug
 {
 	class Fygar;
+	class Player;
 
 	class FygarState : public flgin::State
 	{
@@ -50,13 +51,18 @@ namespace DigDug
 		void Exit() override;
 	};
 
-	class FygarDyingState final : public FygarState
+	class FygarBloatingState final : public FygarState
 	{
 	public:
-		FygarDyingState() : FygarState() {}
-		~FygarDyingState() = default;
+		FygarBloatingState() : FygarState(), m_BloatTime{ 0.f }, m_MaxBloatTime{ 3.f }, m_MaxBloatScale{ 1.f } {}
+		~FygarBloatingState() = default;
 		void Enter() override;
 		bool Update() override;
 		void Exit() override;
+
+	private:
+		float m_BloatTime;
+		float m_MaxBloatTime;
+		float m_MaxBloatScale;
 	};
 };

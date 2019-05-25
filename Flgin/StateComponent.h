@@ -25,6 +25,7 @@ namespace flgin
 		~StateComponent();
 		void Update();
 		void SetCurrentState(State* pNewState);
+		State* GetCurrentState() const { return m_pCurrentState; }
 
 		StateComponent(StateComponent&&) = delete;
 		StateComponent(const StateComponent&) = delete;

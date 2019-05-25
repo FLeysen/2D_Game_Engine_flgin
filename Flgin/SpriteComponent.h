@@ -19,6 +19,7 @@ namespace flgin
 		void IncrementCurrentFrame();
 		bool GetFlippedHorizontal() const { return m_Flips & SDL_FLIP_HORIZONTAL; }
 		bool GetFlippedVertical() const { return m_Flips & SDL_FLIP_VERTICAL; }
+		void StopAnimating();
 
 #pragma region ro5
 		SpriteComponent()

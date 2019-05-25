@@ -92,3 +92,8 @@ void flgin::SpriteComponent::IncrementCurrentFrame()
 	m_SourceRect.x = static_cast<int>(m_CurrentFrame % m_Columns * m_SourceRect.w);
 	m_SourceRect.y = static_cast<int>(m_CurrentFrame / m_Columns * m_SourceRect.h);
 }
+
+void flgin::SpriteComponent::StopAnimating()
+{
+	FInvoker.CancelOwnedInvokes(this);
+}

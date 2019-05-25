@@ -5,6 +5,8 @@
 #include "ResourceManager.h"
 #include "TextLocalizer.h"
 #include "GridMovementComponent.h"
+#include "Timer.h"
+#include "Player.h"
 
 void DigDug::FygarState::SetFygar(Fygar * pFygar)
 {
@@ -53,7 +55,7 @@ bool DigDug::FygarIdleState::Update()
 		break;
 	}
 
-	if (!m_pFygar->IsDying())
+	if (!m_pFygar->IsBloating())
 	{
 		if (m_pFygar->IsFiring())
 		{
@@ -66,12 +68,12 @@ bool DigDug::FygarIdleState::Update()
 		}
 		return false;
 	}
-	FygarDyingState* dyingState{ new FygarDyingState{} };
+	FygarBloatingState* dyingState{ new FygarBloatingState{} };
 	dyingState->SetFygar(m_pFygar);
 	dyingState->SetMover(m_pMover);
 	dyingState->SetSprite(m_pSprite);
 	m_pTargetState = dyingState;
-	return false;
+	return true;
 }
 
 void DigDug::FygarFiringState::Enter()
@@ -118,16 +120,25 @@ void DigDug::FygarFiringState::Enter()
 
 bool DigDug::FygarFiringState::Update()
 {
-	if (!m_pFygar->IsFiring())
+	if (!m_pFygar->IsBloating())
 	{
-		FygarIdleState* idleState{ new FygarIdleState{} };
-		idleState->SetFygar(m_pFygar);
-		idleState->SetMover(m_pMover);
-		idleState->SetSprite(m_pSprite);
-		m_pTargetState = idleState;
-		return true;
+		if (!m_pFygar->IsFiring())
+		{
+			FygarIdleState* idleState{ new FygarIdleState{} };
+			idleState->SetFygar(m_pFygar);
+			idleState->SetMover(m_pMover);
+			idleState->SetSprite(m_pSprite);
+			m_pTargetState = idleState;
+			return true;
+		}
+		return false;
 	}
-	return false;
+	FygarBloatingState* dyingState{ new FygarBloatingState{} };
+	dyingState->SetFygar(m_pFygar);
+	dyingState->SetMover(m_pMover);
+	dyingState->SetSprite(m_pSprite);
+	m_pTargetState = dyingState;
+	return true;
 }
 
 void DigDug::FygarFiringState::Exit()
@@ -136,15 +147,48 @@ void DigDug::FygarFiringState::Exit()
 	m_pMover->Enable();
 }
 
-void DigDug::FygarDyingState::Enter()
+void DigDug::FygarBloatingState::Enter()
 {
+	m_pMover->Disable();
 }
 
-bool DigDug::FygarDyingState::Update()
+bool DigDug::FygarBloatingState::Update()
 {
+	if (m_pFygar->IsBloating())
+	{
+		m_BloatTime += FTime.GetDeltaTime();
+		float size{ 30.f * (1 + m_BloatTime / m_MaxBloatTime * m_MaxBloatScale) };
+		m_pSprite->SetDimensions(size, size);
+		m_pSprite->SetPositionOffset(size * -0.5f, size * -0.5f);
+		if (m_BloatTime > m_MaxBloatTime)
+		{
+			m_pFygar->GetHitBy()->SetFiring(false);
+			m_pFygar->GetHitBy()->ChangeScore(m_pFygar->GetScoreWorth());
+			m_pFygar->GetGameObject()->SetActive(false);
+		}
+	}
+	else
+	{
+		m_BloatTime -= FTime.GetDeltaTime();
+		float size{ 30.f * (1 + m_BloatTime / m_MaxBloatTime * m_MaxBloatScale) };
+		m_pSprite->SetPositionOffset(size * -0.5f, size * -0.5f);
+		m_pSprite->SetDimensions(size, size);
+		if (m_BloatTime < 0.f)
+		{
+			m_pSprite->SetPositionOffset(-15.f, -15.f);
+			m_pSprite->SetDimensions(30.f, 30.f);
+			FygarIdleState* idleState{ new FygarIdleState{} };
+			idleState->SetFygar(m_pFygar);
+			idleState->SetMover(m_pMover);
+			idleState->SetSprite(m_pSprite);
+			m_pTargetState = idleState;
+			return true;
+		}
+	}
 	return false;
 }
 
-void DigDug::FygarDyingState::Exit()
+void DigDug::FygarBloatingState::Exit()
 {
+	m_pMover->Enable();
 }

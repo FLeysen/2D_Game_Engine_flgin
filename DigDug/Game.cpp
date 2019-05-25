@@ -82,6 +82,7 @@ void DigDug::Game::InitGameScene()
 	go = new GameObject{};
 	go->SetPosition(15.f, 45.0f);
 	MovementGrid* grid{ new MovementGrid{ go, 13, 21, 30.0f } };
+	Fygar::SetGrid(grid);
 	go->AddComponent(grid);
 	go->AddComponent(new GridRenderer{ go, scene, grid });
 	scene->AddGameObject(go);
@@ -158,7 +159,6 @@ void DigDug::Game::InitGameScene()
 	playerComponent->AddObserver(scoreObserver);
 	playerComponent->AddObserver(new GameOverObserver{ *this });
 	playerComponent->SetInitPos(go->GetPosition().x, go->GetPosition().y);
-	pumpCollider->SetOnCollisionFunction(new FunctionHolder<void>{ [playerComponent]() { playerComponent->SetFiring(false); } });
 
 	//TODO: REMOVE TEST CODE
 	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
@@ -173,6 +173,22 @@ void DigDug::Game::InitGameScene()
 
 	ColliderComponent* colliderComponent{ new ColliderComponent{ go, "Player", 30.f, 30.f } };
 	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ []() {} });
+	pumpCollider->SetOnCollisionFunction(new FunctionHolder<void>{
+	[playerComponent, pumpCollider, pumpSprite, pumpMover, stateComponent]()
+{
+	if (pumpCollider->GetCollisionHit()->GetGameObject()->CompareTag("Fygar"))
+	{
+		Fygar* hit{ pumpCollider->GetCollisionHit()->GetGameObject()->GetComponent<Fygar>() };
+		if (hit->IsBloating()) return;
+		hit->SetBloating(true);
+		hit->SetHitBy(playerComponent);
+		pumpSprite->StopAnimating();
+		pumpMover->SetMoving(false);
+		FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
+		static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
+	}
+	else
+		playerComponent->SetFiring(false); } });
 	FCollisionManager.AddIgnore("Pump", "Player");
 
 	go->SetTag("Player");
@@ -202,6 +218,7 @@ void DigDug::Game::InitGameScene()
 			colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ [go, grid, colliderComponent]() { if (!colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player")) return; go->SetActive(false); grid->GetNodeNearestTo(go->GetPosition().x, go->GetPosition().y)->SetBlocked(false); } });
 			FCollisionManager.AddIgnore("Dirt", "Dirt");
 
+			go->SetTag("Dirt");
 			go->AddComponent(colliderComponent);
 			go->AddComponent(renComp);
 			go->SetPosition(grid->GetGrid()[i].GetPosition().x, grid->GetGrid()[i + 21].GetPosition().y);
@@ -383,7 +400,22 @@ void DigDug::Game::InitTwoPlayer()
 
 	ColliderComponent* colliderComponent{ new ColliderComponent{ go, "Player", 30.f, 30.f } };
 	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ []() {} });
-	pumpCollider->SetOnCollisionFunction(new FunctionHolder<void>{ [playerComponent]() { playerComponent->SetFiring(false); } });
+	pumpCollider->SetOnCollisionFunction(new FunctionHolder<void>{
+		[playerComponent, pumpCollider, pumpSprite, pumpMover, stateComponent]()
+	{ 
+		if (pumpCollider->GetCollisionHit()->GetGameObject()->CompareTag("Fygar"))
+		{
+			Fygar* hit{ pumpCollider->GetCollisionHit()->GetGameObject()->GetComponent<Fygar>() };
+			if (hit->IsBloating()) return;
+			hit->SetBloating(true);
+			hit->SetHitBy(playerComponent);
+			pumpSprite->StopAnimating();
+			pumpMover->SetMoving(false);
+			FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
+			static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
+		}
+		else
+			playerComponent->SetFiring(false); } });
 
 	go->AddComponent(colliderComponent);
 	go->SetTag("Player");

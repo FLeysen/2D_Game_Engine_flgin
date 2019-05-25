@@ -8,6 +8,8 @@
 #include "Timer.h"
 #include "FreeMover.h"
 #include "Invoker.h"
+#include "ColliderComponent.h"
+#include "Fygar.h"
 
 void DigDug::DigDugState::SetAttachedSprite(flgin::SpriteComponent* pSprite)
 {
@@ -204,6 +206,8 @@ bool DigDug::FiringState::Update()
 	{
 		if (m_pPlayer->IsFiring())
 			return false;
+
+		if (m_pHit) m_pHit->SetBloating(false);
 
 		IdleState* idleState{ new IdleState{} };
 		idleState->SetAttachedSprite(m_pSpriteComponent);
