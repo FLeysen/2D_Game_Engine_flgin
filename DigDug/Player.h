@@ -18,7 +18,7 @@ namespace DigDug
 		glm::vec2 GetInitPos() const { return m_InitPos; }
 		void SetInitPos(float x, float y) { m_InitPos.x = x; m_InitPos.y = y; }
 
-		void ChangeLives(int amount);
+		void ChangeLives(int amount, bool rawChange = false);
 		UINT GetLives() const { return m_Lives; }
 
 		void SetDying(bool dying) { m_IsDying = dying; }

@@ -2,6 +2,11 @@
 #include "Flgin.h"
 namespace DigDug
 {
+	enum class GameState : UINT8
+	{
+		Single, Coop, Versus
+	};
+
 	class Game
 	{
 	public:
@@ -14,13 +19,17 @@ namespace DigDug
 		void InitTwoPlayer();
 		void InitVersus();
 		void InitEndScene();
+		void InitNextLevel();
 
 		void SetSwappingToSingle();
 		void SetSwappingToTwoPlayer();
 		void SetSwappingToVerus();
+		void SetSwappingToNextLevel();
 
 	private:
 		flgin::Flgin m_Engine;
+		GameState m_GameState;
+		UINT8 m_Level;
 	};
 }
 

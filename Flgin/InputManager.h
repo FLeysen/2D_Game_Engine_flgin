@@ -21,9 +21,6 @@ namespace flgin
 		void Quit() { m_ShouldContinue = false; }
 		InputComponent* GetPlayer(unsigned int idx);
 		
-		void SetActivePlayers(UINT8 amt) { m_ActivePlayers = amt; }
-		UINT8 GetActivePlayerCount() const { return m_ActivePlayers; }
-		
 		template <class T>
 		void RemoveCommand()
 		{
@@ -59,7 +56,6 @@ namespace flgin
 	private:
 		std::vector<Command*> m_pCommands;
 		std::vector<InputComponent> m_pPlayers;
-		UINT8 m_ActivePlayers;
 		bool m_ShouldContinue;
 	};
 }

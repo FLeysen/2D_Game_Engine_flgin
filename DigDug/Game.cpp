@@ -44,6 +44,8 @@
 
 DigDug::Game::Game()
 	: m_Engine{}
+	, m_GameState{ GameState::Single }
+	, m_Level{ 0 }
 {}
 
 
@@ -73,10 +75,11 @@ void DigDug::Game::InitGameScene()
 	FInputManager.ClearCommands();
 	FCollisionManager.ClearColliders();
 
+	m_Level = 0;
 	NextLevelObserver* ob{ new NextLevelObserver{} };
 	ob->SetNextLevelInit(new FunctionHolder<void>{
 		[this]()
-	{ FInvoker.AddInvoke(new InvokeHolder<void>{ this, 5.f, [this]() { FSceneManager.SwapScene(new flgin::FunctionHolder<void>{ std::bind(&Game::InitEndScene, this)}); } });  } });
+	{ FInvoker.AddInvoke(new InvokeHolder<void>{ this, 5.f, [this]() { new flgin::FunctionHolder<void>{ std::bind(&Game::SetSwappingToNextLevel, this)}; } });  } });
 
 	GameObject* go{  };
 #ifdef _DEBUG
@@ -224,7 +227,6 @@ void DigDug::Game::InitGameScene()
 
 	Rock::Create(scene, grid->GetNodeNearestTo(150.f, 150.f), FLocalizer.Get("texRock"));
 
-	//TODO: TEST CODE, PLEASE REMOVE
 	RenderComponent* renComp{};
 	for (unsigned int i{ 0 }; i < grid->GetGridSize() - 21; ++i)
 	{
@@ -351,7 +353,7 @@ void DigDug::Game::InitSinglePlayer()
 	InitGameScene();
 	FSceneManager.RemoveCurrentScene();
 	FSceneManager.ActivateSceneByName("GameScene");
-	FInputManager.SetActivePlayers(1U);
+	m_GameState = GameState::Single;
 }
 
 void DigDug::Game::InitTwoPlayer()
@@ -359,8 +361,8 @@ void DigDug::Game::InitTwoPlayer()
 	using namespace flgin;
 
 	InitSinglePlayer();
-	
-	FInputManager.SetActivePlayers(2);
+	m_GameState = GameState::Coop;
+
 	Scene* scene{ FSceneManager.GetCurrentScene() };
 
 	GameObject* pump{ new GameObject{} };
@@ -497,6 +499,7 @@ void DigDug::Game::InitVersus()
 	using namespace flgin;
 
 	InitSinglePlayer();
+	m_GameState = GameState::Versus;
 
 	Scene* scene{ FSceneManager.GetCurrentScene() };
 	
@@ -607,7 +610,7 @@ void DigDug::Game::InitEndScene()
 	using namespace flgin;
 	
 	UINT scoreP1{ FInputManager.GetPlayer(0)->GetGameObject()->GetComponent<Player>()->GetScore() };
-	UINT scoreP2{ FInputManager.GetActivePlayerCount() > 1U ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetScore() : 0 };
+	UINT scoreP2{ m_GameState == GameState::Coop ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetScore() : 0 };
 
 	InitMenuScene();
 
@@ -626,7 +629,7 @@ void DigDug::Game::InitEndScene()
 	go->SetPosition(10.f, 420.f);
 	scene->AddGameObject(go);
 
-	if (FInputManager.GetActivePlayerCount() > 1U)
+	if (m_GameState == GameState::Coop)
 	{
 		go = new GameObject{};
 		renderComponent = scene->CreateRenderComponent(go, 3);
@@ -644,6 +647,196 @@ void DigDug::Game::InitEndScene()
 	}
 }
 
+void DigDug::Game::InitNextLevel()
+{
+	/*
+	using namespace flgin;
+	Scene* scene{ FSceneManager.CreateScene("GameScene" + std::to_string(m_Level)) };
+	FInvoker.CancelAllInvokes();
+	FInputManager.ClearCommands();
+	FCollisionManager.ClearColliders();
+
+	UINT scoreP1{ FInputManager.GetPlayer(0)->GetGameObject()->GetComponent<Player>()->GetScore() };
+	UINT scoreP2{ m_GameState == GameState::Coop ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetScore() : 0 };
+	UINT livesP1{ FInputManager.GetPlayer(0)->GetGameObject()->GetComponent<Player>()->GetLives() };
+	UINT livesP2{ m_GameState == GameState::Coop ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetLives() : 0 };
+
+	FSceneManager.RemoveCurrentScene();
+	FSceneManager.ActivateSceneByName("MenuScene");
+
+
+	GameObject* go{  };
+#ifdef _DEBUG
+	go = new GameObject{};
+	RenderComponent* renderComponent{ scene->CreateRenderComponent(go, 4) };
+	go->AddComponent(renderComponent);
+	go->AddComponent(new TextComponent{ go, FLocalizer.Get("fontDefault"), 20, {255, 255, 0} });
+	go->AddComponent(new FPSComponent{ go, .5f });
+	scene->AddGameObject(go);
+#endif
+
+	go = new GameObject{};
+	go->SetPosition(15.f, 45.0f);
+	MovementGrid* grid{ new MovementGrid{ go, 13, 21, 30.0f } };
+	Fygar::SetGrid(grid);
+	go->AddComponent(grid);
+	go->AddComponent(new GridRenderer{ go, scene, grid });
+	scene->AddGameObject(go);
+
+	go = new GameObject{};
+	SpriteComponent* livesSprite{ scene->CreateSpriteComponent(go) };
+	livesSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texLives")));
+	LivesObserver* livesObserver{ new LivesObserver{ 3, livesSprite } };
+	go->SetPosition(0.f, 425.f);
+	scene->AddGameObject(go);
+
+	go = new GameObject{};
+	RenderComponent* scoreRenderer{ scene->CreateRenderComponent(go) };
+	go->AddComponent(scoreRenderer);
+	TextComponent* textRenderer{ new TextComponent{ go, FLocalizer.Get("fontDefault"), 30, {255, 255, 255} } };
+	go->AddComponent(textRenderer);
+	ScoreObserver* scoreObserver{ };
+	go->SetPosition(170.f, 425.f);
+	scene->AddGameObject(go);
+
+	GameObject* pump{ new GameObject{} };
+	pump->SetTag("Pump");
+	SpriteComponent* pumpSprite{ scene->CreateSpriteComponent(pump) };
+	pumpSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPump")));
+	pumpSprite->SetDimensions(180.f, 18.f);
+	pumpSprite->SetSpriteInfo(1, 10, 180.f, 18.f, 0.1f, true);
+	FreeMover* pumpMover{ new FreeMover{pump, 0.f} };
+	ColliderComponent* pumpCollider{ new ColliderComponent{pump, "Pump", 30.f, 30.f} };
+	pump->AddComponent(pumpMover);
+	pump->AddComponent(pumpSprite);
+	pump->AddComponent(pumpCollider);
+	scene->AddGameObject(pump);
+
+	go = new GameObject{};
+	go->SetPosition(15.0f, 15.0f);
+	InputComponent* inputComponent{ FInputManager.GetPlayer(0) };
+	GridMovementComponent* gridMover{ new GridMovementComponent{ go, 100.0f, grid, 90.f, true } };
+	go->AddComponent(gridMover);
+	inputComponent->Clear();
+	QuitCommand* quitCommand{ new QuitCommand{} };
+	ReturnToMenuCommand* returnCommand{ new ReturnToMenuCommand{*this} };
+	DirectionalGridMove* gridMoveRight{ new DirectionalGridMove{ gridMover, true, true } };
+	DirectionalGridMove* gridMoveLeft{ new DirectionalGridMove{ gridMover, true, false } };
+	DirectionalGridMove* gridMoveDown{ new DirectionalGridMove{ gridMover, false, true } };
+	DirectionalGridMove* gridMoveUp{ new DirectionalGridMove{ gridMover, false, false } };
+	FireCommand* fireCommand{ new FireCommand{} };
+
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_BACK, returnCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_X, fireCommand);
+
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, gridMoveRight);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_LEFT, gridMoveLeft);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_DOWN, gridMoveDown);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_UP, gridMoveUp);
+
+	AxisRange range{};
+	range.max = std::numeric_limits<short int>::max();
+	range.min = 15000;
+	range.wasReached = false;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveDown);
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveRight);
+	range.min = std::numeric_limits<short int>::min();
+	range.max = -15000;
+	range.wasReached = false;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveUp);
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveLeft);
+
+	inputComponent->AddKeyboardMapping(SDLK_d, gridMoveRight);
+	inputComponent->AddKeyboardMapping(SDLK_a, gridMoveLeft);
+	inputComponent->AddKeyboardMapping(SDLK_s, gridMoveDown);
+	inputComponent->AddKeyboardMapping(SDLK_w, gridMoveUp);
+	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
+	inputComponent->AddKeyboardMapping(SDLK_r, returnCommand);
+	inputComponent->AddKeyboardMapping(SDLK_q, fireCommand);
+
+	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 4) };
+	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
+	spriteComponent->SetPositionOffset(-15.f, -15.f);
+	spriteComponent->SetSpriteInfo(6, 1, 30.0f, 30.0f, 0.4f);
+	spriteComponent->SetDimensions(30.0f, 30.0f);
+
+	Player* playerComponent{ new Player{ go, pump } };
+	playerComponent->AddObserver(livesObserver);
+	playerComponent->AddObserver(scoreObserver);
+	playerComponent->AddObserver(new GameOverObserver{ *this });
+	playerComponent->SetInitPos(go->GetPosition().x, go->GetPosition().y);
+
+	//TODO: REMOVE TEST CODE
+	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
+	inputComponent->AddKeyboardMapping(SDLK_e, angryToggleCommand);
+	inputComponent->AttachToGameObject(go);
+	NPCFygar::Create(scene, { 300.f, 40.f });
+	FCollisionManager.AddIgnore("Flame", "Fygar");
+
+	StateComponent* stateComponent{ new StateComponent{ go } };
+	IdleState* idleState{ new IdleState{} };
+	idleState->SetAttachedSprite(spriteComponent);
+	idleState->SetPlayer(playerComponent);
+	stateComponent->SetCurrentState(idleState);
+
+	ColliderComponent* colliderComponent{ new ColliderComponent{ go, "Player", 30.f, 30.f } };
+	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ []() {} });
+	pumpCollider->SetOnCollisionFunction(new FunctionHolder<void>{
+	[playerComponent, pumpCollider, pumpSprite, pumpMover, stateComponent]()
+{
+	if (pumpCollider->GetCollisionHit()->GetGameObject()->CompareTag("Fygar"))
+	{
+		Fygar* hit{ pumpCollider->GetCollisionHit()->GetGameObject()->GetComponent<Fygar>() };
+		if (hit->IsBloating()) return;
+		hit->SetBloating(true);
+		hit->SetHitBy(playerComponent);
+		pumpSprite->StopAnimating();
+		pumpMover->SetMoving(false);
+		FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
+		static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
+	}
+	else
+		playerComponent->SetFiring(false); } });
+	FCollisionManager.AddIgnore("Pump", "Player");
+
+	go->SetTag("Player");
+	go->AddComponent(colliderComponent);
+	go->AddComponent(spriteComponent);
+	go->AddComponent(inputComponent);
+	go->AddComponent(playerComponent);
+	go->AddComponent(stateComponent);
+	scene->AddGameObject(go);
+
+	Rock::Create(scene, grid->GetNodeNearestTo(150.f, 150.f), FLocalizer.Get("texRock"));
+
+	RenderComponent* renComp{};
+	for (unsigned int i{ 0 }; i < grid->GetGridSize() - 21; ++i)
+	{
+		if (rand() % 4 != 0)
+		{
+			if (grid->GetGrid()[i + 21].IsBlocked()) continue;
+			grid->GetGrid()[i + 21].SetBlocked(true);
+			go = new GameObject{};
+			renComp = scene->CreateRenderComponent(go, 2);
+			renComp->SetPositionOffset(-15.f, -15.f);
+			renComp->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texDirt" + std::to_string(i * 4 / (grid->GetGridSize() - 21)))));
+
+			colliderComponent = new ColliderComponent{ go, "Dirt", 7.5f, 7.5f, 15.f, 15.f };
+			colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ [go, grid, colliderComponent]() { if (!colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player")) return; go->SetActive(false); grid->GetNodeNearestTo(go->GetPosition().x, go->GetPosition().y)->SetBlocked(false); } });
+			FCollisionManager.AddIgnore("Dirt", "Dirt");
+
+			go->SetTag("Dirt");
+			go->AddComponent(colliderComponent);
+			go->AddComponent(renComp);
+			go->SetPosition(grid->GetGrid()[i].GetPosition().x, grid->GetGrid()[i + 21].GetPosition().y);
+			scene->AddGameObject(go);
+		}
+	}
+	*/
+}
+
 void DigDug::Game::SetSwappingToSingle()
 {
 	FSceneManager.SwapScene(new flgin::FunctionHolder<void>{ std::bind(&Game::InitSinglePlayer, this) });
@@ -657,4 +850,9 @@ void DigDug::Game::SetSwappingToTwoPlayer()
 void DigDug::Game::SetSwappingToVerus()
 {
 	FSceneManager.SwapScene(new flgin::FunctionHolder<void>{ std::bind(&Game::InitVersus, this) });
+}
+
+void DigDug::Game::SetSwappingToNextLevel()
+{
+	FSceneManager.SwapScene(new flgin::FunctionHolder<void>{ std::bind(&Game::InitNextLevel, this) });
 }

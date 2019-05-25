@@ -8,7 +8,6 @@ flgin::InputManager::InputManager()
 	: m_pCommands{}
 	, m_pPlayers{}
 	, m_ShouldContinue{ true }
-	, m_ActivePlayers{ 1 }
 {}
 
 flgin::InputManager::~InputManager()
@@ -30,14 +29,14 @@ bool flgin::InputManager::ProcessInput()
 		else if (e.type == SDL_CONTROLLERBUTTONDOWN || e.type == SDL_CONTROLLERBUTTONUP)
 		{
 			SDL_JoystickID playerID{ e.cbutton.which };
-			if (playerID >= static_cast<SDL_JoystickID>(m_ActivePlayers)) 
+			if (playerID >= static_cast<SDL_JoystickID>(m_pPlayers.size())) 
 				continue;
 			m_pPlayers[playerID].ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP);
 		}
 		else if (e.type == SDL_CONTROLLERAXISMOTION)
 		{
 			SDL_JoystickID playerID{ e.caxis.which };
-			if (playerID >= static_cast<SDL_JoystickID>(m_ActivePlayers))
+			if (playerID >= static_cast<SDL_JoystickID>(m_pPlayers.size())) 
 				continue;
 			m_pPlayers[playerID].ProcessAxisMotion(e.caxis.axis, e.caxis.value);
 		}
