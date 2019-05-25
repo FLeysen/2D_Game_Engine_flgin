@@ -36,6 +36,8 @@
 #include "Fygar.h"
 #include "FygarCommands.h"
 #include "FygarStates.h"
+#include "NPCFygar.h"
+#include "NextLevelObserver.h"
 
 DigDug::Game::Game()
 	: m_Engine{}
@@ -68,6 +70,11 @@ void DigDug::Game::InitGameScene()
 	FInvoker.CancelAllInvokes();
 	FInputManager.ClearCommands();
 	FCollisionManager.ClearColliders();
+
+	NextLevelObserver* ob{ new NextLevelObserver{} };
+	ob->SetNextLevelInit(new FunctionHolder<void>{
+		[this]()
+	{ FInvoker.AddInvoke(new InvokeHolder<void>{ this, 5.f, [this]() { FSceneManager.SwapScene(new flgin::FunctionHolder<void>{ std::bind(&Game::InitEndScene, this)}); } });  } });
 
 	GameObject* go{  };
 #ifdef _DEBUG
@@ -164,7 +171,9 @@ void DigDug::Game::InitGameScene()
 	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
 	inputComponent->AddKeyboardMapping(SDLK_e, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
-	
+	NPCFygar::Create(scene, { 300.f, 40.f });
+	FCollisionManager.AddIgnore("Flame", "Fygar");
+
 	StateComponent* stateComponent{ new StateComponent{ go } };
 	IdleState* idleState{ new IdleState{} };
 	idleState->SetAttachedSprite(spriteComponent);
@@ -540,6 +549,10 @@ void DigDug::Game::InitVersus()
 	fygar->AddComponent(fygarComponent);
 	fygar->AddComponent(stateComponent);
 	scene->AddGameObject(fygar);
+
+	NextLevelObserver* ob{ FObserverManager.Get<NextLevelObserver>() };
+	ob->AddEnemy();
+	fygarComponent->AddObserver(ob);
 }
 
 void DigDug::Game::InitEndScene()

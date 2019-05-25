@@ -164,7 +164,7 @@ bool DigDug::FygarBloatingState::Update()
 		{
 			m_pFygar->GetHitBy()->SetFiring(false);
 			m_pFygar->GetHitBy()->ChangeScore(m_pFygar->GetScoreWorth());
-			m_pFygar->GetGameObject()->SetActive(false);
+			m_pFygar->Die();
 		}
 	}
 	else

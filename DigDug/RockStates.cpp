@@ -5,6 +5,7 @@
 #include "FunctionHolder.h"
 #include "MovementGrid.h"
 #include "Player.h"
+#include "Fygar.h"
 
 void DigDug::StuckState::Enter()
 {
@@ -83,10 +84,10 @@ void DigDug::FallingState::CheckPlayerHit()
 	flgin::ColliderComponent* other{ m_pCollider->GetCollisionHit() };
 	if (other->GetGameObject()->CompareTag("Player"))
 		other->GetGameObject()->GetComponent<Player>()->ChangeLives(-1);
-	else if (other->GetGameObject()->CompareTag("Fygar") || other->GetGameObject()->CompareTag("Pooka"))
+	else if (other->GetGameObject()->CompareTag("Fygar"))
 	{
 		++m_AmountCrushed;
-		other->GetGameObject()->SetActive(false);
+		other->GetGameObject()->GetComponent<Fygar>()->Die();
 	}
 	else if (other->GetGameObject()->CompareTag("Dirt"))
 		GrantScore();

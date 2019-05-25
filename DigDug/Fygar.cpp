@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Fygar.h"
 #include "MovementGrid.h"
+#include "ObserverEvents.h"
 
 flgin::MovementGrid* DigDug::Fygar::m_pGrid{ nullptr };
 
@@ -12,6 +13,12 @@ DigDug::Fygar::Fygar(flgin::GameObject* pOwnerObject, flgin::GameObject* pFire)
 	, m_pHitBy{}
 {
 	m_pFire->SetActive(false);
+}
+
+void DigDug::Fygar::Die()
+{
+	m_pOwnerObject->SetActive(false);
+	Notify(ObserverEvent::EnemyEliminated);
 }
 
 UINT DigDug::Fygar::GetScoreWorth()

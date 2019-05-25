@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseComponent.h"
+#include "Subject.h"
 
 namespace flgin
 {
@@ -10,12 +11,14 @@ namespace DigDug
 {
 	class Player;
 
-	class Fygar final : public flgin::BaseComponent
+	class Fygar final : public flgin::Subject, public flgin::BaseComponent
 	{
 	public:
 		Fygar(flgin::GameObject* pOwnerObject, flgin::GameObject* pFire);
 		~Fygar() = default;
 		void Update() override {}
+
+		void Die();
 
 		UINT GetScoreWorth();
 

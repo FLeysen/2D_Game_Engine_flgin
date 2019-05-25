@@ -72,6 +72,12 @@
     <ClInclude Include="Fygar.h">
       <Filter>States</Filter>
     </ClInclude>
+    <ClInclude Include="NPCFygar.h">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="NextLevelObserver.h">
+      <Filter>Observers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -115,6 +121,12 @@
     </ClCompile>
     <ClCompile Include="Fygar.cpp">
       <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="NPCFygar.cpp">
+      <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="NextLevelObserver.cpp">
+      <Filter>Observers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

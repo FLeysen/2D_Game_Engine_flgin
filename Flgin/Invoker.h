@@ -4,7 +4,7 @@
 #include <functional>
 
 #ifndef MAX_INVOCATIONS
-#define MAX_INVOCATIONS 10
+#define MAX_INVOCATIONS 50
 #endif
 #define FInvoker flgin::Invoker::GetInstance()
 
