@@ -158,6 +158,7 @@ bool DigDug::FygarBloatingState::Update()
 	{
 		m_BloatTime += FTime.GetDeltaTime();
 		float size{ 30.f * (1 + m_BloatTime / m_MaxBloatTime * m_MaxBloatScale) };
+		m_pFygar->SetDeflating(false);
 		m_pSprite->SetDimensions(size, size);
 		m_pSprite->SetPositionOffset(size * -0.5f, size * -0.5f);
 		if (m_BloatTime > m_MaxBloatTime)
@@ -171,6 +172,7 @@ bool DigDug::FygarBloatingState::Update()
 	{
 		m_BloatTime -= FTime.GetDeltaTime();
 		float size{ 30.f * (1 + m_BloatTime / m_MaxBloatTime * m_MaxBloatScale) };
+		m_pFygar->SetDeflating(true);
 		m_pSprite->SetPositionOffset(size * -0.5f, size * -0.5f);
 		m_pSprite->SetDimensions(size, size);
 		if (m_BloatTime < 0.f)
@@ -191,4 +193,5 @@ bool DigDug::FygarBloatingState::Update()
 void DigDug::FygarBloatingState::Exit()
 {
 	m_pMover->Enable();
+	m_pFygar->SetDeflating(false);
 }

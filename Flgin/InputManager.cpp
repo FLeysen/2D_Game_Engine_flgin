@@ -30,13 +30,16 @@ bool flgin::InputManager::ProcessInput()
 		else if (e.type == SDL_CONTROLLERBUTTONDOWN || e.type == SDL_CONTROLLERBUTTONUP)
 		{
 			SDL_JoystickID playerID{ e.cbutton.which };
-			if (playerID >= static_cast<SDL_JoystickID>(m_pPlayers.size())) 
+			if (playerID >= static_cast<SDL_JoystickID>(m_ActivePlayers)) 
 				continue;
 			m_pPlayers[playerID].ProcessControllerKey(e.cbutton.button, e.type == SDL_CONTROLLERBUTTONUP);
 		}
 		else if (e.type == SDL_CONTROLLERAXISMOTION)
 		{
-			//Axes not yet supported
+			SDL_JoystickID playerID{ e.caxis.which };
+			if (playerID >= static_cast<SDL_JoystickID>(m_ActivePlayers))
+				continue;
+			m_pPlayers[playerID].ProcessAxisMotion(e.caxis.axis, e.caxis.value);
 		}
 	}
 	return m_ShouldContinue;	

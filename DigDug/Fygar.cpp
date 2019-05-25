@@ -10,6 +10,7 @@ DigDug::Fygar::Fygar(flgin::GameObject* pOwnerObject, flgin::GameObject* pFire)
 	, m_pFire{ pFire }
 	, m_IsFiring{ false }
 	, m_IsBloating{ false }
+	, m_IsDeflating{ false }
 	, m_pHitBy{}
 {
 	m_pFire->SetActive(false);

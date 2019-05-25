@@ -28,6 +28,9 @@ namespace DigDug
 		void SetBloating(bool bloating) { m_IsBloating = bloating; }
 		bool IsBloating() const { return m_IsBloating; }
 
+		void SetDeflating(bool deflating) { m_IsDeflating = deflating; }
+		bool IsDeflating() const { return m_IsDeflating; }
+
 		void SetHitBy(Player* player) { m_pHitBy = player; }
 		Player* GetHitBy() const { return m_pHitBy; }
 
@@ -38,6 +41,7 @@ namespace DigDug
 	private:
 		bool m_IsFiring;
 		bool m_IsBloating;
+		bool m_IsDeflating;
 		flgin::GameObject* m_pFire;
 		Player* m_pHitBy;
 		static flgin::MovementGrid* m_pGrid;

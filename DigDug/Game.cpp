@@ -39,6 +39,9 @@
 #include "NPCFygar.h"
 #include "NextLevelObserver.h"
 
+#undef max
+#undef min
+
 DigDug::Game::Game()
 	: m_Engine{}
 {}
@@ -145,6 +148,18 @@ void DigDug::Game::InitGameScene()
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_LEFT, gridMoveLeft);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_DOWN, gridMoveDown);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_UP, gridMoveUp);
+
+	AxisRange range{};
+	range.max = std::numeric_limits<short int>::max();
+	range.min = 15000;
+	range.wasReached = false;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveDown);
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveRight);
+	range.min = std::numeric_limits<short int>::min();
+	range.max = -15000;
+	range.wasReached = false;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveUp);
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveLeft);
 
 	inputComponent->AddKeyboardMapping(SDLK_d, gridMoveRight);
 	inputComponent->AddKeyboardMapping(SDLK_a, gridMoveLeft);
@@ -290,10 +305,19 @@ void DigDug::Game::InitMenuScene()
 	inputComponent->AddKeyboardMapping(SDLK_s, menuNextCommand);
 	inputComponent->AddKeyboardMapping(SDLK_RETURN, menuConfirmCommand);
 
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_DOWN, menuNextCommand);
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_UP, menuPreviousCommand);
-	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_A, menuConfirmCommand);
 	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_UP, menuPreviousCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_DOWN, menuNextCommand);
+	inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_A, menuConfirmCommand);
+
+	AxisRange range{};
+	range.max = std::numeric_limits<short int>::max();
+	range.min = range.max - 10;
+	range.wasReached = false;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, menuNextCommand);
+	range.min = std::numeric_limits<short int>::min();
+	range.max = range.min + 10;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, menuPreviousCommand);
 
 	inputComponent->AttachToGameObject(go);
 	go->AddComponent(inputComponent);
@@ -383,6 +407,18 @@ void DigDug::Game::InitTwoPlayer()
 	inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
 	inputComponent->AddKeyboardMapping(SDLK_p, fireCommand);
 	inputComponent->AddKeyboardMapping(SDLK_o, returnCommand);
+
+	AxisRange range{};
+	range.max = std::numeric_limits<short int>::max();
+	range.min = 15000;
+	range.wasReached = false;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveDown);
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveRight);
+	range.min = std::numeric_limits<short int>::min();
+	range.max = -15000;
+	range.wasReached = false;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveUp);
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveLeft);
 	
 	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 4) };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
@@ -518,6 +554,18 @@ void DigDug::Game::InitVersus()
 	inputComponent->AddKeyboardMapping(SDLK_p, fireBreatheCommand);
 	inputComponent->AddKeyboardMapping(SDLK_o, returnCommand);
 
+	AxisRange range{};
+	range.max = std::numeric_limits<short int>::max();
+	range.min = 15000;
+	range.wasReached = false;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveDown);
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveRight);
+	range.min = std::numeric_limits<short int>::min();
+	range.max = -15000;
+	range.wasReached = false;
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveUp);
+	inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveLeft);
+
 	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(fygar, 4) };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texFygar")));
 	spriteComponent->SetPositionOffset(-15.f, -15.f);
@@ -537,8 +585,8 @@ void DigDug::Game::InitVersus()
 
 	ColliderComponent* colliderComponent{ new ColliderComponent{ fygar, "Fygar", 30.f, 30.f } };
 	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{
-		[colliderComponent]() {
-		if (colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player"))
+		[colliderComponent, fygarComponent]() {
+		if (colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player") && !fygarComponent->IsDeflating())
 			colliderComponent->GetCollisionHit()->GetGameObject()->GetComponent<Player>()->ChangeLives(-1); } });
 
 	fygar->SetTag("Fygar");

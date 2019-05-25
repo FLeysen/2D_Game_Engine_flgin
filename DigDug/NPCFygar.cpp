@@ -64,8 +64,8 @@ flgin::GameObject * DigDug::NPCFygar::Create(flgin::Scene* scene, const glm::vec
 
 	ColliderComponent* colliderComponent{ new ColliderComponent{ fygar, "Fygar", 30.f, 30.f } };
 	colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{
-		[colliderComponent]() {
-		if (colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player"))
+		[colliderComponent, fygarComponent]() {
+		if (colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player") && !fygarComponent->IsDeflating())
 			colliderComponent->GetCollisionHit()->GetGameObject()->GetComponent<Player>()->ChangeLives(-1); } });
 
 	FygarController* fygarController{ new FygarController{fygar, fygarComponent, gridMover, grid} };

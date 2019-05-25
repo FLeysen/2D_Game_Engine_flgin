@@ -2,7 +2,7 @@ key;en-uk;nl-be
 dataPath;../Data/;../Data/
 fontDefault;Lingua.otf;Lingua.otf
 stringAssignment;Programming 4 Assignment;Programmeren 4 Opdracht
-stringGameName;DigDug;GraafGraafde
+stringGameName;DigDug;GraafGroef
 stringP1;Player 1:;Speler 1:
 stringP2;Player 2:;Speler 2:
 texBg;background.jpg;background.jpg
