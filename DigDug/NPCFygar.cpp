@@ -42,7 +42,7 @@ flgin::GameObject * DigDug::NPCFygar::Create(flgin::Scene* scene, const glm::vec
 	GameObject* fygar{ new GameObject{} };
 	MovementGrid* grid{ scene->FindComponentOfType<MovementGrid>() };
 	fygar->SetPosition(pos.x, pos.y);
-	GridMovementComponent* gridMover{ new GridMovementComponent{ fygar, 100.0f, grid, 90.0f, false } };
+	GridMovementComponent* gridMover{ new GridMovementComponent{ fygar, 90.0f, grid, 90.0f, false } };
 	fygar->AddComponent(gridMover);
 
 	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(fygar, 4) };

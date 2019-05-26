@@ -81,6 +81,21 @@
     <ClInclude Include="FygarController.h">
       <Filter>Controllers</Filter>
     </ClInclude>
+    <ClInclude Include="PookaCommands.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="PookaController.h">
+      <Filter>Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Pooka.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="PookaStates.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="NPCPooka.h">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -133,6 +148,21 @@
     </ClCompile>
     <ClCompile Include="FygarController.cpp">
       <Filter>Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="PookaCommands.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="PookaController.cpp">
+      <Filter>Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Pooka.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="PookaStates.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="NPCPooka.cpp">
+      <Filter>Prefabs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

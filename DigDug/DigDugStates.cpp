@@ -10,6 +10,7 @@
 #include "Invoker.h"
 #include "ColliderComponent.h"
 #include "Fygar.h"
+#include "Pooka.h"
 
 void DigDug::DigDugState::SetAttachedSprite(flgin::SpriteComponent* pSprite)
 {
@@ -208,6 +209,7 @@ bool DigDug::FiringState::Update()
 			return false;
 
 		if (m_pHit) m_pHit->SetBloating(false);
+		if (m_pPookaHit) m_pPookaHit->SetBloating(false);
 
 		IdleState* idleState{ new IdleState{} };
 		idleState->SetAttachedSprite(m_pSpriteComponent);

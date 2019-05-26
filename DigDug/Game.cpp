@@ -38,6 +38,8 @@
 #include "FygarStates.h"
 #include "NPCFygar.h"
 #include "NextLevelObserver.h"
+#include "Pooka.h"
+#include "NPCPooka.h"
 
 #undef max
 #undef min
@@ -79,7 +81,7 @@ void DigDug::Game::InitGameScene()
 	NextLevelObserver* ob{ new NextLevelObserver{} };
 	ob->SetNextLevelInit(new FunctionHolder<void>{
 		[this]()
-	{ FInvoker.AddInvoke(new InvokeHolder<void>{ this, 5.f, [this]() { new flgin::FunctionHolder<void>{ std::bind(&Game::SetSwappingToNextLevel, this)}; } });  } });
+	{ FInvoker.AddInvoke(new InvokeHolder<void>{ this, 5.f, std::bind(&Game::SetSwappingToNextLevel, this) });  } });
 
 	GameObject* go{  };
 #ifdef _DEBUG
@@ -95,6 +97,8 @@ void DigDug::Game::InitGameScene()
 	go->SetPosition(15.f, 45.0f);
 	MovementGrid* grid{ new MovementGrid{ go, 13, 21, 30.0f } };
 	Fygar::SetGrid(grid);
+	Pooka::SetGrid(grid);
+
 	go->AddComponent(grid);
 	go->AddComponent(new GridRenderer{ go, scene, grid });
 	scene->AddGameObject(go);
@@ -190,6 +194,9 @@ void DigDug::Game::InitGameScene()
 	inputComponent->AttachToGameObject(go);
 	NPCFygar::Create(scene, { 300.f, 40.f });
 	FCollisionManager.AddIgnore("Flame", "Fygar");
+	NPCPooka::Create(scene, { 300.f, 40.f });
+	FCollisionManager.AddIgnore("Fygar", "Pooka");
+	FCollisionManager.AddIgnore("Flame", "Pooka");
 
 	StateComponent* stateComponent{ new StateComponent{ go } };
 	IdleState* idleState{ new IdleState{} };
@@ -205,6 +212,17 @@ void DigDug::Game::InitGameScene()
 	if (pumpCollider->GetCollisionHit()->GetGameObject()->CompareTag("Fygar"))
 	{
 		Fygar* hit{ pumpCollider->GetCollisionHit()->GetGameObject()->GetComponent<Fygar>() };
+		if (hit->IsBloating()) return;
+		hit->SetBloating(true);
+		hit->SetHitBy(playerComponent);
+		pumpSprite->StopAnimating();
+		pumpMover->SetMoving(false);
+		FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
+		static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
+	}
+	else if (pumpCollider->GetCollisionHit()->GetGameObject()->CompareTag("Pooka"))
+	{
+		Pooka* hit{ pumpCollider->GetCollisionHit()->GetGameObject()->GetComponent<Pooka>() };
 		if (hit->IsBloating()) return;
 		hit->SetBloating(true);
 		hit->SetHitBy(playerComponent);
@@ -460,6 +478,17 @@ void DigDug::Game::InitTwoPlayer()
 			FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
 			static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
 		}
+		else if (pumpCollider->GetCollisionHit()->GetGameObject()->CompareTag("Pooka"))
+		{
+			Pooka* hit{ pumpCollider->GetCollisionHit()->GetGameObject()->GetComponent<Pooka>() };
+			if (hit->IsBloating()) return;
+			hit->SetBloating(true);
+			hit->SetHitBy(playerComponent);
+			pumpSprite->StopAnimating();
+			pumpMover->SetMoving(false);
+			FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
+			static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
+		}
 		else
 			playerComponent->SetFiring(false); } });
 
@@ -526,7 +555,7 @@ void DigDug::Game::InitVersus()
 	MovementGrid* grid{ scene->FindComponentOfType<MovementGrid>() };
 	fygar->SetPosition(650.0f, 15.0f);
 	InputComponent* inputComponent{ FInputManager.GetPlayer(1) };
-	GridMovementComponent* gridMover{ new GridMovementComponent{ fygar, 100.0f, grid, 90.0f, false } };
+	GridMovementComponent* gridMover{ new GridMovementComponent{ fygar, 90.0f, grid, 90.0f, false } };
 	fygar->AddComponent(gridMover);
 	QuitCommand* quitCommand{ new QuitCommand{} };
 	DirectionalGridMove* gridMoveRight{ new DirectionalGridMove{ gridMover, true, true } };

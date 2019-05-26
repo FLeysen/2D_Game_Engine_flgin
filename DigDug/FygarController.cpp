@@ -32,6 +32,18 @@ DigDug::FygarController::FygarController(flgin::GameObject* ownerObject, Fygar* 
 
 void DigDug::FygarController::Update()
 {
+	if (IsNearTarget())
+	{
+		m_pOwnerObject->SetPosition(m_pTargetNode->GetPosition().x, m_pTargetNode->GetPosition().y);
+		if (m_pLastCommand)
+		{
+			m_pLastCommand->Execute(*m_pOwnerObject, true);
+			m_pLastCommand = nullptr;
+		}
+		flgin::GridNode* nextNode{ DetermineNextNode() };
+		m_pLastNode = m_pTargetNode;
+		m_pTargetNode = nextNode;
+	}
 	if (m_pMover->GetMovementDirection() == flgin::MovementDirection::Left || m_pMover->GetMovementDirection() == flgin::MovementDirection::Right)
 	{
 		m_AccuTime += FTime.GetDeltaTime();
@@ -44,18 +56,6 @@ void DigDug::FygarController::Update()
 				FInvoker.AddInvoke(new flgin::InvokeHolder<void>{ this, 1.2f,  [this]() { m_pFygar->SetFiring(false); } });
 			}
 		}
-	}
-	if (IsNearTarget())
-	{
-		m_pOwnerObject->SetPosition(m_pTargetNode->GetPosition().x, m_pTargetNode->GetPosition().y);
-		if (m_pLastCommand)
-		{
-			m_pLastCommand->Execute(*m_pOwnerObject, true);
-			m_pLastCommand = nullptr;
-		}
-		flgin::GridNode* nextNode{ DetermineNextNode() };
-		m_pLastNode = m_pTargetNode;
-		m_pTargetNode = nextNode;
 	}
 }
 

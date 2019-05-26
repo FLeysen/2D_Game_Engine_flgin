@@ -3,10 +3,10 @@
 
 namespace DigDug
 {
-	class BreatheFireCommand final : public flgin::Command
+	class GhostCommand final : public flgin::Command
 	{
 	public:
-		BreatheFireCommand() : Command(){}
+		GhostCommand() : Command() {}
 		void Execute(flgin::GameObject& attachedObject, bool isInverseAction = false) override;
 	};
 }
