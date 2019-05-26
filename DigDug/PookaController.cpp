@@ -22,7 +22,7 @@ DigDug::PookaController::PookaController(flgin::GameObject* ownerObject, Pooka* 
 	, m_pRightMove{}
 	, m_AccuTime{}
 	, m_pLastCommand{}
-	, m_GhostInterval{ 7.f }
+	, m_GhostInterval{ (rand() % 10000 + 10000) / 1000.f }
 	, m_MaxVelocity{ 200.f }
 	, m_AcceptableNearDist{ 60.f }
 {

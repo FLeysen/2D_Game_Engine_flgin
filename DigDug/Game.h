@@ -25,6 +25,7 @@ namespace DigDug
 		void SetSwappingToTwoPlayer();
 		void SetSwappingToVerus();
 		void SetSwappingToNextLevel();
+		void SetSwappingToEndScene();
 
 	private:
 		flgin::Flgin m_Engine;

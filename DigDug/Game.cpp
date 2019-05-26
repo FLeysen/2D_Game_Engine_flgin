@@ -175,6 +175,7 @@ void DigDug::Game::InitGameScene()
 	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
 	inputComponent->AddKeyboardMapping(SDLK_r, returnCommand);
 	inputComponent->AddKeyboardMapping(SDLK_q, fireCommand);
+	inputComponent->AttachToGameObject(go);
 	
 	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 4) };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
@@ -187,16 +188,6 @@ void DigDug::Game::InitGameScene()
 	playerComponent->AddObserver(scoreObserver);
 	playerComponent->AddObserver(new GameOverObserver{ *this });
 	playerComponent->SetInitPos(go->GetPosition().x, go->GetPosition().y);
-
-	//TODO: REMOVE TEST CODE
-	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
-	inputComponent->AddKeyboardMapping(SDLK_e, angryToggleCommand);
-	inputComponent->AttachToGameObject(go);
-	NPCFygar::Create(scene, { 300.f, 40.f });
-	FCollisionManager.AddIgnore("Flame", "Fygar");
-	NPCPooka::Create(scene, { 300.f, 40.f });
-	FCollisionManager.AddIgnore("Fygar", "Pooka");
-	FCollisionManager.AddIgnore("Flame", "Pooka");
 
 	StateComponent* stateComponent{ new StateComponent{ go } };
 	IdleState* idleState{ new IdleState{} };
@@ -243,14 +234,16 @@ void DigDug::Game::InitGameScene()
 	go->AddComponent(stateComponent);
 	scene->AddGameObject(go);
 
-	Rock::Create(scene, grid->GetNodeNearestTo(150.f, 150.f), FLocalizer.Get("texRock"));
-
 	RenderComponent* renComp{};
+	std::vector<UINT> freeIndices{10, 11, 31, 32, 47, 58, 52, 53, 73, 74, 94, 95, 115, 116, 136, 137
+								, 87, 88, 89, 162, 163, 164, 183, 184, 185};
+	std::vector<UINT> rockIndices{ 47, 58 };
+	std::vector<UINT> pookaIndices{ 87, 185 };
+	std::vector<UINT> fygarIndices{ 136 };
 	for (unsigned int i{ 0 }; i < grid->GetGridSize() - 21; ++i)
 	{
-		if (rand() % 4 != 0)
+		if (std::find(freeIndices.cbegin(), freeIndices.cend(), i) == freeIndices.cend())
 		{
-			if (grid->GetGrid()[i + 21].IsBlocked()) continue;
 			grid->GetGrid()[i + 21].SetBlocked(true);
 			go = new GameObject{};
 			renComp = scene->CreateRenderComponent(go, 2);
@@ -259,15 +252,33 @@ void DigDug::Game::InitGameScene()
 
 			colliderComponent = new ColliderComponent{ go, "Dirt", 7.5f, 7.5f, 15.f, 15.f };
 			colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ [go, grid, colliderComponent]() { if (!colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player")) return; go->SetActive(false); grid->GetNodeNearestTo(go->GetPosition().x, go->GetPosition().y)->SetBlocked(false); } });
-			FCollisionManager.AddIgnore("Dirt", "Dirt");
-
+		
 			go->SetTag("Dirt");
 			go->AddComponent(colliderComponent);
 			go->AddComponent(renComp);
 			go->SetPosition(grid->GetGrid()[i].GetPosition().x, grid->GetGrid()[i + 21].GetPosition().y);
 			scene->AddGameObject(go);
 		}
+		if (std::find(rockIndices.cbegin(), rockIndices.cend(), i) != rockIndices.cend())
+		{
+			Rock::Create(scene, &grid->GetGrid()[i + 21], FLocalizer.Get("texRock"));
+		}
+		if (std::find(pookaIndices.cbegin(), pookaIndices.cend(), i) != pookaIndices.cend())
+		{
+			NPCPooka::Create(scene, grid->GetGrid()[i + 21].GetPosition());
+		}
+		if (std::find(fygarIndices.cbegin(), fygarIndices.cend(), i) != fygarIndices.cend())
+		{
+			NPCFygar::Create(scene, grid->GetGrid()[i + 21].GetPosition());
+		}
 	}
+	FCollisionManager.AddIgnore("Pump", "Flame");
+	FCollisionManager.AddIgnore("Flame", "Fygar");
+	FCollisionManager.AddIgnore("Fygar", "Pooka");
+	FCollisionManager.AddIgnore("Pooka", "Fygar");
+	FCollisionManager.AddIgnore("Flame", "Pooka");
+	FCollisionManager.AddIgnore("Dirt", "Dirt");
+	FCollisionManager.AddIgnore("Pooka", "Flame");
 }
 
 void DigDug::Game::InitMenuScene()
@@ -451,9 +462,6 @@ void DigDug::Game::InitTwoPlayer()
 
 	Player* playerComponent{ new Player{ go, pump } };
 	playerComponent->SetInitPos(go->GetPosition().x, go->GetPosition().y);
-	//TODO: REMOVE TEST CODE
-	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
-	inputComponent->AddKeyboardMapping(SDLK_i, angryToggleCommand);
 	inputComponent->AttachToGameObject(go);
 
 	StateComponent* stateComponent{ new StateComponent{ go } };
@@ -544,7 +552,6 @@ void DigDug::Game::InitVersus()
 	[flameCollider]() {
 	if (flameCollider->GetCollisionHit()->GetGameObject()->CompareTag("Player"))
 		flameCollider->GetCollisionHit()->GetGameObject()->GetComponent<Player>()->ChangeLives(-1); } });
-	FCollisionManager.AddIgnore("Pump", "Flame");
 
 	flame->AddComponent(flameCollider);
 	flame->AddComponent(flameSprite);
@@ -678,8 +685,8 @@ void DigDug::Game::InitEndScene()
 
 void DigDug::Game::InitNextLevel()
 {
-	/*
 	using namespace flgin;
+	++m_Level;
 	Scene* scene{ FSceneManager.CreateScene("GameScene" + std::to_string(m_Level)) };
 	FInvoker.CancelAllInvokes();
 	FInputManager.ClearCommands();
@@ -690,9 +697,14 @@ void DigDug::Game::InitNextLevel()
 	UINT livesP1{ FInputManager.GetPlayer(0)->GetGameObject()->GetComponent<Player>()->GetLives() };
 	UINT livesP2{ m_GameState == GameState::Coop ? FInputManager.GetPlayer(1)->GetGameObject()->GetComponent<Player>()->GetLives() : 0 };
 
+	FObserverManager.Clear();
 	FSceneManager.RemoveCurrentScene();
-	FSceneManager.ActivateSceneByName("MenuScene");
+	FSceneManager.ActivateSceneByName("GameScene" + std::to_string(m_Level));
 
+	NextLevelObserver* ob{ new NextLevelObserver{} };
+	ob->SetNextLevelInit(new FunctionHolder<void>{
+		[this]()
+	{ FInvoker.AddInvoke(new InvokeHolder<void>{ this, 5.f, std::bind(&Game::SetSwappingToEndScene, this) });  } });
 
 	GameObject* go{  };
 #ifdef _DEBUG
@@ -708,6 +720,8 @@ void DigDug::Game::InitNextLevel()
 	go->SetPosition(15.f, 45.0f);
 	MovementGrid* grid{ new MovementGrid{ go, 13, 21, 30.0f } };
 	Fygar::SetGrid(grid);
+	Pooka::SetGrid(grid);
+
 	go->AddComponent(grid);
 	go->AddComponent(new GridRenderer{ go, scene, grid });
 	scene->AddGameObject(go);
@@ -724,7 +738,7 @@ void DigDug::Game::InitNextLevel()
 	go->AddComponent(scoreRenderer);
 	TextComponent* textRenderer{ new TextComponent{ go, FLocalizer.Get("fontDefault"), 30, {255, 255, 255} } };
 	go->AddComponent(textRenderer);
-	ScoreObserver* scoreObserver{ };
+	ScoreObserver* scoreObserver{ new ScoreObserver{ textRenderer } };
 	go->SetPosition(170.f, 425.f);
 	scene->AddGameObject(go);
 
@@ -784,6 +798,7 @@ void DigDug::Game::InitNextLevel()
 	inputComponent->AddKeyboardMapping(SDLK_ESCAPE, quitCommand);
 	inputComponent->AddKeyboardMapping(SDLK_r, returnCommand);
 	inputComponent->AddKeyboardMapping(SDLK_q, fireCommand);
+	inputComponent->AttachToGameObject(go);
 
 	SpriteComponent* spriteComponent{ scene->CreateSpriteComponent(go, 4) };
 	spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
@@ -796,13 +811,8 @@ void DigDug::Game::InitNextLevel()
 	playerComponent->AddObserver(scoreObserver);
 	playerComponent->AddObserver(new GameOverObserver{ *this });
 	playerComponent->SetInitPos(go->GetPosition().x, go->GetPosition().y);
-
-	//TODO: REMOVE TEST CODE
-	DieCommand* angryToggleCommand{ new DieCommand{playerComponent} };
-	inputComponent->AddKeyboardMapping(SDLK_e, angryToggleCommand);
-	inputComponent->AttachToGameObject(go);
-	NPCFygar::Create(scene, { 300.f, 40.f });
-	FCollisionManager.AddIgnore("Flame", "Fygar");
+	playerComponent->ChangeLives(livesP1, true);
+	playerComponent->ChangeScore(scoreP1);
 
 	StateComponent* stateComponent{ new StateComponent{ go } };
 	IdleState* idleState{ new IdleState{} };
@@ -826,6 +836,17 @@ void DigDug::Game::InitNextLevel()
 		FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
 		static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
 	}
+	else if (pumpCollider->GetCollisionHit()->GetGameObject()->CompareTag("Pooka"))
+	{
+		Pooka* hit{ pumpCollider->GetCollisionHit()->GetGameObject()->GetComponent<Pooka>() };
+		if (hit->IsBloating()) return;
+		hit->SetBloating(true);
+		hit->SetHitBy(playerComponent);
+		pumpSprite->StopAnimating();
+		pumpMover->SetMoving(false);
+		FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
+		static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
+	}
 	else
 		playerComponent->SetFiring(false); } });
 	FCollisionManager.AddIgnore("Pump", "Player");
@@ -838,14 +859,16 @@ void DigDug::Game::InitNextLevel()
 	go->AddComponent(stateComponent);
 	scene->AddGameObject(go);
 
-	Rock::Create(scene, grid->GetNodeNearestTo(150.f, 150.f), FLocalizer.Get("texRock"));
-
 	RenderComponent* renComp{};
+	std::vector<UINT> freeIndices{ 10, 11, 31, 32, 47, 58, 52, 53, 73, 74, 94, 95, 115, 116, 136, 137
+								, 87, 88, 89, 162, 163, 164, 183, 184, 185 };
+	std::vector<UINT> rockIndices{ 47, 58 };
+	std::vector<UINT> pookaIndices{ 87, 185 };
+	std::vector<UINT> fygarIndices{ 136 };
 	for (unsigned int i{ 0 }; i < grid->GetGridSize() - 21; ++i)
 	{
-		if (rand() % 4 != 0)
+		if (std::find(freeIndices.cbegin(), freeIndices.cend(), i) == freeIndices.cend())
 		{
-			if (grid->GetGrid()[i + 21].IsBlocked()) continue;
 			grid->GetGrid()[i + 21].SetBlocked(true);
 			go = new GameObject{};
 			renComp = scene->CreateRenderComponent(go, 2);
@@ -854,7 +877,6 @@ void DigDug::Game::InitNextLevel()
 
 			colliderComponent = new ColliderComponent{ go, "Dirt", 7.5f, 7.5f, 15.f, 15.f };
 			colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ [go, grid, colliderComponent]() { if (!colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player")) return; go->SetActive(false); grid->GetNodeNearestTo(go->GetPosition().x, go->GetPosition().y)->SetBlocked(false); } });
-			FCollisionManager.AddIgnore("Dirt", "Dirt");
 
 			go->SetTag("Dirt");
 			go->AddComponent(colliderComponent);
@@ -862,8 +884,261 @@ void DigDug::Game::InitNextLevel()
 			go->SetPosition(grid->GetGrid()[i].GetPosition().x, grid->GetGrid()[i + 21].GetPosition().y);
 			scene->AddGameObject(go);
 		}
+		if (std::find(rockIndices.cbegin(), rockIndices.cend(), i) != rockIndices.cend())
+		{
+			Rock::Create(scene, &grid->GetGrid()[i + 21], FLocalizer.Get("texRock"));
+		}
+		if (std::find(pookaIndices.cbegin(), pookaIndices.cend(), i) != pookaIndices.cend())
+		{
+			NPCPooka::Create(scene, grid->GetGrid()[i + 21].GetPosition());
+		}
+		if (std::find(fygarIndices.cbegin(), fygarIndices.cend(), i) != fygarIndices.cend())
+		{
+			NPCFygar::Create(scene, grid->GetGrid()[i + 21].GetPosition());
+		}
 	}
-	*/
+	FCollisionManager.AddIgnore("Pump", "Flame");
+	FCollisionManager.AddIgnore("Flame", "Fygar");
+	FCollisionManager.AddIgnore("Fygar", "Pooka");
+	FCollisionManager.AddIgnore("Pooka", "Fygar");
+	FCollisionManager.AddIgnore("Flame", "Pooka");
+	FCollisionManager.AddIgnore("Pooka", "Flame");
+	FCollisionManager.AddIgnore("Dirt", "Dirt");
+
+	if (m_GameState == GameState::Coop)
+	{
+		pump = new GameObject{};
+		pump->SetTag("Pump");
+		pumpSprite = scene->CreateSpriteComponent(pump);
+		pumpSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPump")));
+		pumpSprite->SetDimensions(180.f, 18.f);
+		pumpSprite->SetSpriteInfo(1, 10, 180.f, 18.f, 0.1f, true);
+		pumpMover = new FreeMover{pump, 0.f};
+		pumpCollider = new ColliderComponent{pump, "Pump", 30.f, 30.f};
+		pump->AddComponent(pumpMover);
+		pump->AddComponent(pumpSprite);
+		pump->AddComponent(pumpCollider);
+		scene->AddGameObject(pump);
+
+		go = new GameObject{};
+		go->SetPosition(650.0f, 15.0f);
+		inputComponent = FInputManager.GetPlayer(1);
+		gridMover = new GridMovementComponent{ go, 100.0f, grid, 90.0f, true };
+		go->AddComponent(gridMover);
+		gridMoveRight = new DirectionalGridMove{ gridMover, true, true };
+		gridMoveLeft = new DirectionalGridMove{ gridMover, true, false };
+		gridMoveDown = new DirectionalGridMove{ gridMover, false, true };
+		gridMoveUp = new DirectionalGridMove{ gridMover, false, false };
+		fireCommand = FInputManager.GetCommand<FireCommand>();
+
+		inputComponent->Clear();
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_BACK, returnCommand);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_X, fireCommand);
+
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, gridMoveRight);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_LEFT, gridMoveLeft);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_DOWN, gridMoveDown);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_UP, gridMoveUp);
+
+		inputComponent->AddKeyboardMapping(SDLK_RIGHT, gridMoveRight);
+		inputComponent->AddKeyboardMapping(SDLK_LEFT, gridMoveLeft);
+		inputComponent->AddKeyboardMapping(SDLK_DOWN, gridMoveDown);
+		inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
+		inputComponent->AddKeyboardMapping(SDLK_p, fireCommand);
+		inputComponent->AddKeyboardMapping(SDLK_o, returnCommand);
+
+		range.max = std::numeric_limits<short int>::max();
+		range.min = 15000;
+		range.wasReached = false;
+		inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveDown);
+		inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveRight);
+		range.min = std::numeric_limits<short int>::min();
+		range.max = -15000;
+		range.wasReached = false;
+		inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveUp);
+		inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveLeft);
+
+		spriteComponent = scene->CreateSpriteComponent(go, 4);
+		spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texPlayer")));
+		spriteComponent->SetPositionOffset(-15.f, -15.f);
+		spriteComponent->SetSpriteInfo(6, 1, 30.0f, 30.0f, 0.4f);
+		spriteComponent->SetDimensions(30.0f, 30.0f);
+		spriteComponent->SetRotationalOffset(0.f, 0.f);
+		spriteComponent->SetRotation(180.f);
+		spriteComponent->SetFlips(false, true);
+
+		playerComponent = new Player{ go, pump };
+		playerComponent->SetInitPos(go->GetPosition().x, go->GetPosition().y);
+		inputComponent->AttachToGameObject(go);
+
+		stateComponent = new StateComponent{ go };
+		idleState = new IdleState{};
+		idleState->SetAttachedSprite(spriteComponent);
+		idleState->SetPlayer(playerComponent);
+		stateComponent->SetCurrentState(idleState);
+
+		colliderComponent = new ColliderComponent{ go, "Player", 30.f, 30.f };
+		colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{ []() {} });
+		pumpCollider->SetOnCollisionFunction(new FunctionHolder<void>{
+			[playerComponent, pumpCollider, pumpSprite, pumpMover, stateComponent]()
+		{
+			if (pumpCollider->GetCollisionHit()->GetGameObject()->CompareTag("Fygar"))
+			{
+				Fygar* hit{ pumpCollider->GetCollisionHit()->GetGameObject()->GetComponent<Fygar>() };
+				if (hit->IsBloating()) return;
+				hit->SetBloating(true);
+				hit->SetHitBy(playerComponent);
+				pumpSprite->StopAnimating();
+				pumpMover->SetMoving(false);
+				FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
+				static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
+			}
+			else if (pumpCollider->GetCollisionHit()->GetGameObject()->CompareTag("Pooka"))
+			{
+				Pooka* hit{ pumpCollider->GetCollisionHit()->GetGameObject()->GetComponent<Pooka>() };
+				if (hit->IsBloating()) return;
+				hit->SetBloating(true);
+				hit->SetHitBy(playerComponent);
+				pumpSprite->StopAnimating();
+				pumpMover->SetMoving(false);
+				FInvoker.CancelOwnedInvokes(stateComponent->GetCurrentState());
+				static_cast<FiringState*>(stateComponent->GetCurrentState())->SetHit(hit);
+			}
+			else
+				playerComponent->SetFiring(false); } });
+
+		go->AddComponent(colliderComponent);
+		go->SetTag("Player");
+		go->AddComponent(spriteComponent);
+		go->AddComponent(inputComponent);
+		go->AddComponent(playerComponent);
+		go->AddComponent(stateComponent);
+		scene->AddGameObject(go);
+
+		go = new GameObject{};
+		livesSprite = scene->CreateSpriteComponent(go);
+		livesSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texLives")));
+		livesSprite->SetRotation(180.0f);
+		livesSprite->SetPositionOffset(45.0f, 30.f);
+		livesSprite->SetFlips(false, true);
+		livesObserver = new LivesObserver{ 3, livesSprite };
+		go->SetPosition(585.f, 425.f);
+		scene->AddGameObject(go);
+		playerComponent->AddObserver(livesObserver);
+		playerComponent->AddObserver(new GameOverObserver{ *this });
+
+		go = new GameObject{};
+		scoreRenderer = scene->CreateRenderComponent(go) ;
+		go->AddComponent(scoreRenderer);
+		textRenderer = new TextComponent{ go, FLocalizer.Get("fontDefault"), 30, {255, 255, 255} };
+		go->AddComponent(textRenderer);
+		scoreObserver = new ScoreObserver{ textRenderer };
+		go->SetPosition(380.f, 425.f);
+		scene->AddGameObject(go);
+		playerComponent->AddObserver(scoreObserver);
+		playerComponent->ChangeScore(scoreP2);
+		playerComponent->ChangeLives(livesP2, true);
+	}
+	else if (m_GameState == GameState::Versus)
+	{
+		GameObject* flame{ new GameObject{} };
+		flame->SetTag("Flame");
+		SpriteComponent* flameSprite{ scene->CreateSpriteComponent(flame) };
+		flameSprite->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texFire")));
+		flameSprite->SetDimensions(30.f, 24.f);
+		flameSprite->SetPositionOffset(-15.f, -12.f);
+		flameSprite->SetSpriteInfo(6, 1, 30.f, 24.f, 0.3f, true);
+		ColliderComponent* flameCollider{ new ColliderComponent{flame, "Flame", 20.f, 17.f} };
+		flameCollider->SetOnCollisionFunction(new FunctionHolder<void>{
+		[flameCollider]() {
+		if (flameCollider->GetCollisionHit()->GetGameObject()->CompareTag("Player"))
+			flameCollider->GetCollisionHit()->GetGameObject()->GetComponent<Player>()->ChangeLives(-1); } });
+
+		flame->AddComponent(flameCollider);
+		flame->AddComponent(flameSprite);
+		scene->AddGameObject(flame);
+
+
+		GameObject* fygar{ new GameObject{} };
+		fygar->SetPosition(650.0f, 15.0f);
+		inputComponent = FInputManager.GetPlayer(1);
+		gridMover = new GridMovementComponent{ fygar, 90.0f, grid, 90.0f, false };
+		fygar->AddComponent(gridMover);
+		gridMoveRight = new DirectionalGridMove{ gridMover, true, true };
+		gridMoveLeft = new DirectionalGridMove{ gridMover, true, false };
+		gridMoveDown = new DirectionalGridMove{ gridMover, false, true };
+		gridMoveUp = new DirectionalGridMove{ gridMover, false, false };
+		BreatheFireCommand* fireBreatheCommand{ FInputManager.GetCommand<BreatheFireCommand>() };
+		if (!fireBreatheCommand) fireBreatheCommand = new BreatheFireCommand{};
+
+		inputComponent->Clear();
+		inputComponent->AttachToGameObject(fygar);
+
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_Y, new RumbleCommand{ 0 });
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_START, quitCommand);
+
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, gridMoveRight);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_LEFT, gridMoveLeft);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_DOWN, gridMoveDown);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_DPAD_UP, gridMoveUp);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_X, fireBreatheCommand);
+		inputComponent->AddControllerMapping(SDL_CONTROLLER_BUTTON_BACK, returnCommand);
+
+		inputComponent->AddKeyboardMapping(SDLK_RIGHT, gridMoveRight);
+		inputComponent->AddKeyboardMapping(SDLK_LEFT, gridMoveLeft);
+		inputComponent->AddKeyboardMapping(SDLK_DOWN, gridMoveDown);
+		inputComponent->AddKeyboardMapping(SDLK_UP, gridMoveUp);
+		inputComponent->AddKeyboardMapping(SDLK_p, fireBreatheCommand);
+		inputComponent->AddKeyboardMapping(SDLK_o, returnCommand);
+
+		range.max = std::numeric_limits<short int>::max();
+		range.min = 15000;
+		range.wasReached = false;
+		inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveDown);
+		inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveRight);
+		range.min = std::numeric_limits<short int>::min();
+		range.max = -15000;
+		range.wasReached = false;
+		inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTY, range, gridMoveUp);
+		inputComponent->AddAxisMapping(SDL_CONTROLLER_AXIS_LEFTX, range, gridMoveLeft);
+
+		spriteComponent = scene->CreateSpriteComponent(fygar, 4);
+		spriteComponent->SetTexture(FResourceManager.LoadTexture(FLocalizer.Get("texFygar")));
+		spriteComponent->SetPositionOffset(-15.f, -15.f);
+		spriteComponent->SetSpriteInfo(4, 1, 30.0f, 30.0f, 0.4f);
+		spriteComponent->SetDimensions(30.0f, 30.0f);
+		spriteComponent->SetRotationalOffset(0.f, 0.f);
+		spriteComponent->SetRotation(180.f);
+		spriteComponent->SetFlips(false, true);
+
+		Fygar* fygarComponent{ new Fygar{ fygar, flame } };
+		stateComponent = new StateComponent{ fygar };
+		FygarIdleState* fygarIdleState{ new FygarIdleState{} };
+		fygarIdleState->SetSprite(spriteComponent);
+		fygarIdleState->SetFygar(fygarComponent);
+		fygarIdleState->SetMover(gridMover);
+		stateComponent->SetCurrentState(fygarIdleState);
+
+		colliderComponent = new ColliderComponent{ fygar, "Fygar", 30.f, 30.f };
+		colliderComponent->SetOnCollisionFunction(new FunctionHolder<void>{
+			[colliderComponent, fygarComponent]() {
+			if (colliderComponent->GetCollisionHit()->GetGameObject()->CompareTag("Player") && !fygarComponent->IsDeflating())
+				colliderComponent->GetCollisionHit()->GetGameObject()->GetComponent<Player>()->ChangeLives(-1); } });
+
+		fygar->SetTag("Fygar");
+		fygar->AddComponent(colliderComponent);
+		fygar->AddComponent(spriteComponent);
+		fygar->AddComponent(inputComponent);
+		fygar->AddComponent(fygarComponent);
+		fygar->AddComponent(stateComponent);
+		scene->AddGameObject(fygar);
+
+		ob = FObserverManager.Get<NextLevelObserver>();
+		ob->AddEnemy();
+		fygarComponent->AddObserver(ob);
+	}
 }
 
 void DigDug::Game::SetSwappingToSingle()
@@ -884,4 +1159,9 @@ void DigDug::Game::SetSwappingToVerus()
 void DigDug::Game::SetSwappingToNextLevel()
 {
 	FSceneManager.SwapScene(new flgin::FunctionHolder<void>{ std::bind(&Game::InitNextLevel, this) });
+}
+
+void DigDug::Game::SetSwappingToEndScene()
+{
+	FSceneManager.SwapScene(new flgin::FunctionHolder<void>{ std::bind(&Game::InitEndScene, this) });
 }

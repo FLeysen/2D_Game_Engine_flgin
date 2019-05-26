@@ -6,6 +6,7 @@
 #include "MovementGrid.h"
 #include "Player.h"
 #include "Fygar.h"
+#include "Pooka.h"
 
 void DigDug::StuckState::Enter()
 {
@@ -88,6 +89,11 @@ void DigDug::FallingState::CheckPlayerHit()
 	{
 		++m_AmountCrushed;
 		other->GetGameObject()->GetComponent<Fygar>()->Die();
+	}
+	else if (other->GetGameObject()->CompareTag("Pooka"))
+	{
+		++m_AmountCrushed;
+		other->GetGameObject()->GetComponent<Pooka>()->Die();
 	}
 	else if (other->GetGameObject()->CompareTag("Dirt"))
 		GrantScore();

@@ -25,7 +25,8 @@ void DigDug::Player::ChangeLives(int amount, bool rawChange)
 	}
 	else
 	{
-		m_Lives += amount;
+		m_Lives = amount;
+		Notify(ObserverEvent::LivesChanged);
 	}
 }
 
