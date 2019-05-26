@@ -8,6 +8,10 @@ Flgin/Logger
 Flgin/Logger/DeprecatedLogs
 DigDug/Logger
 DigDug/Logger/DeprecatedLogs
+DebugWin32
+Debugx64
+ReleaseWin32
+Releasex64
 
 # User-specific files
 *.suo
