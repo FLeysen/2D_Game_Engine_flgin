@@ -30,7 +30,6 @@ namespace DigDug
 	private:
 		flgin::Flgin m_Engine;
 		GameState m_GameState;
-		UINT8 m_Level;
 	};
 }
 

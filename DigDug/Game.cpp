@@ -47,7 +47,6 @@
 DigDug::Game::Game()
 	: m_Engine{}
 	, m_GameState{ GameState::Single }
-	, m_Level{ 0 }
 {}
 
 
@@ -77,7 +76,6 @@ void DigDug::Game::InitGameScene()
 	FInputManager.ClearCommands();
 	FCollisionManager.ClearColliders();
 
-	m_Level = 0;
 	NextLevelObserver* ob{ new NextLevelObserver{} };
 	ob->SetNextLevelInit(new FunctionHolder<void>{
 		[this]()
@@ -686,8 +684,7 @@ void DigDug::Game::InitEndScene()
 void DigDug::Game::InitNextLevel()
 {
 	using namespace flgin;
-	++m_Level;
-	Scene* scene{ FSceneManager.CreateScene("GameScene" + std::to_string(m_Level)) };
+	Scene* scene{ FSceneManager.CreateScene("GameScene2") };
 	FInvoker.CancelAllInvokes();
 	FInputManager.ClearCommands();
 	FCollisionManager.ClearColliders();
@@ -699,7 +696,7 @@ void DigDug::Game::InitNextLevel()
 
 	FObserverManager.Clear();
 	FSceneManager.RemoveCurrentScene();
-	FSceneManager.ActivateSceneByName("GameScene" + std::to_string(m_Level));
+	FSceneManager.ActivateSceneByName("GameScene2");
 
 	NextLevelObserver* ob{ new NextLevelObserver{} };
 	ob->SetNextLevelInit(new FunctionHolder<void>{
@@ -860,11 +857,12 @@ void DigDug::Game::InitNextLevel()
 	scene->AddGameObject(go);
 
 	RenderComponent* renComp{};
-	std::vector<UINT> freeIndices{ 10, 11, 31, 32, 47, 58, 52, 53, 73, 74, 94, 95, 115, 116, 136, 137
-								, 87, 88, 89, 162, 163, 164, 183, 184, 185 };
-	std::vector<UINT> rockIndices{ 47, 58 };
-	std::vector<UINT> pookaIndices{ 87, 185 };
-	std::vector<UINT> fygarIndices{ 136 };
+	std::vector<UINT> freeIndices{ 6, 7, 27, 28, 48, 49, 69, 70, 90, 91, 111, 112, 130, 131, 132, 133, 134, 135, 151, 152, 153, 154, 155, 156
+								, 79, 80, 77, 78, 100, 101, 98, 99, 121, 122, 119, 120, 142, 143, 140, 141
+								, 95, 96, 116, 117, 138, 137, 159, 158, 181, 178, 179, 180, 202, 199, 200, 201, 52, 88};
+	std::vector<UINT> rockIndices{ 52, 88 };
+	std::vector<UINT> pookaIndices{ 77, 143 };
+	std::vector<UINT> fygarIndices{ 151, 199 };
 	for (unsigned int i{ 0 }; i < grid->GetGridSize() - 21; ++i)
 	{
 		if (std::find(freeIndices.cbegin(), freeIndices.cend(), i) == freeIndices.cend())

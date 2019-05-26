@@ -53,7 +53,7 @@ void DigDug::PookaController::Update()
 
 	if (!m_pPooka->IsGhosting())
 	{
-		m_AcceptableNearDist = 120.f;
+		m_AcceptableNearDist = 240.f;
 		m_AccuTime += FTime.GetDeltaTime();
 		if (m_AccuTime > m_GhostInterval)
 		{
